@@ -20,33 +20,48 @@ jobs:
         with:
           lfs: false
           fetch-depth: 1
-      - name: Retrieve previously compiled real Pyrogenesis executable
+      - name: Discover most recent verified Pyrogenesis build
+        id: native
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run_id="$(gh api 'repos/DalmoMendonca/zion/actions/workflows/native-engine-smoke.yml/runs?per_page=30' --jq '[.workflow_runs[] | select(.conclusion == "success")] | first | .id')"
+          if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
+            echo "No successful native build artifact is available yet."
+            exit 1
+          fi
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+      - name: Restore verified Pyrogenesis build
         uses: actions/download-artifact@v4
         with:
           repository: DalmoMendonca/zion
-          run-id: 38256026534
+          run-id: ${{ steps.native.outputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           name: zion-native-linux-smoke
           path: .native-cache
-      - name: Restore executable and inspect linked libraries
-        shell: bash
+      - name: Install native engine runtime dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libboost-dev libboost-system-dev libboost-filesystem-dev \
+            libcurl4-gnutls-dev libenet-dev libfmt-dev libfreetype-dev \
+            libgloox-dev libicu-dev libminiupnpc-dev libogg-dev \
+            libopenal-dev libpng-dev libsdl2-dev libsodium-dev \
+            libvorbis-dev libwxgtk3.2-dev libxml2-dev libxcursor-dev \
+            libgl1-mesa-dev libglu1-mesa-dev libvulkan-dev
+      - name: Locate executable and game engine shared libraries
         run: |
           set -euxo pipefail
-          find .native-cache -maxdepth 10 -type f | head -20
+          find .native-cache -maxdepth 10 -type f -name 'libmozjs*.so*' -print
           engine="$(find .native-cache -type f -name pyrogenesis | head -1)"
           test -n "$engine"
           cp "$engine" binaries/system/pyrogenesis
           chmod +x binaries/system/pyrogenesis
+          while IFS= read -r lib; do cp "$lib" binaries/system/; done < <(find .native-cache -type f -name 'libmozjs*.so*')
+          export LD_LIBRARY_PATH="$(pwd)/binaries/system:${LD_LIBRARY_PATH:-}"
           ldd binaries/system/pyrogenesis
-      - name: Install game runtime libraries
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends \
-            libboost-filesystem1.83.0 libboost-system1.83.0 libcurl4t64 \
-            libenet7 libfmt9 libfreetype6 libgloox18t64 libicu74 \
-            libminiupnpc17 libogg0 libopenal1 libpng16-16t64 \
-            libsdl2-2.0-0 libsodium23 libvorbis0a libwxgtk3.2-1t64 \
-            libxml2 libxcursor1 libgl1 libglu1-mesa libvulkan1
+          ! ldd binaries/system/pyrogenesis | grep 'not found'
+          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
       - name: Obtain original scenario assets for nonvisual simulation
         run: |
           git lfs install --local
