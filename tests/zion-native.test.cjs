@@ -114,7 +114,7 @@ test("Victory engine integration registers valid triggers and preserves state",(
   };
   const fakeTech={IsTechnologyResearched:(id)=>!!base.techs[id]};
   const context={
-    Trigger:function(){},SYSTEM_ENTITY:0,
+    warn:()=>{}, Trigger:function(){},SYSTEM_ENTITY:0,
     IID_Trigger:"trigger",IID_StatisticsTracker:"stats",
     IID_TechnologyManager:"tech",IID_PlayerManager:"manager",
     IID_GuiInterface:"gui",
