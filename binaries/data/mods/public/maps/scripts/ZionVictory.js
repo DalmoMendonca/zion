@@ -181,6 +181,7 @@ if (typeof module !== "undefined" && module.exports)
         this.zionLatestReports = {};
         this.zionLastAges = {};
         this.zionResolved = false;
+        warn("ZION_NATIVE_READY: native Zion victory initialized");
         notify([], "ZION A.D. | First Covenant. Select a Civic Center to research forms of government. Develop a society that endures, not merely an empire that wins wars.");
         this.DoRepeatedly(CHECK_INTERVAL, "ZionEvaluate", {}, 6000);
     };
