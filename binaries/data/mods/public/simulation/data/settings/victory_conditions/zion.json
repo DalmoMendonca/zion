@@ -1,0 +1,25 @@
+{
+	"TranslatedKeys": [
+		"Title",
+		"Description"
+	],
+	"Data": {
+		"Title": "Zion A.D. — First Covenant",
+		"Description": "Build and govern a thriving society through three institutional stages. Choose successive government and policy pairs at your Civic Center, develop material and cultural institutions, and sustain balanced flourishing. This first playable milestone is shorter than the eventual 2,000-year campaign.",
+		"Scripts": [
+			"scripts/TriggerHelper.js",
+			"scripts/ZionModel.js",
+			"scripts/ZionVictory.js"
+		],
+		"GUIOrder": 11,
+		"DisabledWhenChecked": [
+			"conquest",
+			"conquest_units",
+			"conquest_structures",
+			"conquest_civic_centers",
+			"regicide",
+			"wonder",
+			"capture_the_relic"
+		]
+	}
+}
