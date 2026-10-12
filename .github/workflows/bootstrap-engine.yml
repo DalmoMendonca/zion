@@ -31,6 +31,8 @@ jobs:
             git remote set-url upstream https://github.com/AOSC-Tracking/0ad.git
             git fetch --depth=1 --no-tags upstream main
           fi
+          # GitHub rejects imported shallow ancestry; fetch actual upstream history before pushing.
+          git fetch --unshallow upstream main
           UPSTREAM_COMMIT="$(git rev-parse FETCH_HEAD)"
           git switch --detach FETCH_HEAD
           git switch -c zion-engine-import
