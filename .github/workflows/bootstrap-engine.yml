@@ -1,0 +1,131 @@
+name: Bootstrap Zion A.D. from 0 A.D. source
+# This workflow runs once; the imported upstream tree replaces this bootstrap file.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/bootstrap-engine.yml
+permissions:
+  contents: write
+jobs:
+  import-engine:
+    if: github.repository == 'DalmoMendonca/zion'
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - name: Import full upstream game source into this repository
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export GIT_LFS_SKIP_SMUDGE=1
+          git config --global user.name "Zion A.D. Bootstrap"
+          git config --global user.email "actions@users.noreply.github.com"
+          git clone --depth=1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" work
+          cd work
+          ORIGINAL_HEAD="$(git rev-parse HEAD)"
+          git remote add upstream https://gitea.wildfiregames.com/0ad/0ad.git
+          if ! git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=90 fetch --depth=1 --no-tags upstream main; then
+            echo "Official Gitea unavailable; using independently synchronized public mirror."
+            git remote set-url upstream https://github.com/AOSC-Tracking/0ad.git
+            git fetch --depth=1 --no-tags upstream main
+          fi
+          UPSTREAM_COMMIT="$(git rev-parse FETCH_HEAD)"
+          git switch --detach FETCH_HEAD
+          git switch -c zion-engine-import
+          # README describes the real fork rather than the previous companion app.
+          cp README.md UPSTREAM-README.md
+          cat > README.md <<'EOF'
+          # Zion A.D.
+
+          **An open-source civilization strategy game built directly on the 0 A.D. / Pyrogenesis engine.**
+
+          This repository contains the original game source tree: C++ engine, simulation, UI,
+          renderer, maps, units, buildings, and the art/sound files (large binary assets are
+          tracked as Git LFS pointers). It is the foundation of Zion A.D., not a separate
+          browser game or a small 0 A.D. add-on.
+
+          **Vision:** Guide societies across 2,000 years toward Zion: shared flourishing,
+          ecological regeneration, justice, wisdom, agency, love, peace, and institutions
+          that are worthy of the people they serve. Multiple forms of governance and
+          integral developmental paths will be implemented within the native simulation.
+
+          **Development status:** This is the upstream game source imported as a starting
+          foundation. The 2,000-year Zion gameplay, new title-screen UI, policy simulation,
+          and historical eras are not implemented yet. Do not confuse the imported 0 A.D.
+          executable with a complete, playable Zion A.D. game.
+
+          ## Source and build
+
+          * Original developer documentation: [UPSTREAM-README.md](UPSTREAM-README.md)
+          * Current 0 A.D. project: https://gitea.wildfiregames.com/0ad/0ad
+          * Build instructions: https://gitea.wildfiregames.com/0ad/0ad/wiki/BuildInstructions
+          * The official `.lfsconfig` points to Wildfire Games' LFS server for fetching art
+            and sound assets. Run `git lfs install && git lfs pull` if needed.
+          * Maintainers can fetch subsequent upstream changes with
+            `git remote add upstream https://gitea.wildfiregames.com/0ad/0ad.git`
+            and `git fetch upstream main`.
+
+          ## Attribution and licenses
+
+          An unofficial derivative of **0 A.D.**, originally developed by Wildfire Games.
+          All upstream copyrights and license files are retained. Engine code is primarily
+          GPL-2.0-or-later; art assets use their respective upstream licenses, including
+          CC BY-SA 3.0. See [LICENSE.md](LICENSE.md) and upstream licensing files.
+          Zion A.D. is not affiliated with Wildfire Games.
+
+          ## Project direction
+
+          See [ZION-VISION.md](ZION-VISION.md). All gameplay changes must live in the
+          native Pyrogenesis/0 A.D. source tree.
+          EOF
+          cat > ZION-VISION.md <<'EOF'
+          # Zion A.D. — Design direction
+
+          **One game. One codebase. The complete 0 A.D. foundation.**
+
+          The player's goal is to cultivate Zion over a 2,000-year span. A society is
+          more than armies and GDP; culture, interior experience, individual behavior,
+          and institutions interact. An aspirational integral framework supplies four
+          perspectives (individual interior and exterior; collective interior and exterior).
+
+          ## Native-game priorities
+
+          1. Update native game identity and title-screen presentation to Zion A.D.
+          2. Extend 0 A.D.'s simulation components with persistent societal metrics:
+             provision, material prosperity, dignity, freedom, wisdom, communion,
+             ecological health, resilience, and intergenerational memory.
+          3. Make governance a real, changeable institution inside the RTS UI:
+             community covenant, elder council, monarchy, constitutional charter,
+             mercantile republic, assemblies, or federated commons.
+          4. Connect player choices (laws, welfare, trade, resource allocation, civic
+             participation, diplomacy, military action) to observable outcomes.
+          5. Implement era transitions spanning 2,000 years, including time-dependent
+             technology, urbanization, and societal challenges.
+          6. Provide native-game scenarios and a Zion victory condition rewarding
+             plural, sustainable flourishing rather than expansion or domination.
+          7. Add dedicated art and audio only after the original game renders and
+             performs reliably.
+
+          ## Guardrails
+
+          * Spiral-development stages are optional game heuristics, not a scientific
+            measure of persons or cultures. Development is contingent and reversible.
+          * Governance structures have benefits, costs, and failure modes; no
+            institution or strategy is guaranteed success.
+          * No forced conversion, ethnic hierarchy, or persecution is ever rewarded.
+          * Preserve upstream source, art provenance, and license notices.
+          * No new browser simulator; edit the real C++/JavaScript/Pyrogenesis code.
+          EOF
+          git add README.md UPSTREAM-README.md ZION-VISION.md
+          git commit -m "Zion A.D.: adopt upstream game as the native foundation"
+          # Preserve repository's old Git history without keeping the browser prototype in HEAD.
+          git merge -s ours --allow-unrelated-histories -m "Replace companion prototype with real 0 A.D. source fork" "${ORIGINAL_HEAD}"
+          echo "Upstream source commit: ${UPSTREAM_COMMIT}"
+          echo "New fork head: $(git rev-parse HEAD)"
+          test -d source
+          test -d binaries/data/mods/public
+          test -d build
+          git push origin HEAD:refs/heads/main
+          echo "Source import pushed successfully."
