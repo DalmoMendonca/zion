@@ -1,0 +1,101 @@
+name: Build and smoke-test Pyrogenesis
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/native-engine-smoke.yml"
+      - "binaries/data/mods/public/maps/scripts/Zion*"
+      - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion.json"
+      - "binaries/data/mods/public/simulation/data/technologies/zion*"
+      - "binaries/data/mods/public/simulation/data/technologies/pair_zion*"
+      - "binaries/data/mods/public/gui/session/Zion*"
+permissions:
+  contents: read
+jobs:
+  linux-engine:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      GIT_LFS_SKIP_SMUDGE: "1"
+      MAKEFLAGS: "-j3"
+    steps:
+      - name: Checkout real 0 A.D. fork without LFS downloads
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 1
+      - name: Check runner disk capacity and build environment
+        run: |
+          df -h .
+          uname -a
+          gcc --version | head -1
+          rustc --version
+          cargo --version
+          git lfs version
+      - name: Install native engine dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cargo cmake curl git-lfs pkg-config python3 m4 \
+            libboost-dev libboost-system-dev libboost-filesystem-dev \
+            libcurl4-gnutls-dev libenet-dev libfmt-dev libfreetype-dev \
+            libgloox-dev libicu-dev libminiupnpc-dev libogg-dev \
+            libopenal-dev libpng-dev libsdl2-dev libsodium-dev \
+            libvorbis-dev libwxgtk3.2-dev libxml2-dev libxcursor-dev \
+            libgl1-mesa-dev libglu1-mesa-dev libvulkan-dev \
+            llvm subversion zlib1g-dev xvfb
+      - name: Compile 0 A.D. third-party dependencies
+        run: |
+          export JOBS=-j3
+          bash libraries/build-source-libs.sh --without-nvtt -j3
+      - name: Generate native makefiles
+        run: |
+          bash build/workspaces/update-workspaces.sh \
+            --without-nvtt --without-atlas --without-lobby \
+            --without-tests --without-audio
+      - name: Compile Pyrogenesis engine from fork
+        run: |
+          make -C build/workspaces/gcc -j3 config=release
+          test -x binaries/system/pyrogenesis
+          binaries/system/pyrogenesis -version
+      - name: Fetch original 0 A.D. art through its upstream LFS server
+        continue-on-error: true
+        run: |
+          git lfs install --local
+          git lfs pull --include='binaries/data/mods/public/*' --exclude=''
+          test -f binaries/data/mods/public/art/textures/skins/README || true
+      - name: Run actual Pyrogenesis headless simulation
+        id: engine
+        shell: bash
+        run: |
+          set -o pipefail
+          cd binaries/system
+          timeout --signal=TERM 75s ./pyrogenesis \
+            -autostart="scenarios/arcadia" \
+            -autostart-victory=zion \
+            -autostart-nonvisual \
+            -autostart-disable-replay \
+            -nosound -quickstart 2>&1 | tee engine-smoke.log
+          code=${PIPESTATUS[0]}
+          echo "ENGINE_EXIT_CODE=$code" >> "$GITHUB_ENV"
+          echo "Pyrogenesis exit code: $code"
+          # 124 is expected for an ongoing headless match killed by timeout.
+          if [ "$code" -ne 0 ] && [ "$code" -ne 124 ]; then
+            exit "$code"
+          fi
+          if grep -Ei '(^| )ERROR:|JavaScript error:|failed to load|unhandled exception|assertion failed' engine-smoke.log; then
+            echo "Engine reported runtime errors."
+            exit 1
+          fi
+      - name: Upload diagnostics and native binary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zion-native-linux-smoke
+          if-no-files-found: warn
+          path: |
+            binaries/system/engine-smoke.log
+            binaries/system/pyrogenesis
+            ~/.cache/0ad/logs/
+          retention-days: 7
