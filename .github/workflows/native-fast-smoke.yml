@@ -1,0 +1,74 @@
+name: Rapid Pyrogenesis gameplay smoke
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/native-fast-smoke.yml"
+      - "binaries/data/mods/public/maps/scripts/Zion*"
+      - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion.json"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  native-simulation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      GIT_LFS_SKIP_SMUDGE: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 1
+      - name: Retrieve previously compiled real Pyrogenesis executable
+        uses: actions/download-artifact@v4
+        with:
+          repository: DalmoMendonca/zion
+          run-id: 38256026534
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: zion-native-linux-smoke
+          path: .native-cache
+      - name: Restore executable and inspect linked libraries
+        shell: bash
+        run: |
+          set -euxo pipefail
+          find .native-cache -maxdepth 10 -type f | head -20
+          engine="$(find .native-cache -type f -name pyrogenesis | head -1)"
+          test -n "$engine"
+          cp "$engine" binaries/system/pyrogenesis
+          chmod +x binaries/system/pyrogenesis
+          ldd binaries/system/pyrogenesis
+      - name: Install game runtime libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libboost-filesystem1.83.0 libboost-system1.83.0 libcurl4t64 \
+            libenet7 libfmt9 libfreetype6 libgloox18t64 libicu74 \
+            libminiupnpc17 libogg0 libopenal1 libpng16-16t64 \
+            libsdl2-2.0-0 libsodium23 libvorbis0a libwxgtk3.2-1t64 \
+            libxml2 libxcursor1 libgl1 libglu1-mesa libvulkan1
+      - name: Obtain original scenario assets for nonvisual simulation
+        run: |
+          git lfs install --local
+          git lfs pull --include="binaries/data/mods/public/maps/scenarios/arcadia.pmp" --exclude=""
+      - name: Launch built engine with current Zion scripts
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd binaries/system
+          timeout --signal=TERM 12s ./pyrogenesis \
+            -autostart="scenarios/arcadia" -autostart-victory=zion \
+            -autostart-nonvisual -autostart-disable-replay \
+            -nosound -quickstart >engine-smoke.log 2>&1
+          code=$?
+          tail -60 engine-smoke.log
+          grep -F "GAME STARTED, ALL INIT COMPLETE" engine-smoke.log || exit 1
+          grep -F "ZION_NATIVE_READY" engine-smoke.log || exit 1
+          if grep -Ei '(^| )ERROR:|JavaScript error:|failed to load|unhandled exception|assertion failed' engine-smoke.log; then exit 1; fi
+          test "$code" -eq 0 -o "$code" -eq 124
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zion-rapid-smoke-log
+          if-no-files-found: warn
+          path: binaries/system/engine-smoke.log
