@@ -45,6 +45,13 @@ jobs:
             libvorbis-dev libwxgtk3.2-dev libxml2-dev libxcursor-dev \
             libgl1-mesa-dev libglu1-mesa-dev libvulkan-dev \
             llvm subversion zlib1g-dev xvfb
+      # Mozilla 128's Rust target detection breaks with Rust >= 1.98
+      # (Mozilla bug 2053518, October 2026): pin the last unaffected Rust.
+      - name: Select Mozilla-compatible Rust toolchain
+        run: |
+          rustup toolchain install 1.97.1 --profile minimal
+          rustup default 1.97.1
+          rustc --version
       - name: Compile 0 A.D. third-party dependencies
         run: |
           export JOBS=-j3
