@@ -76,7 +76,7 @@ test("Native victory condition loads existing engine scripts",()=>{
   const condition=JSON.parse(fs.readFileSync(path.join(mod,
     "simulation/data/settings/victory_conditions/zion.json"),"utf8"));
   assert.deepEqual(condition.Data.Scripts, [
-    "scripts/TriggerHelper.js","scripts/ZionModel.js","scripts/ZionVictory.js"]);
+    "scripts/TriggerHelper.js","scripts/ZionVictory.js"]);
   for(const script of condition.Data.Scripts)
     assert.ok(fs.existsSync(path.join(mod,"maps",script)), script);
 });
@@ -114,7 +114,7 @@ test("Victory engine integration registers valid triggers and preserves state",(
   };
   const fakeTech={IsTechnologyResearched:(id)=>!!base.techs[id]};
   const context={
-    ZionModel:model,Trigger:function(){},SYSTEM_ENTITY:0,
+    Trigger:function(){},SYSTEM_ENTITY:0,
     IID_Trigger:"trigger",IID_StatisticsTracker:"stats",
     IID_TechnologyManager:"tech",IID_PlayerManager:"manager",
     IID_GuiInterface:"gui",
@@ -150,4 +150,15 @@ test("Victory engine integration registers valid triggers and preserves state",(
   assert.ok(notifications.some(n=>n.message.includes("FIRST COVENANT FULFILLED")));
   assert.ok(triggers.zionLatestReports[1]);
   assert.ok(triggers.zionLatestReports[1].score >= 59);
+});
+
+test("Victory is standalone and does not depend on a separate ZionModel global",()=>{
+  const game=fs.readFileSync(path.join(mod,"maps/scripts/ZionVictory.js"),"utf8");
+  const standalone=fs.readFileSync(path.join(mod,"maps/scripts/ZionModel.js"),"utf8");
+  assert.ok(game.includes(standalone), "Zion model must be embedded in executable trigger");
+  const sandbox={Trigger:function(){},SYSTEM_ENTITY:0,IID_Trigger:"trigger",
+    Engine:{QueryInterface:()=>({RegisterTrigger:()=>{}})}};
+  vm.runInNewContext(game,sandbox);
+  assert.equal(typeof sandbox.ZionModel.measure,"function");
+  assert.equal(typeof sandbox.Trigger.prototype.ZionEvaluate,"function");
 });

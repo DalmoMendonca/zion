@@ -8,7 +8,6 @@
 		"Description": "Build and govern a thriving society through three institutional stages. Choose successive government and policy pairs at your Civic Center, develop material and cultural institutions, and sustain balanced flourishing. This first playable milestone is shorter than the eventual 2,000-year campaign.",
 		"Scripts": [
 			"scripts/TriggerHelper.js",
-			"scripts/ZionModel.js",
 			"scripts/ZionVictory.js"
 		],
 		"GUIOrder": 11,
