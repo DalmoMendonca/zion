@@ -6,7 +6,9 @@ const vm = require("node:vm");
 
 const mod = path.resolve(__dirname, "..", "binaries/data/mods/public");
 const techPath = path.join(mod, "simulation/data/technologies");
-const model = require(path.join(mod, "maps/scripts/ZionModel.js"));
+const modelContext = { module:{ exports:{} } };
+vm.runInNewContext(fs.readFileSync(path.join(mod,"maps/scripts/ZionModel.js"),"utf8"),modelContext);
+const model=modelContext.module.exports;
 
 const base = {
   houses: 12, farms: 7, markets: 3, temples: 2,
