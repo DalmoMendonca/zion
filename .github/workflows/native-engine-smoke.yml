@@ -52,6 +52,10 @@ jobs:
           rustup toolchain install 1.97.1 --profile minimal
           rustup default 1.97.1
           rustc --version
+      - name: Install Mozilla's required cbindgen helper
+        run: |
+          cargo install --locked cbindgen@0.29.0
+          cbindgen --version
       - name: Compile 0 A.D. third-party dependencies
         run: |
           export JOBS=-j3
