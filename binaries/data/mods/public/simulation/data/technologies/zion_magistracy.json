@@ -10,7 +10,7 @@
 		"tech": "phase_village"
 	},
 	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
-	"icon": "civic_centre.png",
+	"icon": "chinese_bureaucracy_01.png",
 	"researchTime": 20,
 	"tooltip": "Structures build 7% faster; houses -1 population capacity.",
 	"modifications": [

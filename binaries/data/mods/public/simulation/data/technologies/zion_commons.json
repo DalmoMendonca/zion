@@ -20,7 +20,7 @@
 		]
 	},
 	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
-	"icon": "social_reforms.png",
+	"icon": "population.png",
 	"researchTime": 20,
 	"tooltip": "Houses +3 population capacity; structures take 7% longer to build.",
 	"modifications": [
