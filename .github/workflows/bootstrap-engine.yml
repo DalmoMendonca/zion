@@ -127,5 +127,6 @@ jobs:
           test -d source
           test -d binaries/data/mods/public
           test -d build
-          # Preserve official LFS pointers; never upload upstream LFS objects to another host.\n          GIT_LFS_SKIP_PUSH=1 git -c core.hooksPath=/dev/null push origin HEAD:refs/heads/main
+          # Preserve official LFS pointers; never upload upstream LFS objects to another host.
+          GIT_LFS_SKIP_PUSH=1 git -c core.hooksPath=/dev/null push origin HEAD:refs/heads/main
           echo "Source import pushed successfully."
