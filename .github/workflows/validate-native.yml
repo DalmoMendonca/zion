@@ -23,7 +23,9 @@ jobs:
           assert not Path("zion-ad-play.html").exists(), "Deprecated companion game returned"
           assert not Path("web/app.js").exists(), "Deprecated browser app returned"
           for path in ("binaries/data/mods/public/gui/pregame/ProjectInformation.xml",
-                       "binaries/data/mods/public/gui/session/top_panel/BuildLabel.xml"):
+                       "binaries/data/mods/public/gui/session/top_panel/BuildLabel.xml",
+             "binaries/data/mods/public/gui/session/ZionStatus.xml",
+             "binaries/data/mods/public/gui/session/session.xml"):
               ET.parse(path)
           assert "ZION A.D." in Path("binaries/data/mods/public/gui/pregame/ProjectInformation.xml").read_text()
           print("Native game fork checks passed.")
@@ -31,4 +33,6 @@ jobs:
           node --check binaries/data/mods/public/gui/pregame/ProjectInformation.js
           node --check binaries/data/mods/public/maps/scripts/ZionModel.js
           node --check binaries/data/mods/public/maps/scripts/ZionVictory.js
+          node --check binaries/data/mods/public/gui/session/ZionStatus.js
+          node --check binaries/data/mods/public/simulation/components/GuiInterface.js
           node --test tests/zion-native.test.cjs

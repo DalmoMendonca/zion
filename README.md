@@ -12,10 +12,12 @@ ecological regeneration, justice, wisdom, agency, love, peace, and institutions
 that are worthy of the people they serve. Multiple forms of governance and
 integral developmental paths will be implemented within the native simulation.
 
-**Development status:** The native title screen now identifies Zion A.D. This is the upstream game source imported as a starting
-foundation. The 2,000-year Zion gameplay, new title-screen UI, policy simulation,
-and historical eras are not implemented yet. Do not confuse the imported 0 A.D.
-executable with a complete, playable Zion A.D. game.
+**Development status:** A first **First Covenant** native RTS gameplay slice now
+includes three successive governance decisions at civic centers, policies with
+real game effects, persistent social conditions, an in-game welfare HUD, and a
+native flourishing victory mode. See [play instructions](docs/FIRST-PLAYABLE.md).
+The full 2,000-year campaign and new future-age 3D art are not implemented;
+a complete Pyrogenesis build and game launch have not yet been verified.
 
 ## Source and build
 

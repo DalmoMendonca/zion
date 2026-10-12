@@ -65,6 +65,7 @@
     {
         // Stored on the engine Trigger component so savegames retain institutional memory.
         this.zionSocieties = {};
+        this.zionLatestReports = {};
         this.zionLastAges = {};
         this.zionResolved = false;
         notify([], "ZION A.D. | First Covenant. Select a Civic Center to research forms of government. Develop a society that endures, not merely an empire that wins wars.");
@@ -93,6 +94,17 @@
             let result = ZionModel.measure(observation, memory);
             memory.stableChecks = result.eligible ? memory.stableChecks + 1 : 0;
             this.zionSocieties[playerID] = memory;
+            this.zionLatestReports[playerID] = {
+                "score": result.score,
+                "floor": result.floor,
+                "ageName": result.ageName,
+                "dimensions": result.dimensions,
+                "quadrants": result.quadrants,
+                "trust": Math.round(memory.trust),
+                "warStrain": Math.round(memory.trauma),
+                "sustained": memory.stableChecks,
+                "needed": CHECKS_TO_WIN
+            };
             const oldAge = this.zionLastAges[playerID] || 0;
             if (result.age > oldAge)
             {

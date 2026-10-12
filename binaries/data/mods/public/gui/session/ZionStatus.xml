@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects>
+  <!-- Visible only when the Zion match mode provides a native society report. -->
+  <object name="zionStatusPanel" type="image" style="TranslucentPanel"
+      size="100%-280 40 100%-8 90" hidden="true" z="46">
+    <object name="zionStatusText" type="text" ghost="true"
+        style="ModernLabelText" font="sans-12" textcolor="white"
+        size="10 6 100%-10 100%-6"/>
+  </object>
+</objects>

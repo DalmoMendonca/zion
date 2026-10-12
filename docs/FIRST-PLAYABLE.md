@@ -48,6 +48,10 @@ currently one-time exclusive choices rather than reversible constitutions.
 The model is a deliberately simplified game simulation, not a factual ranking
 of real populations.
 
+The native in-game HUD displays Zion score and age, with a hover breakdown
+of all eight welfare dimensions, social trust, and war strain. It receives
+a player-specific, read-only report from the simulation.
+
 The code has Node/V8 engine-interface tests and XML/JSON validation.
 A full native engine build and interactive Pyrogenesis launch remain unverified.
 See `tests/zion-native.test.js`.

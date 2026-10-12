@@ -54,6 +54,17 @@ GuiInterface.prototype.Init = function()
  * Returns global information about the current game state.
  * This is used by the GUI and also by AI scripts.
  */
+/** Read-only player-local Zion society report; never modifies simulation state. */
+GuiInterface.prototype.GetZionStatus = function(playerID)
+{
+    if (playerID <= 0)
+        return null;
+    const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+    if (!cmpTrigger || !cmpTrigger.zionLatestReports)
+        return null;
+    return cmpTrigger.zionLatestReports[playerID] || null;
+};
+
 GuiInterface.prototype.GetSimulationState = function()
 {
 	const ret = {

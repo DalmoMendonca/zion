@@ -34,6 +34,7 @@ var g_RangeOverlayManager;
 var g_ResearchProgress;
 var g_TimeNotificationOverlay;
 var g_TopPanel;
+var g_ZionStatus;
 var g_TradeDialog;
 var g_TutorialManager;
 
@@ -308,6 +309,7 @@ async function init(initData, hotloadData)
 	g_TradeDialog = new TradeDialog(g_PlayerViewControl);
 	g_TopPanel = new TopPanel(g_PlayerViewControl, g_DiplomacyDialog, g_TradeDialog, g_MatchSettingsDialog, g_GameSpeedControl);
 	g_TimeNotificationOverlay = new TimeNotificationOverlay(g_PlayerViewControl);
+	g_ZionStatus = new ZionStatus();
 
 	initUnitsAndBuildingsHotkeys();
 	initBatchTrain();

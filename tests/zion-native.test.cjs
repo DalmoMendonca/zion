@@ -148,4 +148,6 @@ test("Victory engine integration registers valid triggers and preserves state",(
   assert.deepEqual(victories,[1]);
   assert.equal(triggers.zionSocieties[1].stableChecks,3);
   assert.ok(notifications.some(n=>n.message.includes("FIRST COVENANT FULFILLED")));
+  assert.ok(triggers.zionLatestReports[1]);
+  assert.ok(triggers.zionLatestReports[1].score >= 59);
 });

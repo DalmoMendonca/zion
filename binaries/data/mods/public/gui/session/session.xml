@@ -53,6 +53,7 @@
 		<include file="gui/session/ResearchProgress.xml"/>
 		<include file="gui/session/TimeNotificationOverlay.xml"/>
 		<include file="gui/session/TopPanel.xml"/>
+		<include file="gui/session/ZionStatus.xml"/>
 		<include file="gui/session/trade/TradeDialog.xml"/>
 		<include file="gui/session/tutorial/Tutorial.xml"/>
 		<include file="gui/session/Menu.xml"/>
