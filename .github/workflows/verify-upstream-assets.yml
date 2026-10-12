@@ -1,0 +1,35 @@
+name: Verify upstream game data availability
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/verify-upstream-assets.yml"
+permissions:
+  contents: read
+jobs:
+  assets:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GIT_LFS_SKIP_SMUDGE: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 1
+      - name: Retrieve real scenario and technology image from official 0 A.D. LFS
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          git config --get-regexp '^lfs\..*url' || true
+          git lfs pull --include="binaries/data/mods/public/maps/scenarios/arcadia.pmp,binaries/data/mods/public/art/textures/ui/session/portraits/technologies/friendship.png" --exclude=""
+          python3 - <<'PY'
+          from pathlib import Path
+          for name in ("binaries/data/mods/public/maps/scenarios/arcadia.pmp",
+                       "binaries/data/mods/public/art/textures/ui/session/portraits/technologies/friendship.png"):
+              p=Path(name)
+              b=p.read_bytes()
+              assert not b.startswith(b"version https://git-lfs"), f"{name} remains LFS pointer"
+              assert len(b)>1000, f"{name} is unexpectedly short"
+              print(name, len(b),"actual bytes")
+          PY
