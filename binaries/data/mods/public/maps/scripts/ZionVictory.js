@@ -21,7 +21,7 @@ var ZionModel = (function()
 
     function freshMemory()
     {
-        return { "trauma": 0, "trust": 0, "lastKills": 0, "stableChecks": 0 };
+        return { "trauma": 0, "trust": 0, "lastKills": 0, "lastLosses": 0, "lastTributes": 0, "stableChecks": 0 };
     }
 
     function measure(o, memory)
@@ -92,16 +92,22 @@ var ZionModel = (function()
         const next = Object.assign(freshMemory(), memory || {});
         const kills = amount(observation.kills);
         const newKills = Math.max(0, kills - next.lastKills);
-        next.lastKills = kills;
-        // War damages social trust for some time even after combat stops.
-        next.trauma = clamp(next.trauma * 0.96 + newKills * 1.4, 0, 50);
-        const foodStress = amount(observation.food) < 100;
+        const losses = amount(observation.losses);
+        const newLosses = Math.max(0, losses - next.lastLosses);
         const aid = amount(observation.tributes);
+        const newAid = Math.max(0, aid - next.lastTributes);
+        next.lastKills = kills;
+        next.lastLosses = losses;
+        next.lastTributes = aid;
+        // Defensive casualties are socially costly too. Healing takes time.
+        next.trauma = clamp(next.trauma * 0.96 + newKills * 1.4 +
+            newLosses * 1.7, 0, 50);
+        const foodStress = amount(observation.food) < 100;
         const cooperative = !!(observation.techs &&
             (observation.techs.zion_commons || observation.techs.zion_concord));
         next.trust = clamp(next.trust + (cooperative ? 0.7 : 0.1) +
-            (aid > 100 ? 0.5 : 0) - (foodStress ? 1.4 : 0) -
-            newKills * 0.3, -35, 30);
+            (newAid > 100 ? 0.5 : 0) - (foodStress ? 1.4 : 0) -
+            newKills * 0.3 - newLosses * 0.35, -35, 30);
         return next;
     }
 
@@ -129,6 +135,8 @@ if (typeof module !== "undefined" && module.exports)
             return Number.isFinite(value) ? value : 0;
         if (!value || typeof value !== "object")
             return 0;
+        if (Number.isFinite(value.total))
+            return value.total;
         return Object.values(value).reduce((n, child) => n + total(child), 0);
     }
 
@@ -161,6 +169,7 @@ if (typeof module !== "undefined" && module.exports)
             "trade": total(stats.tradeIncome),
             "tributes": total(stats.tributesSent),
             "kills": total(stats.enemyUnitsKilled),
+            "losses": total(stats.unitsLost),
             "woodGathered": total(stats.resourcesGathered && stats.resourcesGathered.wood),
             "techs": techs
         };

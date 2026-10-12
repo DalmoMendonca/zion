@@ -162,3 +162,20 @@ test("Victory is standalone and does not depend on a separate ZionModel global",
   assert.equal(typeof sandbox.ZionModel.measure,"function");
   assert.equal(typeof sandbox.Trigger.prototype.ZionEvaluate,"function");
 });
+
+test("Own losses produce persistent strain even when player kills no enemies", () => {
+  const community = {...base, kills:0, losses:12};
+  const memory = model.updateMemory(model.freshMemory(), community);
+  assert.ok(memory.trauma >= 20);
+  assert.ok(model.measure(community, memory).score <
+    model.measure({...community, losses:0}, model.freshMemory()).score);
+});
+
+test("One-time aid is not rewarded on every evaluation forever", () => {
+  const situation = {...base, tributes:150};
+  const before = model.freshMemory();
+  const once = model.updateMemory(before, situation);
+  const twice = model.updateMemory(once, situation);
+  assert.ok(once.trust > 0);
+  assert.ok(twice.trust - once.trust < once.trust - before.trust);
+});
