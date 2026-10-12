@@ -1,0 +1,29 @@
+{
+	"partOfPair": "pair_zion_foundations",
+	"genericName": "Covenant Council",
+	"description": "Mutual responsibility through local kinship, obligation, and care. Houses support more people; trade is less aggressive.",
+	"cost": {
+		"food": 150,
+		"wood": 130
+	},
+	"requirements": {
+		"tech": "phase_village"
+	},
+	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
+	"icon": "shrine.png",
+	"researchTime": 20,
+	"tooltip": "Houses +3 population capacity; traders -8% profit.",
+	"modifications": [
+		{
+			"value": "Population/Bonus",
+			"add": 3,
+			"affects": "House"
+		},
+		{
+			"value": "Trader/GainMultiplier",
+			"multiply": 0.92,
+			"affects": "Trader"
+		}
+	],
+	"soundComplete": "interface/alarm/alarm_upgradearmory.xml"
+}

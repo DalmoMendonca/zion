@@ -1,0 +1,10 @@
+{
+	"genericName": "Foundations of Government",
+	"pair": [
+		"zion_covenant",
+		"zion_magistracy"
+	],
+	"requirements": {
+		"tech": "phase_village"
+	}
+}

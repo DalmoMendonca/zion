@@ -1,0 +1,10 @@
+{
+	"genericName": "The Common Future",
+	"pair": [
+		"zion_concord",
+		"zion_stewardship"
+	],
+	"requirements": {
+		"tech": "phase_city"
+	}
+}

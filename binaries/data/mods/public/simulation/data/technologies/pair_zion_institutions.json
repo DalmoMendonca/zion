@@ -1,0 +1,10 @@
+{
+	"genericName": "Civic Institutions",
+	"pair": [
+		"zion_commons",
+		"zion_guilds"
+	],
+	"requirements": {
+		"tech": "phase_town"
+	}
+}

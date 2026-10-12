@@ -1,0 +1,29 @@
+{
+	"partOfPair": "pair_zion_foundations",
+	"genericName": "Chartered Magistracy",
+	"description": "Central coordination, clear administration, and rapid building at the cost of residential space.",
+	"cost": {
+		"wood": 170,
+		"stone": 100
+	},
+	"requirements": {
+		"tech": "phase_village"
+	},
+	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
+	"icon": "civic_centre.png",
+	"researchTime": 20,
+	"tooltip": "Structures build 7% faster; houses -1 population capacity.",
+	"modifications": [
+		{
+			"value": "Cost/BuildTime",
+			"multiply": 0.93,
+			"affects": "Structure"
+		},
+		{
+			"value": "Population/Bonus",
+			"add": -1,
+			"affects": "House"
+		}
+	],
+	"soundComplete": "interface/alarm/alarm_upgradearmory.xml"
+}

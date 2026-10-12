@@ -1,0 +1,39 @@
+{
+	"partOfPair": "pair_zion_institutions",
+	"genericName": "Guild Republic",
+	"description": "Merchants cooperate across settlements; faster markets, but fewer resources stay in households.",
+	"cost": {
+		"wood": 230,
+		"metal": 170
+	},
+	"requirements": {
+		"all": [
+			{
+				"tech": "phase_town"
+			},
+			{
+				"entity": {
+					"class": "Market",
+					"number": 1
+				}
+			}
+		]
+	},
+	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
+	"icon": "amphore.png",
+	"researchTime": 20,
+	"tooltip": "Traders +22% profit; houses -1 population capacity.",
+	"modifications": [
+		{
+			"value": "Trader/GainMultiplier",
+			"multiply": 1.22,
+			"affects": "Trader"
+		},
+		{
+			"value": "Population/Bonus",
+			"add": -1,
+			"affects": "House"
+		}
+	],
+	"soundComplete": "interface/alarm/alarm_upgradearmory.xml"
+}

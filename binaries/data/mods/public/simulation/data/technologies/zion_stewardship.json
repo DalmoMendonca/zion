@@ -1,0 +1,44 @@
+{
+	"partOfPair": "pair_zion_future",
+	"genericName": "Covenant of Stewardship",
+	"description": "Coordinate farming, public provision, and resilient towns while restraining commercial expansion.",
+	"cost": {
+		"food": 280,
+		"wood": 300
+	},
+	"requirements": {
+		"all": [
+			{
+				"tech": "phase_city"
+			},
+			{
+				"entity": {
+					"class": "Field",
+					"number": 3
+				}
+			}
+		]
+	},
+	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
+	"icon": "town_phase.png",
+	"researchTime": 20,
+	"tooltip": "Houses +2 population; civic territory +12%; trader profits -10%.",
+	"modifications": [
+		{
+			"value": "Population/Bonus",
+			"add": 2,
+			"affects": "House"
+		},
+		{
+			"value": "TerritoryInfluence/Radius",
+			"multiply": 1.12,
+			"affects": "CivCentre"
+		},
+		{
+			"value": "Trader/GainMultiplier",
+			"multiply": 0.9,
+			"affects": "Trader"
+		}
+	],
+	"soundComplete": "interface/alarm/alarm_upgradearmory.xml"
+}

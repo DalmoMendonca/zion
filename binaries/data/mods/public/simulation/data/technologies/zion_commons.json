@@ -1,0 +1,39 @@
+{
+	"partOfPair": "pair_zion_institutions",
+	"genericName": "Common Assembly",
+	"description": "Local assemblies prioritize the household and neighborhood while accepting slower construction.",
+	"cost": {
+		"food": 280,
+		"wood": 220
+	},
+	"requirements": {
+		"all": [
+			{
+				"tech": "phase_town"
+			},
+			{
+				"entity": {
+					"class": "House",
+					"number": 5
+				}
+			}
+		]
+	},
+	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
+	"icon": "social_reforms.png",
+	"researchTime": 20,
+	"tooltip": "Houses +3 population capacity; structures take 7% longer to build.",
+	"modifications": [
+		{
+			"value": "Population/Bonus",
+			"add": 3,
+			"affects": "House"
+		},
+		{
+			"value": "Cost/BuildTime",
+			"multiply": 1.07,
+			"affects": "Structure"
+		}
+	],
+	"soundComplete": "interface/alarm/alarm_upgradearmory.xml"
+}

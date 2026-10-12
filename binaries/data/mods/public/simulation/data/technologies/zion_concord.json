@@ -1,0 +1,39 @@
+{
+	"partOfPair": "pair_zion_future",
+	"genericName": "Covenant of Concord",
+	"description": "Build durable commitments to healing, shared security, and community welfare.",
+	"cost": {
+		"food": 350,
+		"stone": 300
+	},
+	"requirements": {
+		"all": [
+			{
+				"tech": "phase_city"
+			},
+			{
+				"entity": {
+					"class": "Temple",
+					"number": 1
+				}
+			}
+		]
+	},
+	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
+	"icon": "asclepius_rod.png",
+	"researchTime": 20,
+	"tooltip": "Organic units heal while idle; all units +8% maximum health.",
+	"modifications": [
+		{
+			"value": "Health/IdleRegenRate",
+			"add": 0.4,
+			"affects": "Organic"
+		},
+		{
+			"value": "Health/Max",
+			"multiply": 1.08,
+			"affects": "Unit"
+		}
+	],
+	"soundComplete": "interface/alarm/alarm_upgradearmory.xml"
+}
