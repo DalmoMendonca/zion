@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <object>
-	<object name="productLogo" type="image" ghost="true" size="50%-110 10 50%+110 110"/>
+	<!-- Preserve the 0 A.D. logo widget for upstream compatibility but do not display it in Zion A.D. -->
+	<object name="productLogo" type="image" ghost="true" hidden="true" size="50%-110 10 50%+110 110"/>
+	<object type="text" style="MediumTitleText" font="sans-bold-18" textcolor="white" text_align="center" text_valign="center" ghost="true" size="50%-110 10 50%+110 110">
+		<translatableAttribute id="caption">ZION A.D.</translatableAttribute>
+	</object>
 
 	<object type="image" style="TranslucentPanelThinBorder" size="8 100%-368 100%-8 100%-94">
 

@@ -3,7 +3,7 @@
 
 	<!-- IMPORTANT: remember to update pregame/ProjectInformation.js in sync with this: -->
 	<object type="text" style="ModernLabelText" text_valign="top" ghost="true" size="0% 1 100% 100%">
-		<translatableAttribute id="caption">Release XXIX: C--</translatableAttribute>
+		<translatableAttribute id="caption">Zion A.D. — 0 A.D. engine foundation</translatableAttribute>
 	</object>
 
 	<!-- Displays build date and build version-->

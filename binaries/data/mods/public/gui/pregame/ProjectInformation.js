@@ -15,8 +15,8 @@ export const projectInformation = {
 		"caption": getBuildString()
 	},
 	"productDescription": {
-		"caption": setStringTags(translate("Release XXIX: C--"), { "font": "sans-bold-16" }) + "\n\n" +
-			translate("Notice: This game is under development and many features have not been added yet.")
+		"caption": setStringTags(translate("Zion A.D. — The Two-Thousand-Year Covenant"), { "font": "sans-bold-16" }) + "\n\n" +
+			translate("Built directly on the 0 A.D. engine. Zion gameplay is in active development.")
 	}
 };
 

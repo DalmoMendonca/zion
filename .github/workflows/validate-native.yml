@@ -1,0 +1,31 @@
+name: Verify Zion A.D. native foundation
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - name: Validate native 0 A.D. fork structure and Zion GUI
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          assert Path("source").is_dir(), "Missing C++ engine"
+          assert Path("build").is_dir(), "Missing build system"
+          assert Path("binaries/data/mods/public/simulation").is_dir(), "Missing native simulation"
+          assert Path("binaries/data/mods/public/gui").is_dir(), "Missing native GUI"
+          assert not Path("zion-ad-play.html").exists(), "Deprecated companion game returned"
+          assert not Path("web/app.js").exists(), "Deprecated browser app returned"
+          for path in ("binaries/data/mods/public/gui/pregame/ProjectInformation.xml",
+                       "binaries/data/mods/public/gui/session/top_panel/BuildLabel.xml"):
+              ET.parse(path)
+          assert "ZION A.D." in Path("binaries/data/mods/public/gui/pregame/ProjectInformation.xml").read_text()
+          print("Native game fork checks passed.")
+          PY
+          node --check binaries/data/mods/public/gui/pregame/ProjectInformation.js

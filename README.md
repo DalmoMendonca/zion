@@ -12,7 +12,7 @@ ecological regeneration, justice, wisdom, agency, love, peace, and institutions
 that are worthy of the people they serve. Multiple forms of governance and
 integral developmental paths will be implemented within the native simulation.
 
-**Development status:** This is the upstream game source imported as a starting
+**Development status:** The native title screen now identifies Zion A.D. This is the upstream game source imported as a starting
 foundation. The 2,000-year Zion gameplay, new title-screen UI, policy simulation,
 and historical eras are not implemented yet. Do not confuse the imported 0 A.D.
 executable with a complete, playable Zion A.D. game.
