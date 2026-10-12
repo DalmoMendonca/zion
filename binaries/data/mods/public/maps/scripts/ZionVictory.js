@@ -191,6 +191,23 @@ if (typeof module !== "undefined" && module.exports)
         this.zionLastAges = {};
         this.zionResolved = false;
         warn("ZION_NATIVE_READY: native Zion victory initialized");
+        const pm = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
+        for (const playerID of pm.GetActivePlayers())
+        {
+            for (const civic of TriggerHelper.GetPlayerEntitiesByClass(playerID, "CivCentre"))
+            {
+                const researcher = Engine.QueryInterface(civic, IID_Researcher);
+                const choices = researcher ? researcher.GetTechnologiesList() : [];
+                if (choices.some(tech => tech?.pair?.includes("zion_covenant")))
+                {
+                    warn("ZION_GOVERNANCE_TECH_OK: civic center offers constitutional choices");
+                    this.zionTechCheck = true;
+                    break;
+                }
+            }
+            if (this.zionTechCheck)
+                break;
+        }
         notify([], "ZION A.D. | First Covenant. Select a Civic Center to research forms of government. Develop a society that endures, not merely an empire that wins wars.");
         this.DoRepeatedly(CHECK_INTERVAL, "ZionEvaluate", {}, 6000);
     };
@@ -228,6 +245,11 @@ if (typeof module !== "undefined" && module.exports)
                 "sustained": memory.stableChecks,
                 "needed": CHECKS_TO_WIN
             };
+            if (!this.zionFirstTickVerified)
+            {
+                warn("ZION_SOCIAL_TICK_OK: live welfare evaluation completed");
+                this.zionFirstTickVerified = true;
+            }
             const oldAge = this.zionLastAges[playerID] || 0;
             if (result.age > oldAge)
             {

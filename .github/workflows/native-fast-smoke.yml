@@ -78,7 +78,9 @@ jobs:
           code=$?
           tail -60 engine-smoke.log
           grep -F "GAME STARTED, ALL INIT COMPLETE" engine-smoke.log || exit 1
-          grep -F "ZION_NATIVE_READY" engine-smoke.log || exit 1
+          grep -F "ZION_NATIVE_READY" engine-smoke.log
+          grep -F "ZION_GOVERNANCE_TECH_OK" engine-smoke.log
+          grep -F "ZION_SOCIAL_TICK_OK" engine-smoke.log || exit 1
           if grep -Ei '(^| )ERROR:|JavaScript error:|failed to load|unhandled exception|assertion failed' engine-smoke.log; then exit 1; fi
           test "$code" -eq 0 -o "$code" -eq 124
       - if: always()

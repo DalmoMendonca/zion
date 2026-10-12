@@ -91,6 +91,8 @@ jobs:
           echo "Pyrogenesis exit: $code"
           grep -F "GAME STARTED, ALL INIT COMPLETE" engine-smoke.log
           grep -F "ZION_NATIVE_READY" engine-smoke.log
+          grep -F "ZION_GOVERNANCE_TECH_OK" engine-smoke.log
+          grep -F "ZION_SOCIAL_TICK_OK" engine-smoke.log
           if grep -Ei '(^| )ERROR:|JavaScript error:|failed to load|unhandled exception|assertion failed' engine-smoke.log; then
             echo "Unexpected Pyrogenesis JavaScript or simulation error."
             exit 1

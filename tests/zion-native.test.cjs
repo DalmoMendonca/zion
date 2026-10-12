@@ -117,11 +117,12 @@ test("Victory engine integration registers valid triggers and preserves state",(
     warn:()=>{}, Trigger:function(){},SYSTEM_ENTITY:0,
     IID_Trigger:"trigger",IID_StatisticsTracker:"stats",
     IID_TechnologyManager:"tech",IID_PlayerManager:"manager",
-    IID_GuiInterface:"gui",
+    IID_GuiInterface:"gui",IID_Researcher:"researcher",
     Engine:{ QueryInterface:(entity,type)=>{
       if(type==="trigger")return triggers;
       if(type==="manager")return {GetActivePlayers:()=>[1]};
       if(type==="gui")return {PushNotification:(msg)=>notifications.push(msg)};
+      if(type==="researcher")return {GetTechnologiesList:()=>[{pair:["zion_covenant","zion_magistracy"]}]};
       throw new Error("Unexpected interface "+type);
     }},
     QueryPlayerIDInterface:(_id,type)=>{
@@ -147,6 +148,8 @@ test("Victory engine integration registers valid triggers and preserves state",(
   for(let i=0;i<3;i++) triggers.ZionEvaluate();
   assert.deepEqual(victories,[1]);
   assert.equal(triggers.zionSocieties[1].stableChecks,3);
+  assert.equal(triggers.zionTechCheck,true);
+  assert.equal(triggers.zionFirstTickVerified,true);
   assert.ok(notifications.some(n=>n.message.includes("FIRST COVENANT FULFILLED")));
   assert.ok(triggers.zionLatestReports[1]);
   assert.ok(triggers.zionLatestReports[1].score >= 59);
