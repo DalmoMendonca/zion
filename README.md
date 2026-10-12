@@ -23,7 +23,8 @@ a complete Pyrogenesis build and game launch have not yet been verified.
 
 * Original developer documentation: [UPSTREAM-README.md](UPSTREAM-README.md)
 * Current 0 A.D. project: https://gitea.wildfiregames.com/0ad/0ad
-* Build instructions: https://gitea.wildfiregames.com/0ad/0ad/wiki/BuildInstructions
+* [Zion A.D. Linux build and engine smoke test](docs/BUILD-LINUX.md)
+* Upstream build instructions: https://gitea.wildfiregames.com/0ad/0ad/wiki/BuildInstructions
 * The official `.lfsconfig` points to Wildfire Games' LFS server for fetching art
   and sound assets. Run `git lfs install && git lfs pull` if needed.
 * Maintainers can fetch subsequent upstream changes with
