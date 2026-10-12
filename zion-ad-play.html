@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7f6f0" />
+  <title>Zion A.D. — The Two-Thousand-Year Covenant</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
+:root{--paper:#f7f6f0;--white:#fffdf8;--ink:#173d39;--sub:#647c75;--line:#d8e0d9;--teal:#067497;--gold:#c89b49;--deep:#163c34;--soft:#e9eee7;--fail:#b75f45;--serif:'Instrument Serif',Georgia,serif;--sans:'DM Sans',Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px}button,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,select:focus-visible{outline:3px solid #d4ac6a;outline-offset:3px}.app-shell{max-width:1600px;margin:auto;min-height:100vh;padding:0 36px}.global-nav{height:80px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}.brand{font-weight:700;font-size:21px;letter-spacing:.09em;display:flex;align-items:center;gap:10px}.brand em{font-style:normal;font-weight:400;color:var(--gold)}.brand-icon{font-weight:400;color:var(--gold);font-size:24px}.brand-tag{font-weight:500;font-size:11px;color:var(--sub);letter-spacing:.04em;border-left:1px solid var(--line);padding-left:17px;margin-left:8px}.header-right{display:flex;align-items:center;gap:25px}.header-right a{text-decoration:none;color:var(--sub);font-size:12px}.text-button{padding:10px 0;border:0;background:transparent;color:var(--ink);text-decoration:underline;text-underline-offset:3px;font-size:12px}.footer{border-top:1px solid var(--line);color:#8a9a93;display:flex;justify-content:space-between;gap:12px;font-size:10px;letter-spacing:.08em;padding:24px 0 30px}.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:11px;font-weight:700;color:#779087}.hero{padding:45px 0 24px;display:flex;justify-content:space-between;align-items:end;gap:24px}.hero h1{font:400 clamp(42px,4.8vw,76px)/.98 var(--serif);letter-spacing:-.035em;margin:9px 0 14px;color:#193e38}.hero h1 em{color:#b58a4c}.hero p{color:var(--sub);max-width:570px;font-size:14px;line-height:1.75;margin:0}.big-year{border-left:1px solid var(--line);padding-left:32px;text-align:right;flex-shrink:0}.big-year span{display:block;text-transform:uppercase;color:#849b90;font-size:10px;font-weight:700;letter-spacing:.15em}.big-year strong{font:400 60px var(--serif);line-height:1;color:var(--ink)}.century{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;margin:0 0 24px}.progress-track{height:6px;background:#dfe5dd;overflow:hidden}.progress-fill{height:100%;background:#568676;transition:width .4s}.progress-label{font-size:11px;color:var(--sub);min-width:110px;text-align:right}.dashboard{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(290px,.74fr) minmax(305px,.85fr);gap:18px;align-items:stretch}.panel{border:1px solid var(--line);background:var(--white);border-radius:3px;overflow:hidden}.panel-body{padding:23px}.panel-heading{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 15px}.panel h2{font:400 29px var(--serif);margin:0;letter-spacing:-.015em}.panel h3{font:400 22px var(--serif);margin:0}.subtext{color:var(--sub);font-size:12px;line-height:1.6}.landscape{height:280px;position:relative;overflow:hidden;background:#e2eee6}.landscape svg{height:100%;width:100%;display:block}.landscape-caption{position:absolute;left:15px;bottom:15px;background:#f7f5ecdc;backdrop-filter:blur(8px);padding:9px 14px;font-size:11px;letter-spacing:.04em;color:var(--ink)}.landscape-legend{position:absolute;right:15px;top:14px;color:#416d60;font-size:10px;letter-spacing:.13em;text-transform:uppercase}.score-row{display:flex;justify-content:space-between;align-items:center;gap:15px}.score-left strong{font:400 52px var(--serif);line-height:1}.score-left small{font-size:13px;color:var(--sub)}.stage{font-size:15px;font-weight:600;margin-top:3px}.score-ring{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#376f63 var(--pct),#e4eae2 var(--pct));position:relative;flex-shrink:0}.score-ring:before{content:'';position:absolute;width:76px;height:76px;background:var(--white);border-radius:50%}.score-ring span{position:relative;z-index:1;text-align:center;font-size:10px;line-height:1.3;color:var(--sub)}.score-ring b{display:block;font-size:18px;color:var(--ink)}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:14px 21px;margin-top:19px}.metric-title{display:flex;justify-content:space-between;gap:6px;color:#536c63;font-size:11px;margin-bottom:5px}.metric-title b{color:var(--ink)}.bar{height:5px;background:#e9eae4}.bar-fill{height:100%;background:linear-gradient(90deg,#9dbda5,#3b8279)}.bar-fill.warning{background:#c89357}.quad{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.quad-item{background:#eff2ea;padding:12px 12px 11px;min-height:75px}.quad-item .mini{color:#73867c;text-transform:uppercase;letter-spacing:.12em;font-size:9px;margin-bottom:6px}.quad-item strong{font:400 20px var(--serif);display:block}.quad-item small{font-size:10px;color:var(--sub)}.ledger{display:flex;gap:10px;margin-top:15px}.ledger>div{flex:1;border-top:1px solid var(--line);padding-top:13px}.ledger small{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;display:block}.ledger b{font:400 26px var(--serif)}.choice-card{border:1px solid var(--line);background:#fffdf9;padding:12px 13px;text-align:left;color:var(--ink);width:100%;transition:background .16s,border-color .16s}.choice-card:hover:not(:disabled){border-color:#8ba69a;background:#f5f9f2}.choice-card.selected{border-color:#397b6b;background:#edf5ec;box-shadow:inset 3px 0 0 #397b6b}.choice-card strong{display:block;font-size:12px;font-weight:700;margin-bottom:4px}.choice-card small{color:var(--sub);font-size:11px;line-height:1.5;display:block}.choice-group{display:grid;gap:9px}.event-panel{background:#183e35;color:#f9f8eb}.event-panel .eyebrow{color:#b1cbbb}.event-panel h2{color:#f9f8eb;font-size:35px;line-height:1.1;margin-top:9px}.event-panel .subtext{color:#c2d5c8}.event-panel .choice-card{background:#20483e;border-color:#42685b;color:#f4f7ec}.event-panel .choice-card:hover{background:#295c4e}.event-panel .choice-card.selected{background:#316f5c;border-color:#b3c9a5;box-shadow:inset 3px 0 0 #d8c890}.event-panel .choice-card small{color:#bfd2c5}.event-top{font-size:11px;color:#9fc5b0;margin-bottom:8px}.event-panel .panel-body{padding:25px 24px}.event-panel .choice-group{margin-top:22px}.event-panel .effects{margin-top:8px;font-size:10px;color:#cadbc8}.event-panel .effects b{color:#ffdf9b}.decision-section{margin-top:21px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.85fr);gap:18px}.projects{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.project-option{min-height:101px}.project-option .domain{display:block;color:#87968c;text-transform:uppercase;font-size:9px;letter-spacing:.11em;margin-bottom:8px}.project-option .cost{font-size:10px;color:#8f7c54;margin-top:10px}.project-option strong{font-size:12px}.gov-list{display:grid;gap:9px}.gov-picker{width:100%;background:#fffdf9;border:1px solid var(--line);padding:13px;color:var(--ink);border-radius:0}.gov-box{padding:15px;margin-top:12px;background:#f2f4ee}.gov-box strong{font-size:13px}.gov-box p{font-size:11px;line-height:1.6;margin:7px 0 0;color:var(--sub)}.play-action{margin-top:14px;padding:17px 20px;background:#bc9654;color:white;border:0;display:flex;align-items:center;justify-content:space-between;width:100%;font-size:13px;font-weight:700;letter-spacing:.02em}.play-action:hover:not(:disabled){background:#a78043}.play-action span{font-size:20px}.message{border:1px solid #dcccae;background:#fbf4e6;color:#866e42;padding:12px;font-size:12px;margin-top:12px}.chronicle{margin:20px 0 25px;display:grid;grid-template-columns:1fr .95fr;gap:18px}.chart-wrap svg{display:block;width:100%;height:95px}.history{max-height:126px;overflow:auto}.history-line{font-size:11px;color:var(--sub);padding:7px 0;border-bottom:1px solid #e8eee6}.history-line strong{color:var(--ink);padding-right:5px}.ending{text-align:center;padding:50px 20px 60px}.ending h2{font:400 55px var(--serif)}.ending p{max-width:560px;margin:0 auto 22px;color:var(--sub);line-height:1.8}.ending button{background:#225d50;color:white;border:none;padding:15px 30px}.legend{font-size:10px;color:var(--sub)}.hint{padding:10px 0 0;font-size:11px;color:#799086;line-height:1.6}
+@media(max-width:1180px){.dashboard{grid-template-columns:1.1fr 1fr}.event-panel{grid-column:1/-1}.event-panel .choice-group{grid-template-columns:1fr 1fr}.projects{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:750px){.app-shell{padding:0 16px}.global-nav{height:65px}.brand{font-size:16px}.brand-tag,.header-right a{display:none}.header-right{gap:0}.hero{padding:33px 0 17px}.hero h1{font-size:44px}.hero p{font-size:12px}.big-year{padding-left:12px}.big-year strong{font-size:43px}.dashboard,.decision-section,.chronicle{grid-template-columns:1fr}.event-panel{grid-column:auto}.projects{grid-template-columns:repeat(2,minmax(0,1fr))}.landscape{height:240px}.footer{flex-direction:column}.panel-body{padding:18px}.quad{gap:8px}.century{margin-bottom:16px}.metrics{gap:12px}.hero .eyebrow{font-size:9px}.event-panel .choice-group{grid-template-columns:1fr}.decision-section{margin-top:15px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:0ms!important;transition:none!important}}
+
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="global-nav">
+      <div class="brand"><span class="brand-icon">✣</span><span>ZION <em>A.D.</em></span><span class="brand-tag">The 2,000-year covenant</span></div>
+      <div class="header-right"><a href="https://play0ad.com/" target="_blank" rel="noopener">Built on the vision of 0 A.D. ↗</a><button id="reset" class="text-button" title="Start a new civilization">New civilization</button></div>
+    </header>
+    <main id="game" aria-live="polite"></main>
+    <footer class="footer"><span>ONE BODY · MANY COMMUNITIES · TWO THOUSAND YEARS</span><span>Experimental systems model. Growth is not a hierarchy of human worth.</span></footer>
+  </div>
+  <script>
+/* Zion A.D. — deterministic, engine-independent societal simulation.
+ * Copyright (C) 2026 Zion A.D. contributors. GPL-2.0-or-later.
+ * No external runtime dependencies. Kept compatible with SpiderMonkey and browsers.
+ */
+var ZionCore = (function() {
+  'use strict';
+  const KEYS = ['provision','prosperity','dignity','freedom','wisdom','communion','ecology','resilience'];
+  const TITLES = {provision:'Provision', prosperity:'Prosperity', dignity:'Human dignity', freedom:'Freedom', wisdom:'Wisdom', communion:'Communion', ecology:'Creation care', resilience:'Resilience'};
+  const QUADRANTS = [
+    {id:'inner-self',name:'Interior · Person', subtitle:'Awareness & transformation', keys:['wisdom','dignity']},
+    {id:'outer-self',name:'Exterior · Person', subtitle:'Health & material capacity', keys:['provision','resilience']},
+    {id:'inner-world',name:'Interior · Collective',subtitle:'Trust & shared meaning',keys:['communion','freedom']},
+    {id:'outer-world',name:'Exterior · Collective',subtitle:'Institutions & ecology',keys:['prosperity','ecology']}
+  ];
+  const STAGES = [
+    {name:'Survival', description:'Meet the requirements of life', color:'#8a7c70', threshold:0},
+    {name:'Belonging', description:'Kinship, ritual, and solidarity', color:'#8058aa',threshold:26},
+    {name:'Order', description:'Law, meaning, and dependable institutions',color:'#bd584b',threshold:39},
+    {name:'Achievement',description:'Inquiry, innovation, and agency',color:'#bf8a45',threshold:52},
+    {name:'Pluralism',description:'Empathy, rights, and distributed voice',color:'#4e986f',threshold:64},
+    {name:'Integration',description:'Coordinate diverse, legitimate needs',color:'#c49e37',threshold:74},
+    {name:'Planetary care',description:'Durable interdependence across generations',color:'#4b9ea5',threshold:85}
+  ];
+  const GOVERNANCE = [
+    {id:'covenant',name:'Covenant communities', intro:'Mutual obligation sustained through trusted relationships.', year:1, effects:{communion:3,dignity:1,prosperity:-1}, upkeep:0},
+    {id:'elders',name:'Council of elders', intro:'Continuity and mediation with concentrated authority.',year:1,effects:{resilience:3,communion:1,freedom:-2},upkeep:0},
+    {id:'monarchy',name:'Sacred monarchy',intro:'Rapid coordination, meaningful succession risks.',year:1,effects:{provision:3,resilience:2,freedom:-3},upkeep:0},
+    {id:'charter',name:'Constitutional charter',intro:'Accountable institutions and protected liberties.',year:250,effects:{freedom:3,dignity:2,resilience:1,prosperity:-1},upkeep:2},
+    {id:'republic',name:'Mercantile republic',intro:'Distributed enterprise with a danger of inequality.',year:400,effects:{prosperity:4,freedom:1,dignity:-2,ecology:-1},upkeep:2},
+    {id:'assemblies',name:'Participatory assemblies',intro:'Wide voice and legitimacy; slower collective decisions.',year:550,effects:{freedom:3,communion:2,resilience:-1,prosperity:-1},upkeep:3},
+    {id:'federation',name:'Federated commons',intro:'Subsidiarity, cross-community cooperation, shared stewardship.',year:800,effects:{communion:2,ecology:2,freedom:2,prosperity:-1},upkeep:4}
+  ];
+  const PROJECTS = [
+    {id:'volunteers',name:'Neighborly service',domain:'Shared life',cost:0,effects:{communion:3,dignity:2,provision:1},desc:'A free collective effort when the treasury is exhausted.'},
+    {id:'harvest',name:'Regenerative agriculture',domain:'Material life',cost:16, effects:{provision:8,ecology:3,prosperity:1}, desc:'Feed people while restoring soil.'},
+    {id:'water',name:'Water & sanitation',domain:'Material life',cost:17,effects:{provision:7,dignity:4,resilience:3}, desc:'Invest in public health.'},
+    {id:'enterprise',name:'Local enterprise',domain:'Material life',cost:12,effects:{prosperity:9,provision:1,ecology:-3},desc:'Increase production and wealth.'},
+    {id:'trade',name:'Fair trade networks',domain:'Material life',cost:14,effects:{prosperity:7,communion:3,ecology:-2},desc:'Open routes of exchange and contact.'},
+    {id:'study',name:'Libraries & learning',domain:'Consciousness',cost:16,effects:{wisdom:9,freedom:3,prosperity:1},desc:'Broaden literacy and critical thought.'},
+    {id:'contemplation',name:'Contemplation & formation',domain:'Consciousness',cost:10,effects:{wisdom:6,communion:5,dignity:2},desc:'Make room for the interior life.'},
+    {id:'healing',name:'Clinics & mutual aid',domain:'Human flourishing',cost:18,effects:{dignity:8,provision:3,communion:2},desc:'Care for the ill and vulnerable.'},
+    {id:'rights',name:'Rights & safeguards',domain:'Human flourishing',cost:15,effects:{freedom:8,dignity:5,resilience:-1},desc:'Protect conscience and due process.'},
+    {id:'reconciliation',name:'Restorative justice',domain:'Shared life',cost:12,effects:{communion:8,dignity:5,resilience:1},desc:'Repair harm without normalizing injustice.'},
+    {id:'assembly',name:'Citizen deliberation',domain:'Shared life',cost:13,effects:{freedom:7,communion:5,prosperity:-1},desc:'Let affected people participate.'},
+    {id:'science',name:'Science & invention',domain:'Institutions',cost:17,effects:{wisdom:5,prosperity:6,ecology:-2},desc:'Expand human capabilities.'},
+    {id:'restoration',name:'Watershed restoration',domain:'Institutions',cost:17,effects:{ecology:10,resilience:4,provision:1},desc:'Repair damaged ecosystems.'},
+    {id:'defense',name:'Common defense',domain:'Institutions',cost:18,effects:{resilience:9,prosperity:-2,freedom:-2},desc:'Build security without assuming domination.'},
+    {id:'solidarity',name:'Redistributive covenant',domain:'Institutions',cost:14,effects:{dignity:8,communion:4,prosperity:-2},desc:'Prevent prosperity from bypassing the poorest.'},
+    {id:'transparency',name:'Open public accounts',domain:'Institutions',cost:11,effects:{freedom:6,resilience:4,communion:3},desc:'Give power scrutiny and accountability.'},
+    {id:'peacemaking',name:'Diplomacy & refuge',domain:'Shared life',cost:13,effects:{communion:6,dignity:5,resilience:3,prosperity:-1},desc:'Welcome outsiders and negotiate peace.'}
+  ];
+  const EVENTS = [
+    {id:'drought',title:'The river withdraws',text:'A long drought exposes the limits of old irrigation systems.',min:1, choices:[{text:'Share supplies with neighbors',effects:{provision:-5,communion:7,dignity:4}},{text:'Protect core settlements first',effects:{provision:4,resilience:3,communion:-6,dignity:-4}}]},
+    {id:'migrants',title:'Strangers at the gates',text:'Families displaced by conflict ask to make their homes among you.',min:1,choices:[{text:'Welcome and integrate',effects:{communion:6,dignity:6,provision:-3,resilience:-2}},{text:'Strictly restrict settlement',effects:{resilience:3,provision:2,freedom:-4,dignity:-6}}]},
+    {id:'succession',title:'The burden of succession',text:'A leader dies without agreement on who should follow.',min:1,choices:[{text:'Convene broad deliberation',effects:{freedom:6,communion:4,resilience:-4}},{text:'Appoint an emergency regent',effects:{resilience:5,freedom:-6,communion:-2}}]},
+    {id:'plague',title:'An unfamiliar illness',text:'Illness spreads through towns faster than custom can contain.',min:150,choices:[{text:'Fund care for all',effects:{dignity:8,provision:-4,resilience:3}},{text:'Prioritize economic continuity',effects:{prosperity:5,dignity:-7,communion:-4}}]},
+    {id:'merchant',title:'The wealthy guilds',text:'Trade guilds offer prosperity in return for political privilege.',min:150,choices:[{text:'Accept their charter',effects:{prosperity:8,freedom:-4,dignity:-5}},{text:'Condition it on public obligations',effects:{prosperity:3,freedom:3,dignity:5}}]},
+    {id:'heresy',title:'A dispute about truth',text:'Communities disagree over sacred interpretations and authority.',min:200,choices:[{text:'Allow conscience and open debate',effects:{freedom:7,wisdom:4,communion:-2}},{text:'Impose a single confession',effects:{communion:2,resilience:2,freedom:-9,wisdom:-3}}]},
+    {id:'harvest_failure',title:'A failed harvest',text:'A blight threatens the food supply just before winter.',min:250,choices:[{text:'Distribute emergency reserves',effects:{provision:4,communion:3,prosperity:-6}},{text:'Allow scarcity prices',effects:{prosperity:3,provision:-7,dignity:-5}}]},
+    {id:'revolt',title:'A challenge to legitimacy',text:'Those excluded from council decisions demand representation.',min:400,choices:[{text:'Expand political participation',effects:{freedom:8,communion:4,resilience:-3}},{text:'Suppress the demonstrations',effects:{resilience:5,freedom:-9,communion:-8}}]},
+    {id:'innovation',title:'A disruptive invention',text:'New machinery promises abundance but displaces established livelihoods.',min:500,choices:[{text:'Adapt with universal retraining',effects:{prosperity:5,wisdom:4,dignity:5}},{text:'Concentrate the gains',effects:{prosperity:10,dignity:-7,communion:-5}}]},
+    {id:'forest',title:'The contested forest',text:'A timber boom threatens the watershed on which villages depend.',min:550,choices:[{text:'Restore and steward the commons',effects:{ecology:9,provision:2,prosperity:-5}},{text:'Exploit the short-term windfall',effects:{prosperity:8,ecology:-10,resilience:-3}}]},
+    {id:'war',title:'War across the frontier',text:'Neighboring factions demand a military response.',min:600,choices:[{text:'Seek mediation and defend civilians',effects:{communion:5,dignity:4,resilience:-2,prosperity:-2}},{text:'Launch a pre-emptive campaign',effects:{resilience:5,prosperity:-3,communion:-9,dignity:-5}}]},
+    {id:'technology',title:'Power without wisdom',text:'A transformative technology multiplies both possibility and risk.',min:800,choices:[{text:'Create shared oversight',effects:{wisdom:5,freedom:3,resilience:4,prosperity:-3}},{text:'Race forward without constraints',effects:{prosperity:9,ecology:-6,communion:-4,resilience:-4}}]},
+    {id:'inequality',title:'Two cities in one',text:'The prosperity of the center obscures hardship on its outskirts.',min:900,choices:[{text:'Invest in those left behind',effects:{dignity:9,communion:5,prosperity:-3}},{text:'Let wealth trickle through markets',effects:{prosperity:5,dignity:-7,communion:-4}}]},
+    {id:'climate',title:'The changing seasons',text:'Climate patterns shift, demanding choices beyond one generation.',min:1100,choices:[{text:'Commit to a long transition',effects:{ecology:10,resilience:4,prosperity:-5}},{text:'Defer costly adaptation',effects:{prosperity:6,ecology:-10,resilience:-5}}]},
+    {id:'network',title:'The networked world',text:'Information circulates faster than any authority can fully govern.',min:1300,choices:[{text:'Teach discernment and protect speech',effects:{wisdom:6,freedom:5,communion:2}},{text:'Centralize information control',effects:{resilience:3,freedom:-9,wisdom:-4}}]},
+    {id:'automation',title:'Labor transformed',text:'Machines now perform work that once supplied livelihoods and identity.',min:1450,choices:[{text:'Share productivity and expand care',effects:{dignity:8,communion:5,prosperity:1}},{text:'Concentrate ownership',effects:{prosperity:10,dignity:-9,freedom:-3}}]},
+    {id:'planet',title:'The fragile home',text:'Your ecological footprint now affects communities beyond your borders.',min:1650,choices:[{text:'Join a planetary covenant',effects:{ecology:8,communion:6,resilience:2,prosperity:-3}},{text:'Secure domestic advantage',effects:{prosperity:5,communion:-6,ecology:-8}}]},
+    {id:'final',title:'The last shall be first',text:'The civilization must decide how to measure its final achievements.',min:1850,choices:[{text:'Give priority to the most vulnerable',effects:{dignity:10,communion:6,prosperity:-3}},{text:'Celebrate power and abundance',effects:{prosperity:8,resilience:3,dignity:-8}}]}
+  ];
+  function clamp(x,lo,hi) { return Math.max(lo,Math.min(hi,x)); }
+  function average(arr){return arr.reduce((a,b)=>a+b,0)/arr.length;}
+  function quadrantScores(metrics){return QUADRANTS.map(q=>({id:q.id,name:q.name,value:Math.round(average(q.keys.map(k=>metrics[k])))}));}
+  function diagnose(metrics) {
+    const vals=KEYS.map(k=>metrics[k]);const mean=average(vals);const floor=Math.min(...vals);
+    const balance=clamp(1-(Math.max(...vals)-floor)/110,0,1);
+    const score=Math.round(mean*0.62+floor*0.32+balance*6);
+    const stage=STAGES.reduce((a,s,i)=>score>=s.threshold?i:a,0);
+    const quadrants=quadrantScores(metrics);
+    const flourishing=mean>=76 && floor>=62 && quadrants.every(q=>q.value>=70);
+    return {score:score,stage:stage,stageName:STAGES[stage].name,mean:Math.round(mean),floor:floor,quadrants:quadrants,flourishing:flourishing};
+  }
+  function create(seed){return {year:1,turn:0,seed:seed||43, metrics:{provision:48,prosperity:42,dignity:48,freedom:38,wisdom:39,communion:59,ecology:72,resilience:45}, governance:'covenant', treasury:76,population:450,history:[],usedEvents:[], completed:false, collapseYears:0, legacy:0};}
+  function copy(s){return JSON.parse(JSON.stringify(s));}
+  function rnd(s){s.seed=(Math.imul(1664525,s.seed)+1013904223)>>>0;return s.seed/4294967296;}
+  function apply(m,effects){for(const k of Object.keys(effects||{}))if(k in m)m[k]=clamp(m[k]+effects[k],0,100);}
+  function eventFor(s){
+    const eligible=EVENTS.filter(e=>e.min<=s.year && s.usedEvents.indexOf(e.id)<0);
+    if(!eligible.length) { const prior=EVENTS.filter(e=>e.min<=s.year); return prior[(Math.floor(s.year/50))%prior.length]; }
+    const hash=(Math.imul(1664525,(s.seed ^ Math.imul(s.turn+1,2654435761))>>>0)+1013904223)>>>0;
+    return eligible[Math.floor((hash/4294967296)*eligible.length)];
+  }
+  function availableGovernance(s){return GOVERNANCE.filter(g=>s.year>=g.year);}
+  function costOf(s,p,g) {
+    const reform = g.id===s.governance?0:6;
+    const upkeep = p.id==='volunteers' && reform===0 ? Math.min(g.upkeep,Math.max(0,s.treasury)) : g.upkeep;
+    return p.cost+reform+upkeep;
+  }
+  function advance(s, opts){
+    if(s.completed)throw new Error('The campaign has ended');
+    const p=PROJECTS.find(x=>x.id===opts.project);if(!p)throw new Error('Choose a valid project');
+    const g=GOVERNANCE.find(x=>x.id===(opts.governance||s.governance));if(!g||g.year>s.year)throw new Error('Governance unavailable');
+    const costs=costOf(s,p,g);
+    if(costs>s.treasury)throw new Error('Insufficient treasury');
+    const next=copy(s), before=diagnose(next.metrics);
+    next.treasury-=costs;next.governance=g.id;
+    apply(next.metrics,p.effects);apply(next.metrics,g.effects);
+    const event=EVENTS.find(e=>e.id===opts.eventId && e.min<=s.year);
+    if(!event)throw new Error('Event no longer valid');
+    const choice=event.choices[opts.choice];if(!choice)throw new Error('Invalid response');
+    apply(next.metrics,choice.effects);
+    next.usedEvents.push(event.id);
+    const m=next.metrics;
+    // Dynamic interdependence: abundance improves capacity; ecological stress undermines it.
+    const income=11+Math.floor(m.prosperity/5)+Math.floor(m.provision/12);
+    const needs=8+Math.floor(next.population/1700);
+    next.treasury=clamp(next.treasury+income-needs,0,250);
+    if(m.ecology<40){apply(m,{provision:-3,resilience:-3});}
+    if(m.dignity<35||m.freedom<25)apply(m,{communion:-3,resilience:-2});
+    if(m.communion<30)apply(m,{prosperity:-2});
+    if(m.provision<25)apply(m,{dignity:-4,communion:-2});
+    if(m.wisdom>70&&m.freedom>60)apply(m,{resilience:1});
+    if(m.ecology>70&&m.provision>55)apply(m,{resilience:1});
+    const pressure=next.turn>0&&next.turn%5===4 ? 3:1;
+    // Historical shocks and institutional entropy prevent endless effortless compounding.
+    apply(m,{provision:-pressure,prosperity:-1,dignity:-1,freedom:-1,wisdom:-1,communion:-2,ecology:-2,resilience:-2});
+    next.population=Math.max(30,Math.round(next.population*(1+(m.provision-35)/850)));
+    next.year=Math.min(2000, s.year+50);next.turn++;
+    const report=diagnose(m);
+    if(report.floor<12)next.collapseYears++;else next.collapseYears=0;
+    next.legacy+=report.score;
+    next.history.push({year:next.year,project:p.id,governance:g.id,event:event.id,choice:opts.choice,score:report.score,stage:report.stage,treasury:next.treasury,metrics:copy(m),delta:report.score-before.score});
+    next.completed=next.year>=2000||next.collapseYears>=3;
+    return next;
+  }
+  function outcome(s){const d=diagnose(s.metrics);return {won:s.year>=2000&&d.flourishing,score:d.score,stage:d.stageName,year:s.year,description:s.collapseYears>=3?'Institutional collapse':d.flourishing?'A durable, unfinished Zion':'The covenant remains unfinished',diagnosis:d};}
+  function observeRTS(obs){
+    // Game-world proxy measurements, not a claim to quantify consciousness or actual justice.
+    const metrics={
+      provision:clamp(22+obs.food/20+obs.farms*7+obs.houses*0.8,0,100),
+      prosperity:clamp(19+obs.trade/80+obs.markets*11+obs.civics*6+obs.metal/120,0,100),
+      dignity:clamp(28+obs.houses*4+obs.healers*11+obs.temples*2,0,100),
+      freedom:clamp(35+obs.markets*7+obs.civics*6+obs.houses*1.3-obs.fortresses*7,0,100),
+      wisdom:clamp(24+obs.temples*11+obs.healers*5+obs.civics*4+obs.techs*2,0,100),
+      communion:clamp(32+obs.temples*7+obs.houses*2+obs.tributes/60-obs.kills*0.7,0,100),
+      ecology:clamp(75-obs.woodGathered/180+obs.farms*3,0,100),
+      resilience:clamp(26+obs.towers*5+obs.civics*8+obs.healers*4+obs.food/120,0,100)
+    };
+    return diagnose(metrics);
+  }
+  return {KEYS:KEYS,TITLES:TITLES,QUADRANTS:QUADRANTS,STAGES:STAGES,GOVERNANCE:GOVERNANCE,PROJECTS:PROJECTS,EVENTS:EVENTS,create:create,diagnose:diagnose,availableGovernance:availableGovernance,eventFor:eventFor,costOf:costOf,advance:advance,outcome:outcome,observeRTS:observeRTS};
+})();
+if (typeof module !== 'undefined' && module.exports) module.exports = ZionCore;
+
+</script>
+  <script>
+/* Browser campaign UI. Uses the same GPL ZionCore as the 0 A.D. mod. */
+(function() {
+'use strict';
+const $=id=>document.getElementById(id);
+const STORAGE='zion-ad-campaign-v1';
+const saved=()=>{try{return JSON.parse(localStorage.getItem(STORAGE));}catch(e){return null;}};
+let state=saved()||ZionCore.create(43);
+let undo=[];
+let selected='harvest', selectedGovernment=state.governance, selectedChoice=0;
+let message='';
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify(state));}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));}
+function effectLabel(effects){return Object.entries(effects).map(([k,v])=>(v>0?'+':'')+v+' '+ZionCore.TITLES[k].toLowerCase()).join(' · ')}
+function skyline(){
+ const m=state.metrics;const n=8+Math.floor(state.year/180)+Math.floor(m.prosperity/12);
+ let buildings='';
+ for(let i=0;i<n;i++){
+   const x=40+(i*137%795),y=215-(i*61%98),h=19+(i*17%44)+(state.year>900?8:0),w=14+i%3*4;
+   const roof=i%4===0?'#b27c57':i%4===1?'#d3b77d':'#cc9873';
+   const wall=i%3===0?'#f3e5c4':i%3===1?'#ddd5b1':'#e8cfa5';
+   buildings+=`<g opacity="${i%6===0?.67:1}"><path d="M${x} ${y-h} l${w/2} -${w/2*.6} ${w/2} ${w/2*.6} v${h} h-${w}z" fill="${wall}"/><path d="M${x} ${y-h} l${w/2} -${w/2*.6} ${w/2} ${w/2*.6}z" fill="${roof}"/><path d="M${x+w*.44} ${y-10}v-8 h${w*.24}v8" fill="#977f5a"/><rect x="${x+w*.22}" y="${y-h+9}" width="3" height="4" fill="#7c9c9b" /></g>`;
+ }
+ let trees='';const green= Math.max(7,Math.floor(m.ecology*.50));for(let i=0;i<green;i++){
+  const x=(i*79+21)%940,y=205+(i*37%90),r=4+(i*7)%9;
+  trees+=`<g><rect x="${x}" y="${y-4}" width="2" height="10" fill="#7d7954"/><circle cx="${x+1}" cy="${y-8}" r="${r}" fill="${i%3?'#719c7c':'#59866e'}" opacity="${i%5?'.9':'.65'}"/></g>`;
+ }
+ return `<svg viewBox="0 0 940 310" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stylized settlement, growing as society develops"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d4e8e4"/><stop offset="1" stop-color="#eaf0d9"/></linearGradient><linearGradient id="river" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#7baea8"/><stop offset="1" stop-color="#aecac3"/></linearGradient></defs><rect width="940" height="310" fill="url(#sky)"/><circle cx="760" cy="58" r="38" fill="#f5e7b8" opacity=".84"/><path d="M0 134Q100 78 240 142T530 135T940 127V310H0Z" fill="#b8c7a7"/><path d="M0 173Q210 100 360 168T940 160V310H0Z" fill="#94b29b"/><path d="M0 220Q250 159 440 204T940 180V310H0Z" fill="#87aa88"/><path d="M0 259Q150 208 310 260T630 247T940 223V310H0Z" fill="#69967b"/><path d="M400 310Q280 263 441 233T485 177Q470 160 462 147L509 149Q544 185 513 215T597 276L670 310Z" fill="url(#river)"/><path d="M400 310Q280 263 441 233T485 177" stroke="#c8dfd7" stroke-width="3" fill="none" opacity=".75"/>${buildings}<path d="M0 286Q250 245 430 276T940 262V310H0Z" fill="#669276" opacity=".68"/>${trees}<path d="M0 306Q200 278 330 303T690 297T940 300" fill="none" stroke="#e0c397" stroke-width="4" opacity=".8"/></svg>`;
+}
+function graph(){const hist=[{year:1,score:ZionCore.diagnose(ZionCore.create(1).metrics).score},...state.history];const points=hist.map((h,i)=>`${12+i*(570/39)},${104-h.score}`).join(' ');return `<svg viewBox="0 0 598 115" role="img" aria-label="Societal flourishing score across centuries"><line x1="12" y1="25" x2="585" y2="25" stroke="#e3e9df"/><line x1="12" y1="55" x2="585" y2="55" stroke="#e3e9df"/><line x1="12" y1="85" x2="585" y2="85" stroke="#e3e9df"/><polyline fill="none" stroke="#3b826c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="${points}"/><circle cx="${12+(hist.length-1)*(570/39)}" cy="${104-hist[hist.length-1].score}" r="5" fill="#bc9654"/></svg>`;}
+function metricCard(k){const v=state.metrics[k];return `<div class="metric"><div class="metric-title"><span>${ZionCore.TITLES[k]}</span><b>${Math.round(v)}</b></div><div class="bar"><div class="bar-fill ${v<37?'warning':''}" style="width:${v}%"></div></div></div>`}
+function quadrantCards(diag){return diag.quadrants.map(q=>`<div class="quad-item"><div class="mini">${q.name}</div><strong>${q.value} <small>/ 100</small></strong></div>`).join('')}
+function render(){
+ const diag=ZionCore.diagnose(state.metrics);const event=ZionCore.eventFor(state), gov=ZionCore.GOVERNANCE.find(g=>g.id===selectedGovernment)||ZionCore.GOVERNANCE[0], proj=ZionCore.PROJECTS.find(p=>p.id===selected)||ZionCore.PROJECTS[0];
+ const cost=ZionCore.costOf(state,proj,gov);const cannot=state.treasury<cost;
+ const pct=Math.round((state.year-1)/1999*100);
+ const history=state.history.slice(-4).reverse();
+ $('game').innerHTML=`
+  <section class="hero"><div><div class="eyebrow">An experiment in becoming · The common good</div><h1>What if we built <em>Zion?</em></h1><p>From the first century to the twenty-first. Every fifty years, choose what to cultivate, how to govern, and whose needs to honor. Power is easy to accumulate; a civilization that flourishes together is harder to build.</p></div><div class="big-year"><span>Year of the covenant</span><strong>${state.year.toLocaleString()}</strong></div></section>
+  <div class="century"><div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div><span class="progress-label">${pct}% of 2,000 years</span></div>
+  <section class="dashboard">
+   <article class="panel"><div class="landscape">${skyline()}<div class="landscape-legend">THE LIVING COMMONS</div><div class="landscape-caption">${esc(gov.name)} · ${state.population.toLocaleString()} citizens</div></div><div class="panel-body"><div class="panel-heading"><h2>The condition of our world</h2><span class="legend">Balance before dominance</span></div><div class="metrics">${ZionCore.KEYS.map(metricCard).join('')}</div></div></article>
+   <article class="panel"><div class="panel-body"><div class="panel-heading"><h2>Flourishing</h2></div><div class="score-row"><div class="score-left"><div><strong>${diag.score}</strong><small> / 100</small></div><div class="stage">${diag.stageName}</div><div class="subtext">Developmental center</div></div><div class="score-ring" style="--pct:${diag.score}%"><span><b>${diag.floor}</b>weakest<br>dimension</span></div></div><div class="quad">${quadrantCards(diag)}</div><div class="ledger"><div><small>Public treasury</small><b>${state.treasury}</b></div><div><small>Period</small><b>${state.turn+1} <span style="font-size:13px">/ 40</span></b></div></div><p class="hint">Integral development is uneven: an impressive institution may conceal a neglected neighbor. Victory requires all four quadrants.</p></div></article>
+   ${state.completed ? `<article class="panel event-panel"><div class="panel-body"><div class="event-top">THE TWO-THOUSAND-YEAR COVENANT</div><div class="eyebrow">The final reckoning</div><h2>${ZionCore.outcome(state).won?'A flourishing commonwealth':'An unfinished commonwealth'}</h2><p class="subtext">The measure of success is whether provision, freedom, dignity, wisdom and creation care endure together.</p></div></article>` : `<article class="panel event-panel"><div class="panel-body"><div class="event-top">THE QUESTION OF THIS GENERATION</div><div class="eyebrow">${Math.min(2000,state.year+49)} A.D. · Dilemma</div><h2>${esc(event.title)}</h2><p class="subtext">${esc(event.text)}</p><div class="choice-group">${event.choices.map((x,i)=>`<button class="choice-card ${selectedChoice===i?'selected':''}" data-choice="${i}" aria-pressed="${selectedChoice===i}"><strong>${esc(x.text)}</strong><small>${esc(effectLabel(x.effects))}</small></button>`).join('')}</div><p class="hint" style="color:#bad0bd">Every path has consequences. Care without capacity, prosperity without justice, and order without freedom all carry risks.</p></div></article>`}
+  </section>
+  ${state.completed?ending():`<section class="decision-section"><article class="panel"><div class="panel-body"><div class="panel-heading"><h2>Choose what to cultivate</h2><span class="legend">One investment · fifty years</span></div><div class="projects">${ZionCore.PROJECTS.map(p=>`<button class="choice-card project-option ${selected===p.id?'selected':''}" data-project="${p.id}" aria-pressed="${selected===p.id}"><span class="domain">${p.domain}</span><strong>${p.name}</strong><small>${p.desc}</small><span class="cost">Cost ${p.cost}</span></button>`).join('')}</div></div></article><article class="panel"><div class="panel-body"><div class="panel-heading"><h2>Structure society</h2><span class="legend">Reform can be costly</span></div><p class="subtext">No institution is a magic solution. Different arrangements shape liberties, trust, prosperity, and resilience.</p><select id="governance" class="gov-picker" aria-label="Government structure">${ZionCore.availableGovernance(state).map(g=>`<option value="${g.id}" ${g.id===selectedGovernment?'selected':''}>${g.name}</option>`).join('')}</select><div class="gov-box"><strong>${gov.name}</strong><p>${gov.intro}</p><p>${esc(effectLabel(gov.effects))}</p></div><div class="ledger"><div><small>Available</small><b>${state.treasury}</b></div><div><small>Total investment</small><b>${cost}</b></div></div><button id="advance" class="play-action" ${cannot?'disabled':''}>Lead the next fifty years <span>→</span></button>${cannot?'<div class="message">Insufficient funds. Select Neighborly service, or choose a less expensive governing arrangement.</div>':''}${message?`<div class="message">${esc(message)}</div>`:''}<p class="hint">This is a turn-based societal simulation. The 0 A.D. mod contains the complementary real-time 3D challenge.</p></div></article></section>`}
+  <section class="chronicle"><article class="panel"><div class="panel-body"><div class="panel-heading"><h3>The long arc</h3><span class="legend">Flourishing over time</span></div><div class="chart-wrap">${graph()}</div></div></article><article class="panel"><div class="panel-body"><div class="panel-heading"><h3>Chronicle of decisions</h3><span class="legend">A civilization is made of choices</span></div><div class="history">${history.length?history.map(h=>`<div class="history-line"><strong>Year ${h.year}</strong>${esc(ZionCore.PROJECTS.find(p=>p.id===h.project)?.name||h.project)} · ${esc(h.governance)} · score ${h.score} (${h.delta>=0?'+':''}${h.delta})</div>`).join(''):'<div class="history-line">Your first century is still unwritten.</div>'}</div></div></article></section>`;
+ document.querySelectorAll('[data-project]').forEach(b=>b.addEventListener('click',()=>{selected=b.dataset.project;message='';render()}));
+ document.querySelectorAll('[data-choice]').forEach(b=>b.addEventListener('click',()=>{selectedChoice=Number(b.dataset.choice);render()}));
+ const g=$('governance');if(g)g.addEventListener('change',()=>{selectedGovernment=g.value;render()});
+ const adv=$('advance');if(adv)adv.addEventListener('click',()=>{try{undo.push(JSON.stringify(state));if(undo.length>2)undo.shift();state=ZionCore.advance(state,{project:selected,governance:selectedGovernment,eventId:event.id,choice:selectedChoice});save();selectedChoice=0;selectedGovernment=state.governance;message='';window.scrollTo({top:0,behavior:'smooth'});render()}catch(e){message=e.message;render()}});
+ const restart=$('restart');if(restart)restart.addEventListener('click',reset);
+}
+function ending(){const o=ZionCore.outcome(state);return `<section class="ending"><div class="eyebrow">The year 2000 · The reckoning</div><h2>${o.won?'Zion takes root.':'The work remains unfinished.'}</h2><p>${o.won?'The most vulnerable are not abandoned, institutions remain accountable, and land and neighbor alike can flourish. It is a continuing covenant, not a perfect end state.':'You traveled '+state.turn+' generations and reached a final flourishing score of '+o.score+'. Zion is not an empire to capture. The challenge is to shape institutions, cultures and relationships that let every member flourish.'}</p><button id="restart">Begin another civilization →</button></section>`}
+function reset(){if(state.turn&&!window.confirm('Begin a new civilization? Your current campaign will be replaced.'))return;state=ZionCore.create(Math.floor(Math.random()*1e9));selectedGovernment=state.governance;selected='harvest';selectedChoice=0;message='';save();render();window.scrollTo({top:0})}
+$('reset').addEventListener('click',reset);render();
+})();
+
+</script>
+</body>
+</html>

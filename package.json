@@ -1,0 +1,12 @@
+{
+  "name": "zion-ad",
+  "version": "0.1.0",
+  "description": "An unofficial 0 A.D. civilizational flourishing mod and a playable two-thousand-year web campaign",
+  "private": true,
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "package": "python scripts/build.py"
+  },
+  "engines": {"node": ">=20"}
+}

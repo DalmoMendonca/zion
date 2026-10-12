@@ -1,0 +1,13 @@
+{
+  "TranslatedKeys": ["Title", "Description"],
+  "Data": {
+    "Title": "Zion A.D. — 2000 Years",
+    "Description": "A 2,000-year cooperative challenge. Build prosperity, provision, care, freedom, wisdom, communion, ecology and resilience. Build a durable civilization without conquest; the four quadrants of flourishing all matter. A 50-minute real-time journey.",
+    "Scripts": [
+      "scripts/TriggerHelper.js",
+      "scripts/ZionCore.js",
+      "scripts/ZionVictory.js"
+    ],
+    "GUIOrder": 35
+  }
+}

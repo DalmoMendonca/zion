@@ -1,0 +1,10 @@
+{
+  "name": "zion_ad",
+  "version": "0.1.0",
+  "label": "Zion A.D. — The 2000-Year Covenant",
+  "description": "A post-conquest historical experiment in building a flourishing, just and ecologically responsible society over 2000 years. Adds the Zion victory condition to 0 A.D.",
+  "dependencies": ["0ad=0.28.0"],
+  "ignoreInCompatibilityChecks": false,
+  "url": "https://play0ad.com/",
+  "author_name": "Zion A.D. contributors"
+}
