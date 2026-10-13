@@ -30,20 +30,20 @@ var ZionModel = (function()
         const m = memory || freshMemory();
         const s = {};
         s.provision = 20 + Math.min(25, amount(o.food) / 50) +
-            amount(o.farms) * 6 + amount(o.houses);
+            Math.min(24, amount(o.farms) * 6) + Math.min(12, amount(o.houses));
         s.prosperity = 25 + Math.min(18, amount(o.trade) / 60) +
             amount(o.markets) * 12 + amount(o.civics) * 5 +
             Math.min(15, amount(o.metal) / 75);
-        s.dignity = 28 + amount(o.houses) * 3 + amount(o.temples) * 8 +
+        s.dignity = 28 + Math.min(24, amount(o.houses) * 3) + amount(o.temples) * 8 +
             amount(o.healers) * 9 + (has("zion_covenant") ? 5 : 0) +
             (has("zion_commons") ? 4 : 0);
-        s.freedom = 28 + amount(o.houses) * 2 + amount(o.markets) * 10 +
+        s.freedom = 28 + Math.min(18, amount(o.houses) * 2) + amount(o.markets) * 10 +
             amount(o.civics) * 6 - amount(o.fortresses) * 6 +
             (has("zion_magistracy") ? 3 : 0) + (has("zion_guilds") ? 3 : 0);
         s.wisdom = 30 + amount(o.temples) * 14 + amount(o.healers) * 8 +
             amount(o.civics) * 5 + (has("zion_concord") ? 7 : 0) +
             (has("zion_stewardship") ? 5 : 0);
-        s.communion = 31 + amount(o.houses) * 1.7 + amount(o.temples) * 9 +
+        s.communion = 31 + Math.min(17, amount(o.houses) * 1.7) + amount(o.temples) * 9 +
             Math.min(18, amount(o.tributes) / 70) -
             Math.min(25, amount(o.kills) * 0.4) +
             (has("zion_covenant") ? 8 : 0) + (has("zion_commons") ? 5 : 0) -
@@ -80,7 +80,9 @@ var ZionModel = (function()
             Math.round((s.prosperity + s.ecology) / 2)
         ];
         // A demanding but attainable early-game objective; NOT the 2,000-year endgame.
-        const eligible = age === 3 && mean >= 59 && floor >= 42 &&
+        // An actual food-producing community is required; reserves and housing alone cannot win.
+        const foodSecure = amount(o.food) >= 100 && amount(o.farms) >= 3;
+        const eligible = age === 3 && foodSecure && mean >= 59 && floor >= 42 &&
             quadrants.every(value => value >= 51);
         return { "dimensions": s, "mean": Math.round(mean),
             "floor": floor, "score": score, "age": age, "ageName": names[age],
