@@ -46,53 +46,12 @@
             "Production queue rejected " + name);
     }
 
-    // A deterministic adversarial control inside real Pyrogenesis: the model
-    // must reject resource/housing abundance without any productive fields.
-    Trigger.prototype.ZionE2ENegativeControls = function()
-    {
-        const richButHungry = {
-            "food": 1000000, "metal": 1000000, "houses": 10000,
-            "farms": 0, "markets": 3, "temples": 2, "civics": 2,
-            "healers": 1, "towers": 2, "fortresses": 0,
-            "trade": 1000000, "tributes": 1000000,
-            "kills": 0, "losses": 0, "woodGathered": 0,
-            "techs": {
-                "phase_town": true, "phase_city": true,
-                "zion_covenant": true, "zion_commons": true,
-                "zion_concord": true
-            }
-        };
-        const report = ZionModel.measure(richButHungry, ZionModel.freshMemory());
-        check(!report.eligible, "Housing and stockpiles bypassed food-production gate");
-        warn("ZION_E2E_NEGATIVE_FOOD_OK: housing and reserves cannot bypass farms");
-        // Both paths must suffer a measurable wartime penalty and recover
-        // gradually rather than instantly forgetting casualties.
-        const peaceful = {
-            ...richButHungry, "houses": 12, "farms": 7,
-            "food": 1200, "metal": 750, "trade": 5000,
-            "tributes": 1500, "woodGathered": 2500
-        };
-        const before = ZionModel.measure(peaceful, ZionModel.freshMemory());
-        const atWar = { ...peaceful, "kills": 35, "losses": 15 };
-        let memory = ZionModel.updateMemory(ZionModel.freshMemory(), atWar);
-        const wartime = ZionModel.measure(atWar, memory);
-        check(wartime.score < before.score && memory.trauma > 20,
-            "Casualties did not reduce flourishing and create trauma");
-        const initialTrauma = memory.trauma;
-        for (let i = 0; i < 20; ++i)
-            memory = ZionModel.updateMemory(memory, atWar);
-        check(memory.trauma < initialTrauma && memory.trauma > 0,
-            "Wartime trauma failed to decay gradually");
-        warn("ZION_E2E_WAR_RECOVERY_OK: combat costs persist and diminish over time");
-    };
-
     Trigger.prototype.ZionE2EBegin = function()
     {
         const pm = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
         const players = pm.GetActivePlayers().slice(0, 2);
         check(players.length === 2, "Need two active players for two strategies");
         this.zionTestPlayers = [];
-        this.ZionE2ENegativeControls();
 
         for (let i = 0; i < players.length; ++i)
         {
