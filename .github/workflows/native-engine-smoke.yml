@@ -57,17 +57,21 @@ jobs:
       - name: Compile 0 A.D. third-party dependencies
         run: |
           export JOBS=-j3
-          bash libraries/build-source-libs.sh --without-nvtt --with-system-cxxtest -j3
+          bash libraries/build-source-libs.sh --with-system-cxxtest -j3
       - name: Generate native makefiles
         run: |
           bash build/workspaces/update-workspaces.sh \
-            --with-system-cxxtest --without-nvtt --without-atlas --without-lobby \
+            --with-system-cxxtest --without-atlas --without-lobby \
             --without-tests --without-audio
       - name: Compile Pyrogenesis engine from fork
         run: |
           make -C build/workspaces/gcc -j3 config=release
           test -x binaries/system/pyrogenesis
           binaries/system/pyrogenesis -version
+          # Actual rendered game requires conversion DLLs even if a headless
+          # match passes. Do not mistake a no-NVTT executable for a 3D build.
+          test -f binaries/system/libCollada.so
+          find binaries/system -maxdepth 1 -iname 'libnvtt*.so*' -print -quit | grep .
       - name: Fetch real scenario data from the upstream LFS server
         run: |
           git lfs install --local
@@ -110,6 +114,9 @@ jobs:
             binaries/system/engine-smoke.log
             binaries/system/pyrogenesis
             binaries/system/libmozjs*.so*
+            binaries/system/libCollada*.so*
+            binaries/system/libnv*.so*
+            libraries/source/nvtt/bin/libnv*.so*
             libraries/source/spidermonkey/lib/libmozjs*.so*
             ~/.local/state/0ad/log/
           retention-days: 7

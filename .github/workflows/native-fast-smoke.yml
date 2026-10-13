@@ -60,7 +60,9 @@ jobs:
           test -n "$engine"
           cp "$engine" binaries/system/pyrogenesis
           chmod +x binaries/system/pyrogenesis
-          while IFS= read -r lib; do cp "$lib" binaries/system/; done < <(find .native-cache -type f -name 'libmozjs*.so*')
+          while IFS= read -r lib; do cp "$lib" binaries/system/; done < <(
+            find .native-cache -type f \( -name 'libmozjs*.so*' -o -name 'libCollada*.so*' -o -name 'libnv*.so*' \)
+          )
           export LD_LIBRARY_PATH="$(pwd)/binaries/system:${LD_LIBRARY_PATH:-}"
           ldd binaries/system/pyrogenesis
           ! ldd binaries/system/pyrogenesis | grep 'not found'

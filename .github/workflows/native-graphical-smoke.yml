@@ -61,7 +61,9 @@ jobs:
           chmod +x binaries/system/pyrogenesis
           while IFS= read -r lib; do
             cp "$lib" binaries/system/
-          done < <(find .engine -type f -name 'libmozjs*.so*')
+          done < <(find .engine -type f \( -name 'libmozjs*.so*' -o -name 'libCollada*.so*' -o -name 'libnv*.so*' \))
+          test -f binaries/system/libCollada.so
+          find binaries/system -maxdepth 1 -iname 'libnvtt*.so*' -print -quit | grep .
           echo "LD_LIBRARY_PATH=$(pwd)/binaries/system:${LD_LIBRARY_PATH:-}" >> "$GITHUB_ENV"
           mkdir -p "$HOME/.local/share/0ad/mods"
           ldd binaries/system/pyrogenesis

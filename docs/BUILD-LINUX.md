@@ -37,9 +37,9 @@ cd zion
 git lfs install
 git lfs pull
 # Tests and the scenario editor can be omitted for faster first smoke builds.
-bash libraries/build-source-libs.sh --without-nvtt --with-system-cxxtest -j3
+bash libraries/build-source-libs.sh --with-system-cxxtest -j3
 bash build/workspaces/update-workspaces.sh \
-    --with-system-cxxtest --without-nvtt --without-atlas \
+    --with-system-cxxtest --without-atlas \
     --without-lobby --without-tests --without-audio
 make -C build/workspaces/gcc -j3 config=release
 binaries/system/pyrogenesis -version
@@ -81,3 +81,14 @@ confirms maps and artwork can be retrieved from the upstream LFS server.
 
 Check the workflow run's conclusion and logs before claiming a full engine build
 or in-game functionality has passed. An active run is not evidence of success.
+
+## Graphical rendering prerequisites
+
+A headless engine can execute gameplay without model/texture conversion.
+A real graphical build **requires NVTT** to convert UI/world textures and
+libCollada.so to import 3D mesh models. The first graphical smoke screenshot
+revealed widespread missing textures/models when the CI build omitted NVTT and
+did not carry libCollada.so into the test artifact. The native build now
+compiles NVTT and includes conversion libraries; graphical tests explicitly
+check the installed libraries before launching. Do not ship a headless-only
+build as a player download. The original LFS assets are also required.

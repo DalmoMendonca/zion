@@ -29,7 +29,7 @@ Roadmap scope is authoritative; GitHub issues are executable work packets with a
 | Linux native executable and headless skirmish launch | VERIFIED | [native build](https://github.com/DalmoMendonca/zion/actions/runs/38338194693) |
 | Civic research and two institutional strategies in real simulation | VERIFIED for accelerated test | [end-to-end test](https://github.com/DalmoMendonca/zion/actions/runs/38338172357); buildings and base phases artificially supplied |
 | Live social evaluation and one First Covenant victory | VERIFIED in headless engine | Same end-to-end test; not both independent wins |
-| Standalone 3D graphical game and Zion HUD | **BLOCKED / RETEST** | [first graphical test](https://github.com/DalmoMendonca/zion/actions/runs/38338422387) logged an unexposed HUD API; fixed in [GUI registration](https://github.com/DalmoMendonca/zion/commit/51f4f27e9dd68229dcccf2559613c8ba8bc075ad), but no graphical success verified yet |
+| Standalone 3D graphical game and Zion HUD | **BLOCKED / RETEST** | [first graphical test](https://github.com/DalmoMendonca/zion/actions/runs/38338422387): unexposed HUD API, missing NVTT texture conversion and libCollada model conversion. HUD allowlist fixed in [51f4f27](https://github.com/DalmoMendonca/zion/commit/51f4f27e9dd68229dcccf2559613c8ba8bc075ad); conversion-library build/packaging changed, awaiting graphical CI proof |
 | Save/load, complete human-paced match, AI, balance, packaged download | NOT VERIFIED | Explicit gates below |
 | Extended eras and 2,000-year campaign | NOT IMPLEMENTED | Milestones M5-M8 |
 
