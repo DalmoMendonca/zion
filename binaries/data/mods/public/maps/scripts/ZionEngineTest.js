@@ -65,6 +65,25 @@
         const report = ZionModel.measure(richButHungry, ZionModel.freshMemory());
         check(!report.eligible, "Housing and stockpiles bypassed food-production gate");
         warn("ZION_E2E_NEGATIVE_FOOD_OK: housing and reserves cannot bypass farms");
+        // Both paths must suffer a measurable wartime penalty and recover
+        // gradually rather than instantly forgetting casualties.
+        const peaceful = {
+            ...richButHungry, "houses": 12, "farms": 7,
+            "food": 1200, "metal": 750, "trade": 5000,
+            "tributes": 1500, "woodGathered": 2500
+        };
+        const before = ZionModel.measure(peaceful, ZionModel.freshMemory());
+        const atWar = { ...peaceful, "kills": 35, "losses": 15 };
+        let memory = ZionModel.updateMemory(ZionModel.freshMemory(), atWar);
+        const wartime = ZionModel.measure(atWar, memory);
+        check(wartime.score < before.score && memory.trauma > 20,
+            "Casualties did not reduce flourishing and create trauma");
+        const initialTrauma = memory.trauma;
+        for (let i = 0; i < 20; ++i)
+            memory = ZionModel.updateMemory(memory, atWar);
+        check(memory.trauma < initialTrauma && memory.trauma > 0,
+            "Wartime trauma failed to decay gradually");
+        warn("ZION_E2E_WAR_RECOVERY_OK: combat costs persist and diminish over time");
     };
 
     Trigger.prototype.ZionE2EBegin = function()
