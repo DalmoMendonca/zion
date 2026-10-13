@@ -1,6 +1,9 @@
 name: Zion A.D. graphical engine smoke
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Build and smoke-test Pyrogenesis"]
+    types: [completed]
   push:
     paths:
       - ".github/workflows/native-graphical-smoke.yml"
@@ -13,6 +16,7 @@ permissions:
   actions: read
 jobs:
   graphical:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
