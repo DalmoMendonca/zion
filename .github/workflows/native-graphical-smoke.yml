@@ -78,9 +78,9 @@ jobs:
           git lfs pull --include="binaries/data/mods/public/**,binaries/data/mods/mod/**" --exclude=""
           python3 - <<'PY'
           from pathlib import Path
-          p=Path("binaries/data/mods/public/maps/scenarios/combat_demo.pmp")
+          p=Path("binaries/data/mods/public/maps/scenarios/sandbox_athenians.pmp")
           assert p.stat().st_size>1000, f"Terrain asset still LFS pointer or empty: {p.stat().st_size} bytes"
-          print("Combat demo terrain asset restored:",p.stat().st_size)
+          print("Sandbox terrain asset restored:",p.stat().st_size)
           PY
       - name: Render actual 3D gameplay after the loading screen closes
         shell: bash
@@ -93,8 +93,8 @@ jobs:
           export GALLIUM_DRIVER=llvmpipe
           export SDL_VIDEODRIVER=x11
           cd binaries/system
-          timeout --signal=TERM 130s ./pyrogenesis \
-            -autostart="scenarios/combat_demo" \
+          timeout --signal=TERM 250s ./pyrogenesis \
+            -autostart="scenarios/sandbox_athenians" \
             -autostart-victory=zion \
             -autostart-disable-replay \
             -nosound -quickstart -windowed -xres=1280 -yres=720 \
@@ -105,7 +105,7 @@ jobs:
           # A fixed 16-second sleep previously captured the loading screen
           # and nevertheless passed the test. Wait for the real game marker.
           ready=0
-          for attempt in $(seq 1 110); do
+          for attempt in $(seq 1 210); do
             if grep -Fq "GAME STARTED, ALL INIT COMPLETE" graphical.log; then
               ready=1
               break
@@ -148,11 +148,16 @@ jobs:
           parchment_share=matches/len(pixels)
           print("Loading-screen parchment share:",round(parchment_share,3))
           assert parchment_share < 0.70, "Still showing loading parchment, not gameplay"
+          world=image.crop((370,190,1050,600))
+          black_share=sum(1 for r,g,b in world.getdata() if max(r,g,b)<18)/(world.width*world.height)
+          print("Near-black gameplay viewport share:",round(black_share,3))
+          assert black_share<0.75, "Most of the world is unrendered/black"
           PY
           tail -75 binaries/system/graphical.log
           file screenshots/zion-graphical.png
           grep -F "ZION_NATIVE_READY" binaries/system/graphical.log
           grep -F "GAME STARTED, ALL INIT COMPLETE" binaries/system/graphical.log
+          grep -F "ZION_HUD_REPORT_VISIBLE" binaries/system/graphical.log
           if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|GUI object has no setting' binaries/system/graphical.log; then
             echo "Native GUI/engine diagnostics include errors or invalid styles"
             exit 1
