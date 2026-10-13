@@ -4,11 +4,9 @@ on:
   push:
     paths:
       - ".github/workflows/native-engine-smoke.yml"
-      - "binaries/data/mods/public/maps/scripts/Zion*"
-      - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion.json"
-      - "binaries/data/mods/public/simulation/data/technologies/zion*"
-      - "binaries/data/mods/public/simulation/data/technologies/pair_zion*"
-      - "binaries/data/mods/public/gui/session/Zion*"
+      - "source/**"
+      - "build/**"
+      - "libraries/**"
 permissions:
   contents: read
 jobs:
