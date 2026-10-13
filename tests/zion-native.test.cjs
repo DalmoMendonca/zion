@@ -198,3 +198,13 @@ test("Developer integration mode exercises the actual Pyrogenesis Researcher que
     "simulation/data/settings/victory_conditions/zion.json"),"utf8")
     .includes("ZionEngineTest.js"), "Development-only probe leaked to real game");
 });
+
+
+test("Zion HUD uses a GUI method present in the engine's exposed call allowlist", () => {
+  const source=fs.readFileSync(path.join(mod,"simulation/components/GuiInterface.js"),"utf8");
+  const hud=fs.readFileSync(path.join(mod,"gui/session/ZionStatus.js"),"utf8");
+  const allowed=/GuiInterface\.prototype\.exposedFunctions\s*=\s*\{[\s\S]*?"GetZionStatus"\s*:\s*1/;
+  assert.match(source,allowed,"Exposing a method on prototype is insufficient for ScriptCall");
+  assert.ok(hud.includes('Engine.GuiInterfaceCall("GetZionStatus")'));
+  assert.ok(source.includes("GuiInterface.prototype.GetZionStatus = function"));
+});

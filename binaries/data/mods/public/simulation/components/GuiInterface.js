@@ -2109,6 +2109,7 @@ GuiInterface.prototype.OnGlobalEntityRenamed = function(msg)
  */
 GuiInterface.prototype.exposedFunctions = {
 
+	"GetZionStatus": 1,
 	"GetSimulationState": 1,
 	"GetExtendedSimulationState": 1,
 	"GetInitAttributes": 1,
