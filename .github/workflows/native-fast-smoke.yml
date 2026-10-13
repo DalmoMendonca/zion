@@ -103,6 +103,7 @@ jobs:
             -nosound -quickstart >zion-e2e.log 2>&1
           code=$?
           set -e
+          tail -100 zion-e2e.log
           grep -F "ZION_E2E_NEGATIVE_FOOD_OK" zion-e2e.log
           grep -F "ZION_E2E_WAR_RECOVERY_OK" zion-e2e.log
           grep -F "ZION_E2E_FIRST_RESEARCH_OK" zion-e2e.log
