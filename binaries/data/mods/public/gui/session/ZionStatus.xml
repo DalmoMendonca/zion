@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
   <!-- Visible only when the Zion match mode provides a native society report. -->
   <object name="zionStatusPanel" type="image" sprite="sessionOverlayBackground"
-      size="100%-354 44 100%-70 102" hidden="true" z="46">
+      size="100%-450 44 100%-70 124" hidden="true" z="46">
     <object name="zionStatusText" type="text" ghost="true"
         style="ModernLabelText" font="sans-12" textcolor="white"
         size="12 8 100%-10 100%-8"/>
