@@ -78,9 +78,9 @@ jobs:
           git lfs pull --include="binaries/data/mods/public/**,binaries/data/mods/mod/**" --exclude=""
           python3 - <<'PY'
           from pathlib import Path
-          p=Path("binaries/data/mods/public/maps/scenarios/arcadia.pmp")
+          p=Path("binaries/data/mods/public/maps/scenarios/combat_demo.pmp")
           assert p.stat().st_size>100000
-          print("Arcadia terrain asset restored:",p.stat().st_size)
+          print("Combat demo terrain asset restored:",p.stat().st_size)
           PY
       - name: Render actual 3D gameplay after the loading screen closes
         shell: bash
@@ -94,12 +94,14 @@ jobs:
           export SDL_VIDEODRIVER=x11
           cd binaries/system
           timeout --signal=TERM 130s ./pyrogenesis \
-            -autostart="scenarios/arcadia" \
+            -autostart="scenarios/combat_demo" \
             -autostart-victory=zion \
             -autostart-disable-replay \
             -nosound -quickstart -windowed -xres=1280 -yres=720 \
             >graphical.log 2>&1 &
           pid=$!
+          # The larger Arcadia scenario (4205 entities) previously timed out under llvmpipe.
+          # Combat demo has 234 entities and exercises real native terrain, units and UI.
           # A fixed 16-second sleep previously captured the loading screen
           # and nevertheless passed the test. Wait for the real game marker.
           ready=0
@@ -145,7 +147,7 @@ jobs:
             and red>green+10 and green>blue+15)
           parchment_share=matches/len(pixels)
           print("Loading-screen parchment share:",round(parchment_share,3))
-          assert parchment_share < 0.70, "Still showing Arcadia loading parchment, not gameplay"
+          assert parchment_share < 0.70, "Still showing loading parchment, not gameplay"
           PY
           tail -75 binaries/system/graphical.log
           file screenshots/zion-graphical.png
