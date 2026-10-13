@@ -37,10 +37,13 @@
 
     function queue(civicID, name)
     {
-        const cmpResearcher = Engine.QueryInterface(civicID, IID_Researcher);
-        check(!!cmpResearcher, "Civic Centre has no Researcher component");
-        const id = cmpResearcher.QueueTechnology(name);
-        check(id !== -1, "Research queue rejected " + name);
+        // A real game command queues research through ProductionQueue, which
+        // owns the per-second progression timer. Calling Researcher directly
+        // creates a pending item that never advances.
+        const cmpProductionQueue = Engine.QueryInterface(civicID, IID_ProductionQueue);
+        check(!!cmpProductionQueue, "Civic Centre has no ProductionQueue component");
+        check(cmpProductionQueue.AddItem(name, "technology", 1, undefined),
+            "Production queue rejected " + name);
     }
 
     Trigger.prototype.ZionE2EBegin = function()
