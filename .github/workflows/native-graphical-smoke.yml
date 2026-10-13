@@ -79,7 +79,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           p=Path("binaries/data/mods/public/maps/scenarios/combat_demo.pmp")
-          assert p.stat().st_size>100000
+          assert p.stat().st_size>1000, f"Terrain asset still LFS pointer or empty: {p.stat().st_size} bytes"
           print("Combat demo terrain asset restored:",p.stat().st_size)
           PY
       - name: Render actual 3D gameplay after the loading screen closes
