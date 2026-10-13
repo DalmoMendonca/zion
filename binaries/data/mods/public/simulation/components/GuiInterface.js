@@ -57,7 +57,9 @@ GuiInterface.prototype.Init = function()
 /** Read-only player-local Zion society report; never modifies simulation state. */
 GuiInterface.prototype.GetZionStatus = function(playerID)
 {
-    if (playerID <= 0)
+    // Never expose another player's private societal state through the GUI
+    // script interface. Observers have no owned society to inspect.
+    if (!Number.isInteger(playerID) || playerID <= 0)
         return null;
     const cmpTrigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
     if (!cmpTrigger || !cmpTrigger.zionLatestReports)
