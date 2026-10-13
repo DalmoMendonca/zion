@@ -75,11 +75,13 @@ jobs:
           set -uo pipefail
           mkdir -p "$HOME/.local/share/0ad/mods"
           cd binaries/system
+          set +e
           timeout --signal=TERM 12s ./pyrogenesis \
             -autostart="scenarios/arcadia" -autostart-victory=zion \
             -autostart-nonvisual -autostart-disable-replay \
             -nosound -quickstart >engine-smoke.log 2>&1
           code=$?
+          set -e
           tail -60 engine-smoke.log
           grep -F "GAME STARTED, ALL INIT COMPLETE" engine-smoke.log || exit 1
           grep -F "ZION_NATIVE_READY" engine-smoke.log
