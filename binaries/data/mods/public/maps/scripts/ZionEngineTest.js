@@ -147,6 +147,22 @@
             warn("ZION_E2E_PATH_" + (p.choice + 1) + "_OK: civic stages researched, " +
                 "societal score " + report.score + " and floor " + report.floor);
         }
+        // The two routes must be genuinely distinct constitutional choices,
+        // not both players accidentally receiving the same set of technologies.
+        for (const p of this.zionTestPlayers)
+        {
+            const own = paths[p.choice];
+            const other = paths[1 - p.choice];
+            check(tech(p.id).IsTechnologyResearched(own.first) &&
+                tech(p.id).IsTechnologyResearched(own.second) &&
+                tech(p.id).IsTechnologyResearched(own.third),
+                "Player " + p.id + " lacks own complete civic route");
+            check(!tech(p.id).IsTechnologyResearched(other.first) &&
+                !tech(p.id).IsTechnologyResearched(other.second) &&
+                !tech(p.id).IsTechnologyResearched(other.third),
+                "Player " + p.id + " acquired incompatible rival civic route");
+        }
+        warn("ZION_E2E_PATH_EXCLUSIVITY_OK: both routes remain independent");
         warn("ZION_E2E_BOTH_PATHS_OK: two institutional strategies reach final age");
     };
 
