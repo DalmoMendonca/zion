@@ -14,11 +14,24 @@ class ZionStatus
         const state = Engine.GuiInterfaceCall("GetZionStatus");
         this.panel.hidden = !state;
         if (!state)
+        {
+            if (!this.emptyLogged)
+            {
+                warn("ZION_HUD_STATUS_EMPTY: no local societal report yet");
+                this.emptyLogged = true;
+            }
             return;
+        }
+        if (!this.reportRendered)
+        {
+            warn("ZION_HUD_REPORT_VISIBLE: local societal report reached the session GUI");
+            this.reportRendered = true;
+        }
 
         this.label.caption = "ZION  " + state.score + "/100  |  " +
             state.ageName + "\n" + "BALANCE  " + state.floor + "/100" +
-            "     " + state.sustained + "/" + state.needed;
+            "     " + state.sustained + "/" + state.needed +
+            (state.nextStep ? "\nNEXT  " + state.nextStep : "");
 
         const names = {
             "provision":"Provision", "prosperity":"Prosperity",
@@ -31,6 +44,7 @@ class ZionStatus
                 ([key, value]) => names[key] + ": " + value + "/100").join("\n") +
             "\nTrust: " + state.trust +
             "  |  War strain: " + state.warStrain +
+            (state.nextStep ? "\nNext action: " + state.nextStep : "") +
             "\nMaintain balanced flourishing through " +
             state.needed + " evaluations to complete the first covenant.";
     }
