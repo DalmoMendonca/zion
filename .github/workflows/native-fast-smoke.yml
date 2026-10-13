@@ -107,6 +107,7 @@ jobs:
           tail -30 zion-e2e.log
           grep -F "ZION_E2E_FIRST_RESEARCH_OK" zion-e2e.log
           grep -F "ZION_E2E_TOWN_OK" zion-e2e.log
+          grep -F "ZION_E2E_PATH_EXCLUSIVITY_OK" zion-e2e.log
           grep -F "ZION_E2E_BOTH_PATHS_OK" zion-e2e.log
           grep -F "ZION_FIRST_COVENANT_WON" zion-e2e.log
           if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_E2E_FAILED' zion-e2e.log; then
