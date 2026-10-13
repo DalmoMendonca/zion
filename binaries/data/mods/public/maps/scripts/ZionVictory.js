@@ -236,8 +236,20 @@ if (typeof module !== "undefined" && module.exports)
             let result = ZionModel.measure(observation, memory);
             memory.stableChecks = result.eligible ? memory.stableChecks + 1 : 0;
             this.zionSocieties[playerID] = memory;
+            const nextStep = result.age < 3 ?
+                "Research the next civic institution" :
+                observation.farms < 3 ? "Build more food fields" :
+                observation.food < 100 ? "Gather at least 100 food" :
+                result.floor < 42 ? "Improve your weakest societal dimension" :
+                result.mean < 59 ? "Improve overall societal flourishing" :
+                result.quadrants.some(value => value < 51) ?
+                    "Balance neglected institutions" :
+                    "Maintain flourishing until the covenant is complete";
             this.zionLatestReports[playerID] = {
                 "score": result.score,
+                "mean": result.mean,
+                "eligible": result.eligible,
+                "nextStep": nextStep,
                 "floor": result.floor,
                 "ageName": result.ageName,
                 "dimensions": result.dimensions,
