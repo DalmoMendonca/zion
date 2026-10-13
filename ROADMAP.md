@@ -1,6 +1,6 @@
 # Zion A.D. — Development roadmap
 
-**Status:** active native-engine development. **Source of truth:** this document for execution, [GAMEPLAY-CONTRACT](docs/GAMEPLAY-CONTRACT.md) for the eight player-approved design decisions, and [ZION-VISION](ZION-VISION.md) for the long-term premise. **Updated:** October 12, 2026.
+**Status:** active native-engine development. **Source of truth:** this document for execution, [GAMEPLAY-CONTRACT](docs/GAMEPLAY-CONTRACT.md) for the eight player-approved design decisions, and [ZION-VISION](ZION-VISION.md) for the long-term premise. **Updated:** October 13, 2026.
 
 Zion A.D. is a **genuine fork** of 0 A.D. / Pyrogenesis. It is a real-time 3D civilization strategy game in which ordinary workers, construction, warfare and control remain familiar, but institutions, laws, economics, relationships, cultural maturation and ecological stewardship change what civilization can become over an alternative two-thousand-year journey. Multiple political and cultural arrangements may cultivate Zion; no ideology gets an automatic victory.
 
@@ -20,6 +20,14 @@ Roadmap scope is authoritative; GitHub issues are executable work packets with a
 - [#8: M5 diplomacy, war and AI](https://github.com/DalmoMendonca/zion/issues/8)
 - [#9: M6–M8 contingent 2,000-year campaign](https://github.com/DalmoMendonca/zion/issues/9)
 - [#10: M9 accessibility, visual/audio and release quality](https://github.com/DalmoMendonca/zion/issues/10)
+
+## October 13 execution handoff
+
+- Native foundation verification **passed** at [2c5886e](https://github.com/DalmoMendonca/zion/actions/runs/38477277846). This is not graphical-playability proof.
+- Rapid native gameplay verification **failed** at [c261aaf](https://github.com/DalmoMendonca/zion/actions/runs/38476961681): `ZionEngineTest.js` line 65 called `ZionModel.measure` from a separate victory-script global context. This was a real JavaScript exception during `OnGlobalInitGame`, not a gameplay balance failure.
+- Corrective commits [8bd4f01](https://github.com/DalmoMendonca/zion/commit/8bd4f01105de57f85f6852f377b6ab5cbcc81576) and [2c5886e](https://github.com/DalmoMendonca/zion/commit/2c5886e7982c62fdd7e5e3e11edb0c705574e35f) remove the invalid cross-context call and unsupported native assertions. [Rapid retest](https://github.com/DalmoMendonca/zion/actions/runs/38477277883) was still running when recorded. Standalone famine/housing tests remain in the Node suite.
+- **Next:** confirm the rapid retest, then investigate any remaining native failure using the targeted log extraction in CI. Separately complete actual rendered HUD screenshot review; graphical jobs are still unverified. Add independent-win matches for both governance paths after native integration is green.
+- **Rule:** do not add a native test that assumes objects from a different engine script context are globally accessible; test via public trigger interfaces or extract a shared import that the engine demonstrably loads.
 
 ## Current evidence and baseline
 
