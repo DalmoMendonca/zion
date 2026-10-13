@@ -1,6 +1,9 @@
 name: Package Zion A.D. Linux alpha
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/package-linux-alpha.yml"
 permissions:
   contents: read
   actions: read
