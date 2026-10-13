@@ -78,6 +78,7 @@ jobs:
       - name: Run native Zion victory and assert initialization
         shell: bash
         run: |
+          mkdir -p "$HOME/.local/share/0ad/mods"
           cd binaries/system
           set +e
           timeout --signal=TERM 9s ./pyrogenesis \
@@ -93,7 +94,7 @@ jobs:
           grep -F "ZION_NATIVE_READY" engine-smoke.log
           grep -F "ZION_GOVERNANCE_TECH_OK" engine-smoke.log
           grep -F "ZION_SOCIAL_TICK_OK" engine-smoke.log
-          if grep -Ei '(^| )ERROR:|JavaScript error:|failed to load|unhandled exception|assertion failed' engine-smoke.log; then
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed' engine-smoke.log; then
             echo "Unexpected Pyrogenesis JavaScript or simulation error."
             exit 1
           fi

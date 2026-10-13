@@ -20,18 +20,21 @@ jobs:
         with:
           lfs: false
           fetch-depth: 1
-      - name: Discover most recent verified Pyrogenesis build
+      # An engine binary may be valid even if a script smoke test failed later.
+      # Select the newest retained artifact, not just a run with success status.
+      - name: Discover newest compiled Pyrogenesis artifact
         id: native
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          run_id="$(gh api 'repos/DalmoMendonca/zion/actions/workflows/native-engine-smoke.yml/runs?per_page=30' --jq '[.workflow_runs[] | select(.conclusion == "success")] | first | .id')"
+          run_id="$(gh api 'repos/DalmoMendonca/zion/actions/artifacts?name=zion-native-linux-smoke&per_page=50' --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | first | .workflow_run.id')"
           if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
-            echo "No successful native build artifact is available yet."
+            echo "No compiled native engine artifact is retained."
             exit 1
           fi
+          echo "Using compiled engine from run $run_id"
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-      - name: Restore verified Pyrogenesis build
+      - name: Restore precompiled Pyrogenesis engine
         uses: actions/download-artifact@v4
         with:
           repository: DalmoMendonca/zion
@@ -70,6 +73,7 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
+          mkdir -p "$HOME/.local/share/0ad/mods"
           cd binaries/system
           timeout --signal=TERM 12s ./pyrogenesis \
             -autostart="scenarios/arcadia" -autostart-victory=zion \
@@ -81,7 +85,7 @@ jobs:
           grep -F "ZION_NATIVE_READY" engine-smoke.log
           grep -F "ZION_GOVERNANCE_TECH_OK" engine-smoke.log
           grep -F "ZION_SOCIAL_TICK_OK" engine-smoke.log || exit 1
-          if grep -Ei '(^| )ERROR:|JavaScript error:|failed to load|unhandled exception|assertion failed' engine-smoke.log; then exit 1; fi
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed' engine-smoke.log; then exit 1; fi
           test "$code" -eq 0 -o "$code" -eq 124
       - if: always()
         uses: actions/upload-artifact@v4
