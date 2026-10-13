@@ -4,6 +4,10 @@ on:
   push:
     paths:
       - ".github/workflows/native-graphical-smoke.yml"
+      - "binaries/data/mods/public/gui/session/**"
+      - "binaries/data/mods/public/simulation/components/GuiInterface.js"
+      - "binaries/data/mods/public/maps/scripts/Zion*"
+      - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion*.json"
 permissions:
   contents: read
   actions: read
@@ -98,6 +102,8 @@ jobs:
           '
           test -s screenshots/zion-graphical.png
           tail -75 binaries/system/graphical.log
+          echo "Captured screenshot dimensions:"
+          file screenshots/zion-graphical.png
           grep -F "ZION_NATIVE_READY" binaries/system/graphical.log
           grep -F "GAME STARTED, ALL INIT COMPLETE" binaries/system/graphical.log
           if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed' binaries/system/graphical.log; then
