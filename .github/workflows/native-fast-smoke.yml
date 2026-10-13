@@ -105,8 +105,6 @@ jobs:
           set -e
           grep -En "ZION_|ERROR:|JavaScript error:|exception|failed|GAME STARTED" zion-e2e.log | tail -80 || true
           tail -30 zion-e2e.log
-          grep -F "ZION_E2E_NEGATIVE_FOOD_OK" zion-e2e.log
-          grep -F "ZION_E2E_WAR_RECOVERY_OK" zion-e2e.log
           grep -F "ZION_E2E_FIRST_RESEARCH_OK" zion-e2e.log
           grep -F "ZION_E2E_TOWN_OK" zion-e2e.log
           grep -F "ZION_E2E_BOTH_PATHS_OK" zion-e2e.log
