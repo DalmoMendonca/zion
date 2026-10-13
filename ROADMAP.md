@@ -6,6 +6,21 @@ Zion A.D. is a **genuine fork** of 0 A.D. / Pyrogenesis. It is a real-time 3D ci
 
 This is an **implementation plan**, not a list of features already delivered. No invented deadline, release date, or percentage complete. Each stage ends in a playable and verified game state, never just mockups. All release gates below are cumulative: passing a source check does not imply gameplay quality.
 
+## Tracked feature epics
+
+Roadmap scope is authoritative; GitHub issues are executable work packets with acceptance criteria. [All issues](https://github.com/DalmoMendonca/zion/issues).
+
+- [#1: M1 graphical rendering and HUD](https://github.com/DalmoMendonca/zion/issues/1)
+- [#2: M1 independent victories and negative tests](https://github.com/DalmoMendonca/zion/issues/2)
+- [#3: M1 full ordinary match and AI](https://github.com/DalmoMendonca/zion/issues/3)
+- [#4: M1 desktop packages and save/replay](https://github.com/DalmoMendonca/zion/issues/4)
+- [#5: M2 societal simulation](https://github.com/DalmoMendonca/zion/issues/5)
+- [#6: M3 hidden developmental ages](https://github.com/DalmoMendonca/zion/issues/6)
+- [#7: M4 institutions, economy and governance](https://github.com/DalmoMendonca/zion/issues/7)
+- [#8: M5 diplomacy, war and AI](https://github.com/DalmoMendonca/zion/issues/8)
+- [#9: M6–M8 contingent 2,000-year campaign](https://github.com/DalmoMendonca/zion/issues/9)
+- [#10: M9 accessibility, visual/audio and release quality](https://github.com/DalmoMendonca/zion/issues/10)
+
 ## Current evidence and baseline
 
 | Capability | Status | Evidence / limitation |

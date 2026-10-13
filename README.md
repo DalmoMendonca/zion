@@ -42,5 +42,6 @@ Zion A.D. is not affiliated with Wildfire Games.
 
 ## Project direction
 
-See [ZION-VISION.md](ZION-VISION.md). All gameplay changes must live in the
-native Pyrogenesis/0 A.D. source tree.
+See the **[comprehensive development roadmap](ROADMAP.md)**, [design decisions](docs/DECISIONS.md), [technical architecture](docs/ARCHITECTURE.md), [acceptance contract](docs/GAMEPLAY-CONTRACT.md) and [GitHub feature tracker](https://github.com/DalmoMendonca/zion/issues).
+
+All gameplay changes must live in the native Pyrogenesis/0 A.D. source tree.
