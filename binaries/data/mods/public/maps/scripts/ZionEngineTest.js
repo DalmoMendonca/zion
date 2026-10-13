@@ -46,12 +46,34 @@
             "Production queue rejected " + name);
     }
 
+    // A deterministic adversarial control inside real Pyrogenesis: the model
+    // must reject resource/housing abundance without any productive fields.
+    Trigger.prototype.ZionE2ENegativeControls = function()
+    {
+        const richButHungry = {
+            "food": 1000000, "metal": 1000000, "houses": 10000,
+            "farms": 0, "markets": 3, "temples": 2, "civics": 2,
+            "healers": 1, "towers": 2, "fortresses": 0,
+            "trade": 1000000, "tributes": 1000000,
+            "kills": 0, "losses": 0, "woodGathered": 0,
+            "techs": {
+                "phase_town": true, "phase_city": true,
+                "zion_covenant": true, "zion_commons": true,
+                "zion_concord": true
+            }
+        };
+        const report = ZionModel.measure(richButHungry, ZionModel.freshMemory());
+        check(!report.eligible, "Housing and stockpiles bypassed food-production gate");
+        warn("ZION_E2E_NEGATIVE_FOOD_OK: housing and reserves cannot bypass farms");
+    };
+
     Trigger.prototype.ZionE2EBegin = function()
     {
         const pm = Engine.QueryInterface(SYSTEM_ENTITY, IID_PlayerManager);
         const players = pm.GetActivePlayers().slice(0, 2);
         check(players.length === 2, "Need two active players for two strategies");
         this.zionTestPlayers = [];
+        this.ZionE2ENegativeControls();
 
         for (let i = 0; i < players.length; ++i)
         {
