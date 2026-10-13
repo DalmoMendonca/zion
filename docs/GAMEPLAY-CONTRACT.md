@@ -55,7 +55,7 @@ validating XML, JavaScript syntax, or isolated mock component functions.
 - [x] Genuine 0 A.D. / Pyrogenesis source tree imported, preserving upstream.
 - [x] Native executable compiled on Linux in GitHub Actions at least once.
 - [x] A 3D-map scenario begins and advances in the real headless engine.
-- [ ] Native Zion victory condition initializes **without** JavaScript error.
+- [x] Native Zion victory condition initializes **without** JavaScript error.
 - [ ] In the real engine, Civic Centers expose three successive governance
       choices, and completion updates the game's technology state.
 - [ ] In the real engine, a simulated resource, military or policy change

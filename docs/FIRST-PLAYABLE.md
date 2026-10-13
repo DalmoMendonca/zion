@@ -52,9 +52,20 @@ The native in-game HUD displays Zion score and age, with a hover breakdown
 of all eight welfare dimensions, social trust, and war strain. It receives
 a player-specific, read-only report from the simulation.
 
-The code has Node/V8 engine-interface tests and XML/JSON validation.
-A full native engine build and interactive Pyrogenesis launch remain unverified.
-See `tests/zion-native.test.js`.
+The original C++ Pyrogenesis engine has compiled and launched a real
+headless skirmish. The Zion victory script, Civic Center technology choices,
+and first societal evaluation have loaded successfully in that engine.
+The [rapid native smoke workflow](../../.github/workflows/native-fast-smoke.yml)
+checks those three facts on each gameplay-script change.
+
+A separate developer-only victory condition, `zion_e2e`, exercises two
+different civic paths by queuing research and accelerating the infrastructure
+needed to run the test. It is not a human-playable campaign and must never be
+mistaken for one. The full progression test's outcome is tracked in GitHub
+Actions; a graphical session, user input, and save/reload have not been
+verified yet.
+
+Isolated JS/XML checks also run from `tests/zion-native.test.cjs`.
 
 All changes remain in `binaries/data/mods/public/`, the native source tree;
 there is no separate web game or bundled external mod.

@@ -17,7 +17,8 @@ includes three successive governance decisions at civic centers, policies with
 real game effects, persistent social conditions, an in-game welfare HUD, and a
 native flourishing victory mode. See [play instructions](docs/FIRST-PLAYABLE.md).
 The full 2,000-year campaign and new future-age 3D art are not implemented;
-a complete Pyrogenesis build and game launch have not yet been verified.
+a complete native Pyrogenesis build and headless skirmish launch have been
+verified, but a graphical play session and full match remain unverified.
 
 ## Source and build
 
