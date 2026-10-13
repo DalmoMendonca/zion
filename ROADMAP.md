@@ -29,7 +29,7 @@ Roadmap scope is authoritative; GitHub issues are executable work packets with a
 | Linux native executable and headless skirmish launch | VERIFIED | [native build](https://github.com/DalmoMendonca/zion/actions/runs/38338194693) |
 | Civic research and two institutional strategies in real simulation | VERIFIED for accelerated test | [end-to-end test](https://github.com/DalmoMendonca/zion/actions/runs/38338172357); buildings and base phases artificially supplied |
 | Live social evaluation and one First Covenant victory | VERIFIED in headless engine | Same end-to-end test; not both independent wins |
-| Standalone 3D graphical game and Zion HUD | **BLOCKED / RETEST** | [first graphical test](https://github.com/DalmoMendonca/zion/actions/runs/38338422387): unexposed HUD API, missing NVTT texture conversion and libCollada model conversion. HUD allowlist fixed in [51f4f27](https://github.com/DalmoMendonca/zion/commit/51f4f27e9dd68229dcccf2559613c8ba8bc075ad); conversion-library build/packaging changed, awaiting graphical CI proof |
+| Standalone 3D graphical game and Zion HUD | **BLOCKED / RETEST** | [Latest green graphical CI](https://github.com/DalmoMendonca/zion/actions/runs/38343892890) captured **Arcadia's loading screen at 77%**, not the world, and logged five invalid HUD-style warnings. A stronger test now waits for match initialization, checks the screenshot for loading-screen parchment and rejects GUI-style warnings. Actual rendered gameplay frame remains unverified until the new CI run passes and the image is inspected. |
 | Save/load, complete human-paced match, AI, balance, packaged download | NOT VERIFIED | Explicit gates below |
 | Extended eras and 2,000-year campaign | NOT IMPLEMENTED | Milestones M5-M8 |
 
@@ -170,7 +170,7 @@ Every CI result recorded in roadmap must link a concrete run and list what it **
 
 ## Current highest-value work order
 
-- **NOW / 1:** Re-run graphical CI after exposing GetZionStatus in GuiInterface. Inspect resulting frame and fix asset/rendering/UI issues. Require no console errors.
+- **NOW / 1:** Gate screenshots on a fully initialized, actually rendered 3D match (not the Arcadia loading screen); reject GUI style warnings, inspect resulting frame, and confirm HUD and RTS controls don't collide.
 - **NOW / 2:** Make the fast engine integration suite run independent victories via both routes, plus negative tests showing a resource-rich authoritarian/war-torn or food-poor society cannot win.
 - **NOW / 3:** Eliminate artificial phase grants in a separate full match scenario, exercise actual age-up costs and prerequisites, and tune thresholds to normal player pacing.
 - **NEXT / 4:** Make social score robust against building spam, historic lifetime metric exploits and per-tick giveaways; add explainable causal deltas.

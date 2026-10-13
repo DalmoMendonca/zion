@@ -82,50 +82,77 @@ jobs:
           assert p.stat().st_size>100000
           print("Arcadia terrain asset restored:",p.stat().st_size)
           PY
-      - name: Render first real 3D Zion A.D. frame
+      - name: Render actual 3D gameplay after the loading screen closes
         shell: bash
         run: |
           mkdir -p screenshots
-          xvfb-run -a -s '-screen 0 1280x720x24' bash -c '
-            export LIBGL_ALWAYS_SOFTWARE=1
-            export GALLIUM_DRIVER=llvmpipe
-            export SDL_VIDEODRIVER=x11
-            cd binaries/system
-            set +e
-            timeout --signal=TERM 35s ./pyrogenesis \
-              -autostart="scenarios/arcadia" \
-              -autostart-victory=zion \
-              -autostart-disable-replay \
-              -nosound -quickstart -windowed -xres=1280 -yres=720 \
-              >graphical.log 2>&1 &
-            pid=$!
-            sleep 16
-            scrot -o ../../screenshots/zion-graphical.png
-            wait $pid
-            code=$?
-            echo "GRAPHICAL_ENGINE_EXIT=$code"
-            test $code -eq 0 -o $code -eq 124
-          '
+          cat > ./capture-zion.sh <<'SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          export LIBGL_ALWAYS_SOFTWARE=1
+          export GALLIUM_DRIVER=llvmpipe
+          export SDL_VIDEODRIVER=x11
+          cd binaries/system
+          timeout --signal=TERM 130s ./pyrogenesis \
+            -autostart="scenarios/arcadia" \
+            -autostart-victory=zion \
+            -autostart-disable-replay \
+            -nosound -quickstart -windowed -xres=1280 -yres=720 \
+            >graphical.log 2>&1 &
+          pid=$!
+          # A fixed 16-second sleep previously captured the loading screen
+          # and nevertheless passed the test. Wait for the real game marker.
+          ready=0
+          for attempt in $(seq 1 110); do
+            if grep -Fq "GAME STARTED, ALL INIT COMPLETE" graphical.log; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$pid" 2>/dev/null; then
+              echo "Pyrogenesis exited before the match started"
+              tail -80 graphical.log
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "Graphical RTS failed to load before timeout"
+            exit 1
+          fi
+          sleep 14
+          scrot -o ../../screenshots/zion-graphical.png
+          set +e
+          wait "$pid"
+          code=$?
+          set -e
+          echo "GRAPHICAL_ENGINE_EXIT=$code"
+          test "$code" -eq 0 -o "$code" -eq 124
+          SH
+          xvfb-run -a -s '-screen 0 1280x720x24' bash ./capture-zion.sh
           test -s screenshots/zion-graphical.png
-          # A screenshot may exist while the map is entirely black because
-          # texture/mesh conversion libraries were missing. Reject that case.
           python3 - <<'PY'
           from PIL import Image, ImageStat
-          path="screenshots/zion-graphical.png"
-          image=Image.open(path).convert("RGB")
-          assert image.width >= 1280 and image.height >= 720
-          viewport=image.crop((340, 100, 1150, 640))
+          image=Image.open("screenshots/zion-graphical.png").convert("RGB")
+          assert image.size == (1280,720), f"Unexpected frame: {image.size}"
+          viewport=image.crop((350, 110, 1120, 630))
           deviation=ImageStat.Stat(viewport).stddev
           print("3D viewport RGB standard deviation:",deviation)
-          assert max(deviation) >= 12, ("The 3D game viewport is nearly blank. "
-            "Check NVTT/COLLADA and camera rendering before declaring a pass.")
+          assert max(deviation)>=12, "3D viewport is blank/unrendered"
+          parchment=image.crop((840,210,1040,480))
+          pixels=list(parchment.getdata())
+          matches=sum(1 for red,green,blue in pixels if
+            155<=red<=230 and 125<=green<=210 and 75<=blue<=165
+            and red>green+10 and green>blue+15)
+          parchment_share=matches/len(pixels)
+          print("Loading-screen parchment share:",round(parchment_share,3))
+          assert parchment_share < 0.70, "Still showing Arcadia loading parchment, not gameplay"
           PY
           tail -75 binaries/system/graphical.log
-          echo "Captured screenshot dimensions:"
           file screenshots/zion-graphical.png
           grep -F "ZION_NATIVE_READY" binaries/system/graphical.log
           grep -F "GAME STARTED, ALL INIT COMPLETE" binaries/system/graphical.log
-          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed' binaries/system/graphical.log; then
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|GUI object has no setting' binaries/system/graphical.log; then
+            echo "Native GUI/engine diagnostics include errors or invalid styles"
             exit 1
           fi
       - if: always()
