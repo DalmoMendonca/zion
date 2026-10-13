@@ -208,3 +208,30 @@ test("Zion HUD uses a GUI method present in the engine's exposed call allowlist"
   assert.ok(hud.includes('Engine.GuiInterfaceCall("GetZionStatus")'));
   assert.ok(source.includes("GuiInterface.prototype.GetZionStatus = function"));
 });
+
+
+test("Stockpiled wealth and housing spam cannot replace food production", () => {
+  const inflated = {...base, houses:10000, food:1000000, metal:1000000,
+    trade:1000000, farms:0};
+  const outcome = model.measure(inflated, model.freshMemory());
+  assert.equal(outcome.eligible, false);
+  assert.ok(outcome.dimensions.provision < 60);
+});
+
+test("Housing beyond a functioning settlement has diminishing score returns", () => {
+  const normal = model.measure(base, model.freshMemory());
+  const spam = model.measure({...base, houses:10000}, model.freshMemory());
+  assert.equal(spam.dimensions.provision, normal.dimensions.provision);
+  assert.equal(spam.dimensions.dignity, normal.dimensions.dignity);
+  assert.equal(spam.dimensions.freedom, normal.dimensions.freedom);
+});
+
+test("Both governance routes still qualify with actual food infrastructure", () => {
+  for (const techs of [base.techs, {
+    phase_town:true, phase_city:true, zion_magistracy:true,
+    zion_guilds:true, zion_stewardship:true
+  }]) {
+    assert.equal(model.measure({...base, techs}, model.freshMemory()).eligible, true);
+    assert.equal(model.measure({...base, techs, farms:0}, model.freshMemory()).eligible, false);
+  }
+});
