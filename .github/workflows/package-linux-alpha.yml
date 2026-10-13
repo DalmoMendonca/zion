@@ -1,0 +1,82 @@
+name: Package Zion A.D. Linux alpha
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      GIT_LFS_SKIP_SMUDGE: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - name: Find verified native engine
+        id: engine
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          run_id="$(gh api 'repos/DalmoMendonca/zion/actions/artifacts?name=zion-native-linux-smoke&per_page=50' --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | first | .workflow_run.id')"
+          test -n "$run_id" && test "$run_id" != "null"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        with:
+          repository: DalmoMendonca/zion
+          run-id: ${{ steps.engine.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: zion-native-linux-smoke
+          path: .engine
+      - name: Restore executable and required native libraries
+        run: |
+          set -euo pipefail
+          engine="$(find .engine -type f -name pyrogenesis | head -1)"
+          test -n "$engine"
+          cp "$engine" binaries/system/pyrogenesis
+          chmod +x binaries/system/pyrogenesis
+          while IFS= read -r lib; do cp "$lib" binaries/system/; done < <(
+            find .engine -type f \( -name 'libmozjs*.so*' -o -name 'libCollada*.so*' -o -name 'libnv*.so*' \)
+          )
+          test -f binaries/system/libCollada.so
+          find binaries/system -maxdepth 1 -iname 'libnvtt*.so*' -print -quit | grep .
+      - name: Restore game art, terrain and UI
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          git lfs pull --include='binaries/data/mods/public/**,binaries/data/mods/mod/**' --exclude=''
+          test "$(stat -c %s binaries/data/mods/public/maps/scenarios/combat_demo.pmp)" -gt 1000
+          df -h .
+      - name: Create relocatable Linux archive
+        run: |
+          set -euo pipefail
+          mkdir -p dist/ZionAD/binaries
+          cp -a binaries/system dist/ZionAD/binaries/
+          cp -a binaries/data dist/ZionAD/binaries/
+          cat > dist/ZionAD/play-zion.sh <<'SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          cd "$root/binaries/system"
+          export LD_LIBRARY_PATH="$PWD:${LD_LIBRARY_PATH:-}"
+          exec ./pyrogenesis -mod=public -quickstart "$@"
+          SH
+          chmod +x dist/ZionAD/play-zion.sh
+          cat > dist/ZionAD/README.txt <<'TXT'
+          Zion A.D. — experimental Linux desktop alpha
+          Run ./play-zion.sh from this folder. Requires a Linux desktop
+          with compatible graphics drivers and the native 0 A.D. runtime
+          dependencies (SDL2, OpenGL, Boost, wxWidgets and related libraries).
+          This is a test package, not yet a verified M1 release.
+          In the game setup choose the Zion / First Covenant victory condition.
+          TXT
+          tar -C dist -czf ZionAD-linux-alpha.tar.gz ZionAD
+          ls -lh ZionAD-linux-alpha.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZionAD-linux-alpha
+          path: ZionAD-linux-alpha.tar.gz
+          retention-days: 14
+          if-no-files-found: error
