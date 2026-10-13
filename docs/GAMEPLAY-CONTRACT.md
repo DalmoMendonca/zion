@@ -56,15 +56,19 @@ validating XML, JavaScript syntax, or isolated mock component functions.
 - [x] Native executable compiled on Linux in GitHub Actions at least once.
 - [x] A 3D-map scenario begins and advances in the real headless engine.
 - [x] Native Zion victory condition initializes **without** JavaScript error.
-- [ ] In the real engine, Civic Centers expose three successive governance
-      choices, and completion updates the game's technology state.
+- [x] In the real engine, Civic Centers expose three successive governance
+      choices, and completion updates the game's technology state (automated
+      two-path scenario; ordinary manual timing and balancing still pending).
 - [ ] In the real engine, a simulated resource, military or policy change
       alters a reported societal dimension, with the intended resource/effect.
-- [ ] One complete end-to-end test starts with an ancient settlement, triggers
-      multiple institutional transitions and obtains a First Covenant ending
-      using the actual engine, not mock methods.
-- [ ] Two distinct governance strategies can complete that real-engine test,
-      and an impoverished/militarily dominant society cannot trivially win.
+- [x] An accelerated in-engine integration scenario starts with ancient
+      settlements, queues multiple real institutional researches and obtains a
+      First Covenant ending. Infrastructure and phase unlocks are **injected**
+      by the test, so this is not a full manual or human-paced match.
+- [ ] Two distinct governance strategies can **independently win** in the
+      actual engine, and an impoverished/militarily dominant society cannot
+      trivially win. (Current test verifies both strategies reach the final
+      stage, but only one victory ends its match.)
 - [ ] A graphical game session renders the new HUD, map, units and
       gameplay without errors or overlapping interfaces.
 - [ ] Player-accessible packaged build with instructions; no development tools
@@ -101,3 +105,9 @@ playtesting.
 
 **License and attribution:** retain all original 0 A.D. source and asset
 licenses and credits. New engineering remains in the native fork.
+
+## Native gameplay test evidence (October 2026)
+
+- [Rapid Pyrogenesis gameplay smoke run](https://github.com/DalmoMendonca/zion/actions/runs/38337757889): genuine engine launch, native civic research options, first social tick, no JavaScript errors.
+- [Two-path in-engine research and victory run](https://github.com/DalmoMendonca/zion/actions/runs/38338172357): the two alternative initial policies each altered live house capacity as expected; each reached Town and City civic choices; both advanced to the last early-game institutional stage; player 1 won a real First Covenant condition.
+- The test artificially supplies buildings/resources and sets base game phase technologies; it cannot substitute for normal resource gathering, adversarial balancing, a rendered HUD, or a user playtest.
