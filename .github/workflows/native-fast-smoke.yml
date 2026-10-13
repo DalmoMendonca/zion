@@ -89,9 +89,32 @@ jobs:
           grep -F "ZION_SOCIAL_TICK_OK" engine-smoke.log || exit 1
           if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed' engine-smoke.log; then exit 1; fi
           test "$code" -eq 0 -o "$code" -eq 124
+      - name: Exercise two governance progressions in actual simulation
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd binaries/system
+          set +e
+          timeout --signal=TERM 14s ./pyrogenesis \
+            -autostart="scenarios/arcadia" -autostart-victory=zion_e2e \
+            -autostart-nonvisual -autostart-disable-replay \
+            -nosound -quickstart >zion-e2e.log 2>&1
+          code=$?
+          set -e
+          grep -F "ZION_E2E_FIRST_RESEARCH_OK" zion-e2e.log
+          grep -F "ZION_E2E_TOWN_OK" zion-e2e.log
+          grep -F "ZION_E2E_BOTH_PATHS_OK" zion-e2e.log
+          grep -F "ZION_FIRST_COVENANT_WON" zion-e2e.log
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_E2E_FAILED' zion-e2e.log; then
+            tail -100 zion-e2e.log
+            exit 1
+          fi
+          test "$code" -eq 0 -o "$code" -eq 124
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: zion-rapid-smoke-log
           if-no-files-found: warn
-          path: binaries/system/engine-smoke.log
+          path: |
+            binaries/system/engine-smoke.log
+            binaries/system/zion-e2e.log

@@ -279,6 +279,7 @@ if (typeof module !== "undefined" && module.exports)
             if (memory.stableChecks < CHECKS_TO_WIN)
                 continue;
             this.zionResolved = true;
+            warn("ZION_FIRST_COVENANT_WON: player " + playerID + " fulfilled victory conditions");
             notify([playerID], "FIRST COVENANT FULFILLED | Your society sustained balanced flourishing through multiple evaluations.");
             TriggerHelper.SetPlayerWon(
                 playerID,

@@ -182,3 +182,17 @@ test("One-time aid is not rewarded on every evaluation forever", () => {
   assert.ok(once.trust > 0);
   assert.ok(twice.trust - once.trust < once.trust - before.trust);
 });
+
+test("Developer integration mode exercises the actual Pyrogenesis Researcher queue",()=>{
+  const mode=JSON.parse(fs.readFileSync(path.join(mod,
+    "simulation/data/settings/victory_conditions/zion_e2e.json"),"utf8"));
+  assert.ok(mode.Data.Scripts.includes("scripts/ZionEngineTest.js"));
+  const code=fs.readFileSync(path.join(mod,"maps/scripts/ZionEngineTest.js"),"utf8");
+  assert.ok(code.includes("QueueTechnology("));
+  assert.ok(code.includes("IsTechnologyResearched("));
+  assert.ok(code.includes("GetPopBonus()"));
+  assert.ok(code.includes("ZION_E2E_BOTH_PATHS_OK"));
+  assert.ok(!fs.readFileSync(path.join(mod,
+    "simulation/data/settings/victory_conditions/zion.json"),"utf8")
+    .includes("ZionEngineTest.js"), "Development-only probe leaked to real game");
+});

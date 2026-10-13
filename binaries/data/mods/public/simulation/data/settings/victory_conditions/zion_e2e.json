@@ -1,0 +1,26 @@
+{
+	"TranslatedKeys": [
+		"Title",
+		"Description"
+	],
+	"Data": {
+		"Title": "Developer test: Zion native progression",
+		"Description": "Automated engine test only. Two players receive accelerated infrastructure and research different political paths. Not a balanced playable mode.",
+		"Scripts": [
+			"scripts/TriggerHelper.js",
+			"scripts/ZionVictory.js",
+			"scripts/ZionEngineTest.js"
+		],
+		"GUIOrder": 999,
+		"DisabledWhenChecked": [
+			"conquest",
+			"conquest_units",
+			"conquest_structures",
+			"conquest_civic_centers",
+			"regicide",
+			"wonder",
+			"capture_the_relic",
+			"zion"
+		]
+	}
+}
