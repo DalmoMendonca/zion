@@ -1,0 +1,113 @@
+name: Zion A.D. graphical engine smoke
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/native-graphical-smoke.yml"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  graphical:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GIT_LFS_SKIP_SMUDGE: "1"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      GALLIUM_DRIVER: "llvmpipe"
+      SDL_VIDEODRIVER: "x11"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 1
+      - name: Select compiled Linux engine
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run_id="$(gh api 'repos/DalmoMendonca/zion/actions/artifacts?name=zion-native-linux-smoke&per_page=50' --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | first | .workflow_run.id')"
+          test -n "$run_id"
+          test "$run_id" != "null"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        with:
+          repository: DalmoMendonca/zion
+          run-id: ${{ steps.source.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: zion-native-linux-smoke
+          path: .engine
+      - name: Install graphics and game runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            xvfb xauth scrot mesa-utils libgl1-mesa-dri git-lfs \
+            libboost-dev libboost-system-dev libboost-filesystem-dev \
+            libcurl4-gnutls-dev libenet-dev libfmt-dev libfreetype-dev \
+            libgloox-dev libicu-dev libminiupnpc-dev libogg-dev \
+            libopenal-dev libpng-dev libsdl2-dev libsodium-dev \
+            libvorbis-dev libwxgtk3.2-dev libxml2-dev libxcursor-dev \
+            libgl1-mesa-dev libglu1-mesa-dev libvulkan-dev
+      - name: Restore executable and Mozilla runtime
+        run: |
+          set -euxo pipefail
+          engine="$(find .engine -type f -name pyrogenesis | head -1)"
+          test -n "$engine"
+          cp "$engine" binaries/system/pyrogenesis
+          chmod +x binaries/system/pyrogenesis
+          while IFS= read -r lib; do
+            cp "$lib" binaries/system/
+          done < <(find .engine -type f -name 'libmozjs*.so*')
+          echo "LD_LIBRARY_PATH=$(pwd)/binaries/system:${LD_LIBRARY_PATH:-}" >> "$GITHUB_ENV"
+          mkdir -p "$HOME/.local/share/0ad/mods"
+          ldd binaries/system/pyrogenesis
+          ! ldd binaries/system/pyrogenesis | grep 'not found'
+      - name: Download actual 0 A.D. art and maps
+        run: |
+          git lfs install --local
+          git lfs pull --include="binaries/data/mods/public/**,binaries/data/mods/mod/**" --exclude=""
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("binaries/data/mods/public/maps/scenarios/arcadia.pmp")
+          assert p.stat().st_size>100000
+          print("Arcadia terrain asset restored:",p.stat().st_size)
+          PY
+      - name: Render first real 3D Zion A.D. frame
+        shell: bash
+        run: |
+          mkdir -p screenshots
+          xvfb-run -a -s '-screen 0 1280x720x24' bash -c '
+            export LIBGL_ALWAYS_SOFTWARE=1
+            export GALLIUM_DRIVER=llvmpipe
+            export SDL_VIDEODRIVER=x11
+            cd binaries/system
+            set +e
+            timeout --signal=TERM 35s ./pyrogenesis \
+              -autostart="scenarios/arcadia" \
+              -autostart-victory=zion \
+              -autostart-disable-replay \
+              -nosound -quickstart -windowed -xres=1280 -yres=720 \
+              >graphical.log 2>&1 &
+            pid=$!
+            sleep 16
+            scrot -o ../../screenshots/zion-graphical.png
+            wait $pid
+            code=$?
+            echo "GRAPHICAL_ENGINE_EXIT=$code"
+            test $code -eq 0 -o $code -eq 124
+          '
+          test -s screenshots/zion-graphical.png
+          tail -75 binaries/system/graphical.log
+          grep -F "ZION_NATIVE_READY" binaries/system/graphical.log
+          grep -F "GAME STARTED, ALL INIT COMPLETE" binaries/system/graphical.log
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed' binaries/system/graphical.log; then
+            exit 1
+          fi
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zion-graphical-diagnostics
+          if-no-files-found: warn
+          path: |
+            screenshots/zion-graphical.png
+            binaries/system/graphical.log
