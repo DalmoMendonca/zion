@@ -25,7 +25,7 @@ Roadmap scope is authoritative; GitHub issues are executable work packets with a
 ## October 13, 2026 — Petra opponent verification in progress
 
 - Added [developer-only AI observer](binaries/data/mods/public/maps/scripts/ZionAIObservation.js) and a real Pyrogenesis scenario launched with `-autostart-ai=2:petra`. After 180 seconds of simulated time, it requires a real opponent to have gathered resources and either trained citizens or constructed buildings; `tests/run-zion-native-mode.sh` and rapid native CI now execute the check.
-- **Unverified until [latest rapid native CI](https://github.com/DalmoMendonca/zion/actions/workflows/native-fast-smoke.yml) passes.** This probe is not a full normal-length opponent match and does not prove Petra's autonomous civic research yet.
+- **Verified:** [real-engine native CI 38504049660](https://github.com/DalmoMendonca/zion/actions/runs/38504049660) PASSED: in 180 seconds of simulation, the independent Petra opponent gathered 1,315 resources, trained 14 units and built two structures. This is not a complete human-paced match and does not yet prove autonomous civic research.
 
 ## October 13, 2026 — additional native M1 evidence
 
