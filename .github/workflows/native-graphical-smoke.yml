@@ -131,11 +131,20 @@ jobs:
               names=game.namelist()
               assert any(x.endswith("maps/scenarios/sandbox_athenians.pmp") for x in names), "Sandbox terrain missing from official game data"
               for entry in game.infolist():
-                  if entry.filename.startswith(allow):
+                  # Release-28 scenario XML can name civilizations removed
+                  # from the current fork (e.g. pers instead of achae).
+                  # Restore binary terrain and artwork, but never overwrite
+                  # the fork's native scenario settings or game scripts.
+                  old_scenario_xml = entry.filename.startswith(
+                      ("maps/scenarios/", "maps/skirmishes/")) and entry.filename.endswith(".xml")
+                  if entry.filename.startswith(allow) and not old_scenario_xml:
                       game.extract(entry,target)
                       count+=1
           assert count>100, "Official release art missing unexpectedly"
-          print("Extracted authentic visual assets without replacing Zion scripts:",count)
+          scenario = target / "maps/scenarios/sandbox_athenians.xml"
+          assert '"Civ": "achae"' in scenario.read_text(), (
+              "Graphical scenario settings were replaced by incompatible old-release civ identifiers")
+          print("Extracted authentic art while preserving current-fork map civilization settings:",count)
           p.unlink()
           # The official base mod owns fonts required before the graphical game
           # can initialize. Extract licensed fonts without replacing Zion scripts.
