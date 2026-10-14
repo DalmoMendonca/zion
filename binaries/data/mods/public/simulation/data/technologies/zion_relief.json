@@ -1,0 +1,38 @@
+{
+	"genericName": "Civic Relief and Reconstruction",
+	"description": "Invest common resources in postwar relief and rebuilding. Available to different civic constitutions.",
+	"cost": {
+		"food": 200,
+		"wood": 180,
+		"stone": 100
+	},
+	"requirements": {
+		"all": [
+			{
+				"tech": "phase_town"
+			},
+			{
+				"any": [
+					{
+						"tech": "zion_covenant"
+					},
+					{
+						"tech": "zion_magistracy"
+					}
+				]
+			}
+		]
+	},
+	"requirementsTooltip": "Requires Town Phase and a founding civic constitution.",
+	"icon": "asclepius_rod.png",
+	"researchTime": 35,
+	"tooltip": "One-time paid reconstruction reduces existing war strain by up to 12, strengthens civic trust by 3, and improves idle healing.",
+	"modifications": [
+		{
+			"value": "Health/IdleRegenRate",
+			"add": 0.15,
+			"affects": "Organic"
+		}
+	],
+	"soundComplete": "interface/alarm/alarm_upgradearmory.xml"
+}
