@@ -1,0 +1,29 @@
+{
+  "TranslatedKeys": [
+    "Title",
+    "Description"
+  ],
+  "Data": {
+    "Title": "Developer test: civic warfare and famine",
+    "Description": "Automated headless integration test; not a regular player victory mode.",
+    "Scripts": [
+      "scripts/TriggerHelper.js",
+      "scripts/ZionVictory.js",
+      "scripts/ZionEngineTest.js",
+      "scripts/ZionAdversarialTest.js"
+    ],
+    "GUIOrder": 1002,
+    "DisabledWhenChecked": [
+      "conquest",
+      "conquest_units",
+      "conquest_structures",
+      "conquest_civic_centers",
+      "regicide",
+      "wonder",
+      "capture_the_relic",
+      "zion",
+      "zion_e2e",
+      "zion_e2e_alternate"
+    ]
+  }
+}
