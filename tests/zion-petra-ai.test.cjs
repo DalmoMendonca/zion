@@ -27,7 +27,9 @@ function scenario(cooperative, zion = true)
         isResearched: name => researched.has(name),
         isResearching: () => false,
         findAvailableTech: () => available.map(name => [name, { _template: {} }]),
-        currentPhase: () => 1
+        currentPhase: () => 1,
+        ai: { queueManager: { getAvailableResources: () => ({ food: 1000, wood: 1000, stone: 1000, metal: 1000 }) } },
+        getOwnEntitiesByRole: () => []
     };
     const queue = { hasQueuedUnits: () => false, addPlan: plan => plans.push(plan.name) };
     const queues = { minorTech: queue, majorTech: queue };
