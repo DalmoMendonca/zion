@@ -1,0 +1,20 @@
+{
+  "TranslatedKeys": [
+    "Title",
+    "Description"
+  ],
+  "Data": {
+    "Title": "Developer test: Zion worker food collection",
+    "Description": "Native gathering and Civic Centre delivery regression; not a playable mode.",
+    "Scripts": [
+      "scripts/TriggerHelper.js",
+      "scripts/ZionVictory.js",
+      "scripts/ZionGatherTest.js"
+    ],
+    "GUIOrder": 999,
+    "DisabledWhenChecked": [
+      "conquest",
+      "zion"
+    ]
+  }
+}
