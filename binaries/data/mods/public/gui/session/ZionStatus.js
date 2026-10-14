@@ -77,6 +77,7 @@ class ZionStatus
         this.detailsFooter.caption =
             "Trust  " + state.trust + "  |  War strain  " + state.warStrain +
             "\nCIVICS  " + (state.civicPath || "Not yet chosen") +
+            "\nTRADE  " + (state.recentTrade || 0) + " recent exchange activity" +
             "\nNEXT  " + (state.nextStep || "Maintain balanced flourishing") +
             "\nSustained  " + state.sustained + " of " + state.needed +
             " qualifying evaluations";
