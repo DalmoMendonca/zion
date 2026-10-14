@@ -67,8 +67,8 @@ var ZionModel = (function()
         const first = has("zion_covenant") || has("zion_magistracy");
         const second = has("zion_commons") || has("zion_guilds");
         const final = has("zion_concord") || has("zion_stewardship");
-        const age = final && has("phase_city") ? 3 :
-            second && has("phase_town") ? 2 : first ? 1 : 0;
+        const age = final && second && first && has("phase_city") && has("phase_town") ? 3 :
+            second && first && has("phase_town") ? 2 : first ? 1 : 0;
         const names = ["Founding settlement", "Community covenant",
             "Institutional township", "Renewing civilization"];
         const quadrants = [
