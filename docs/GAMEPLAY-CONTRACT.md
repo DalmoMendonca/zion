@@ -59,16 +59,20 @@ validating XML, JavaScript syntax, or isolated mock component functions.
 - [x] In the real engine, Civic Centers expose three successive governance
       choices, and completion updates the game's technology state (automated
       two-path scenario; ordinary manual timing and balancing still pending).
-- [ ] In the real engine, a simulated resource, military or policy change
-      alters a reported societal dimension, with the intended resource/effect.
+- [x] In the real engine, destruction of food fields and live native casualties
+      alter provision, communion and trauma in the next sampled society report.
+      The separate engine test also verifies native technology effects on house
+      population. [Verified CI](https://github.com/DalmoMendonca/zion/actions/runs/38503106735).
 - [x] An accelerated in-engine integration scenario starts with ancient
       settlements, queues multiple real institutional researches and obtains a
       First Covenant ending. Infrastructure and phase unlocks are **injected**
       by the test, so this is not a full manual or human-paced match.
-- [ ] Two distinct governance strategies can **independently win** in the
-      actual engine, and an impoverished/militarily dominant society cannot
-      trivially win. (Current test verifies both strategies reach the final
-      stage, but only one victory ends its match.)
+- [x] Two distinct governance strategies **independently win** in the
+      actual engine in separate developer scenarios. In a third native scenario,
+      combat losses plus food destruction prevent victory for both pathways
+      through two further evaluations. [Verified native CI](https://github.com/DalmoMendonca/zion/actions/runs/38503106735).
+      A standalone military-only adversarial scenario, postwar recovery victory,
+      and ordinary unassisted gameplay still remain open.
 - [ ] A graphical game session renders the new HUD, map, units and
       gameplay without errors or overlapping interfaces.
 - [ ] Player-accessible packaged build with instructions; no development tools
