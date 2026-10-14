@@ -149,7 +149,7 @@ if (typeof module !== "undefined" && module.exports)
     const CHECKS_TO_WIN = 3;
     const POLICY_IDS = Object.keys(ZionModel.GOVERNMENTS);
     const PHASES = ["phase_town", "phase_city"];
-    const allTechs = POLICY_IDS.concat(PHASES);
+    const allTechs = POLICY_IDS.concat(PHASES, ["zion_relief"]);
 
     function total(value)
     {
@@ -239,7 +239,29 @@ if (typeof module !== "undefined" && module.exports)
 
     Trigger.prototype.ZionResearchFinished = function(data)
     {
-        if (this.zionResolved || !data || POLICY_IDS.indexOf(data.tech) === -1)
+        if (this.zionResolved || !data)
+            return;
+        if (data.tech === "zion_relief")
+        {
+            // Research has already charged food, wood, stone and research
+            // time via the real ProductionQueue. Its social effect is a
+            // single, player-chosen event, not a recurring free welfare gain.
+            if (!this.zionSocieties || data.player === undefined)
+                return;
+            const memory = this.zionSocieties[data.player] ||
+                ZionModel.freshMemory();
+            if (memory.reliefApplied)
+                return;
+            memory.reliefApplied = true;
+            const recovered = Math.min(12, memory.trauma);
+            memory.trauma = Math.max(0, memory.trauma - recovered);
+            memory.trust = Math.min(30, memory.trust + 3);
+            this.zionSocieties[data.player] = memory;
+            notify([data.player], "CIVIC RELIEF | Reconstruction funded. War strain -" +
+                Math.round(recovered) + "; trust strengthened. Lasting healing still requires peace and provision.");
+            return;
+        }
+        if (POLICY_IDS.indexOf(data.tech) === -1)
             return;
         notify([data.player], "CIVIC REFORM | " + ZionModel.GOVERNMENTS[data.tech] +
             " enacted. Its benefits and costs now affect buildings and units.");
@@ -334,6 +356,12 @@ if (typeof module !== "undefined" && module.exports)
                 "eligible": result.eligible,
                 "nextStep": nextStep,
                 "civicPath": civicPath,
+                "recoveryAction": memory.trauma >= 12 && !has("zion_relief") &&
+                    has("phase_town") ?
+                    "Research Civic Relief at Civic Center" :
+                    memory.trauma >= 12 ?
+                    "Rebuild food security and avoid further casualties" : "",
+                "reliefApplied": !!memory.reliefApplied,
                 "floor": result.floor,
                 "weakest": weakest,
                 "ageName": result.ageName,
