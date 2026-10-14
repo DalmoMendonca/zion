@@ -7,7 +7,6 @@ on:
       - "source/**"
       - "build/**"
       - "libraries/**"
-      - "docs/M1-VERIFICATION.md"
 permissions:
   contents: read
 jobs:
