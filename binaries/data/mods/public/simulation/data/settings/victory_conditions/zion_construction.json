@@ -1,0 +1,20 @@
+{
+  "TranslatedKeys": [
+    "Title",
+    "Description"
+  ],
+  "Data": {
+    "Title": "Developer test: Zion construction",
+    "Description": "Native native construction integration regression; not a playable mode.",
+    "Scripts": [
+      "scripts/TriggerHelper.js",
+      "scripts/ZionVictory.js",
+      "scripts/ZionConstructionTest.js"
+    ],
+    "GUIOrder": 999,
+    "DisabledWhenChecked": [
+      "conquest",
+      "zion"
+    ]
+  }
+}
