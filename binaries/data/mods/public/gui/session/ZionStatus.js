@@ -30,7 +30,8 @@ class ZionStatus
 
         this.label.caption = "ZION  " + state.score + "/100  |  " +
             state.ageName + "\n" + "BALANCE  " + state.floor + "/100" +
-            "     " + state.sustained + "/" + state.needed +
+            "  |  " + state.sustained + "/" + state.needed +
+            "  |  LOWEST  " + (state.weakest || "unknown") +
             (state.nextStep ? "\nNEXT  " + state.nextStep : "");
 
         const names = {

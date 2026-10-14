@@ -247,21 +247,34 @@ if (typeof module !== "undefined" && module.exports)
             let result = ZionModel.measure(observation, memory);
             memory.stableChecks = result.eligible ? memory.stableChecks + 1 : 0;
             this.zionSocieties[playerID] = memory;
+            // Expose a concrete path from the current bottleneck to progress.
+            const weakest = ZionModel.DIMENSIONS.reduce((low, key) =>
+                result.dimensions[key] < result.dimensions[low] ? key : low);
+            const remedies = {
+                "provision": "Gather food and build productive fields",
+                "prosperity": "Trade, build markets and produce metal",
+                "dignity": "Build housing, temples and train healers",
+                "freedom": "Build housing and markets; limit forts",
+                "wisdom": "Support temples, healers and civic centers",
+                "communion": "Rebuild trust and support community life",
+                "ecology": "Protect forests and maintain fields",
+                "resilience": "Secure food, defenses and civic centers"
+            };
             const nextStep = result.age < 3 ?
                 "Research the next civic institution" :
                 observation.farms < 3 ? "Build more food fields" :
                 observation.food < 100 ? "Gather at least 100 food" :
-                result.floor < 42 ? "Improve your weakest societal dimension" :
-                result.mean < 59 ? "Improve overall societal flourishing" :
+                result.floor < 42 || result.mean < 59 ||
                 result.quadrants.some(value => value < 51) ?
-                    "Balance neglected institutions" :
-                    "Maintain flourishing until the covenant is complete";
+                    remedies[weakest] :
+                    "Maintain flourishing until covenant completion";
             this.zionLatestReports[playerID] = {
                 "score": result.score,
                 "mean": result.mean,
                 "eligible": result.eligible,
                 "nextStep": nextStep,
                 "floor": result.floor,
+                "weakest": weakest,
                 "ageName": result.ageName,
                 "dimensions": result.dimensions,
                 "quadrants": result.quadrants,
