@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <!-- Visible only when the Zion match mode provides a native society report. -->
-  <object name="zionStatusPanel" type="image" sprite="sessionOverlayBackground"
-      size="100%-450 44 100%-70 124" hidden="true" z="46">
-    <object name="zionStatusText" type="text" ghost="true"
-        style="ModernLabelText" font="sans-12" textcolor="white"
-        size="12 8 100%-10 100%-8"/>
-  </object>
+<!-- Native society ledger: click the compact HUD to inspect all dimensions. -->
+<object name="zionStatusPanel" type="button" sprite="sessionOverlayBackground"
+    size="100%-450 44 100%-70 124" hidden="true" z="46">
+  <object name="zionStatusText" type="text" ghost="true"
+      style="ModernLabelText" font="sans-12" textcolor="white"
+      size="12 8 100%-10 100%-8"/>
+</object>
+<object name="zionDetailsPanel" type="image" sprite="sessionOverlayBackground"
+    size="100%-450 132 100%-70 360" hidden="true" z="47">
+  <object name="zionDetailsTitle" type="text" ghost="true"
+      style="ModernLabelText" font="sans-14" textcolor="white"
+      size="12 8 100%-10 32"/>
+  <object name="zionDetailsLeft" type="text" ghost="true"
+      style="ModernLabelText" font="sans-12" textcolor="white"
+      size="12 38 50%-4 146"/>
+  <object name="zionDetailsRight" type="text" ghost="true"
+      style="ModernLabelText" font="sans-12" textcolor="white"
+      size="50%+4 38 100%-10 146"/>
+  <object name="zionDetailsFooter" type="text" ghost="true"
+      style="ModernLabelText" font="sans-12" textcolor="white"
+      size="12 154 100%-10 100%-10"/>
+</object>
