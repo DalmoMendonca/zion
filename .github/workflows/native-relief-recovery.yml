@@ -56,7 +56,10 @@ jobs:
           mkdir -p "$HOME/.local/share/0ad/mods"
           cd binaries/system
           set +e
-          timeout --signal=TERM 55s ./pyrogenesis \
+          # Serialized rejoin runs two synchronized simulations and is slower:
+          # 55 seconds previously reached turn 882, just before the scheduled
+          # food reconstruction. Allow time for three further welfare checks.
+          timeout --signal=TERM 145s ./pyrogenesis \
             -autostart="scenarios/arcadia" \
             -autostart-victory=zion_relief_native \
             -autostart-nonvisual -autostart-disable-replay \
