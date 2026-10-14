@@ -166,7 +166,10 @@ export class ResearchManager
 	 */
 	researchZionInstitutions(gameState, queues, availableTechs)
 	{
-		if (!gameState.getVictoryConditions().has("zion"))
+		// The observer mode uses the same Zion civic rules without spawning
+		// structures or granting any technologies. Ordinary modes are unchanged.
+		if (!gameState.getVictoryConditions().has("zion") &&
+			!gameState.getVictoryConditions().has("zion_ai_observation"))
 			return false;
 
 		if (this.zionPath === undefined)
