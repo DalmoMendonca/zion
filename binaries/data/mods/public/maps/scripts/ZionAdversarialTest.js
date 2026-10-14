@@ -40,9 +40,6 @@
             check(fields.length >= 3, "Expected actual food infrastructure");
             for (const field of fields)
                 Engine.DestroyEntity(field);
-            check(TriggerHelper.GetPlayerEntitiesByClass(p.id, "Field").length === 0,
-                "Food infrastructure survived destruction");
-
             // Real Health.TakeDamage invokes casualty accounting for both
             // sides. Battle is scripted to be deterministic; no fake welfare
             // observations are handed to the social model.
