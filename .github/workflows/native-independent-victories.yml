@@ -6,6 +6,7 @@ on:
       - ".github/workflows/native-independent-victories.yml"
       - "binaries/data/mods/public/maps/scripts/Zion*"
       - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion_e2e*.json"
+      - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion_adversarial.json"
 permissions:
   contents: read
   actions: read
@@ -68,6 +69,25 @@ jobs:
           grep -F 'ZION_E2E_ALT_CONTROL_OK' zion_e2e_alternate.log
           grep -F 'ZION_FIRST_COVENANT_WON: player 2 ' zion_e2e_alternate.log
           echo 'ZION_TWO_INDEPENDENT_NATIVE_VICTORIES_OK'
+      - name: Reject famine and warfare victories inside the native engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd binaries/system
+          set +e
+          timeout --signal=TERM 35s ./pyrogenesis -autostart="scenarios/arcadia" -autostart-victory=zion_adversarial -autostart-nonvisual -autostart-disable-replay -nosound -quickstart >zion_adversarial.log 2>&1
+          code=$?
+          set -e
+          grep -F 'GAME STARTED, ALL INIT COMPLETE' zion_adversarial.log
+          grep -F 'ZION_E2E_BOTH_PATHS_OK' zion_adversarial.log
+          grep -F 'ZION_ADVERSARIAL_NATIVE_BATTLE_OK' zion_adversarial.log
+          grep -F 'ZION_ADVERSARIAL_FAMINE_STARTED' zion_adversarial.log
+          grep -F 'ZION_ADVERSARIAL_NEGATIVE_OK' zion_adversarial.log
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_ADVERSARIAL_FAILED|ZION_FIRST_COVENANT_WON' zion_adversarial.log; then
+            tail -100 zion_adversarial.log
+            exit 1
+          fi
+          test "$code" -eq 0 -o "$code" -eq 124
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -75,3 +95,4 @@ jobs:
           path: |
             binaries/system/zion_e2e.log
             binaries/system/zion_e2e_alternate.log
+            binaries/system/zion_adversarial.log
