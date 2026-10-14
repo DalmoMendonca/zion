@@ -43,9 +43,10 @@ var ZionModel = (function()
         s.wisdom = 30 + amount(o.temples) * 14 + amount(o.healers) * 8 +
             amount(o.civics) * 5 + (has("zion_concord") ? 7 : 0) +
             (has("zion_stewardship") ? 5 : 0);
+        // Lifetime diplomatic and military totals are observations, not permanent
+        // welfare modifiers. Their effects enter through the recoverable trust
+        // and trauma memories below; they must not be rewarded every tick.
         s.communion = 31 + Math.min(17, amount(o.houses) * 1.7) + amount(o.temples) * 9 +
-            Math.min(18, amount(o.tributes) / 70) -
-            Math.min(25, amount(o.kills) * 0.4) +
             (has("zion_covenant") ? 8 : 0) + (has("zion_commons") ? 5 : 0) -
             (has("zion_guilds") ? 2 : 0);
         s.ecology = 79 - Math.min(38, amount(o.woodGathered) / 125) +
