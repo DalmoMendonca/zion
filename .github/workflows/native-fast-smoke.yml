@@ -183,12 +183,18 @@ jobs:
         continue-on-error: true
         shell: bash
         run: bash tests/run-zion-native-mode.sh combat ZION_COMBAT_ORDER_OK ZION_COMBAT_DAMAGE_VERIFIED 75
+      - name: Verify Petra AI opponent actually gathers and expands
+        id: native_ai
+        continue-on-error: true
+        shell: bash
+        run: bash tests/run-zion-native-mode.sh ai_observation ZION_AI_PROBE_STARTED ZION_AI_OPPONENT_ACTIVE 105
       - name: Enforce all independent native integration results
         if: always()
         run: |
           test '${{ steps.native_gather.outcome }}' = 'success'
           test '${{ steps.native_construction.outcome }}' = 'success'
           test '${{ steps.native_combat.outcome }}' = 'success'
+          test '${{ steps.native_ai.outcome }}' = 'success'
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -202,3 +208,4 @@ jobs:
             binaries/system/zion-gather.log
             binaries/system/zion-construction.log
             binaries/system/zion-combat.log
+            binaries/system/zion-ai_observation.log
