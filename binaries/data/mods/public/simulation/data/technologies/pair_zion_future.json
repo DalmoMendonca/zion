@@ -12,10 +12,10 @@
 			{
 				"any": [
 					{
-						"tech": "zion_covenant"
+						"tech": "zion_commons"
 					},
 					{
-						"tech": "zion_magistracy"
+						"tech": "zion_guilds"
 					}
 				]
 			}
