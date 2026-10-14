@@ -1,0 +1,29 @@
+{
+  "TranslatedKeys": [
+    "Title",
+    "Description"
+  ],
+  "Data": {
+    "Title": "Developer test: Petra adversary",
+    "Description": "Automated native test verifies a Petra opponent gathers resources and grows its settlement.",
+    "Scripts": [
+      "scripts/TriggerHelper.js",
+      "scripts/ZionVictory.js",
+      "scripts/ZionAIObservation.js"
+    ],
+    "GUIOrder": 1004,
+    "DisabledWhenChecked": [
+      "conquest",
+      "conquest_units",
+      "conquest_structures",
+      "conquest_civic_centers",
+      "regicide",
+      "wonder",
+      "capture_the_relic",
+      "zion",
+      "zion_e2e",
+      "zion_e2e_alternate",
+      "zion_adversarial"
+    ]
+  }
+}
