@@ -104,13 +104,17 @@ jobs:
                           removed+=1
           print("Removed stale LFS placeholder assets:",removed)
           PY
-          git lfs install --local
-          git lfs pull --include="binaries/data/mods/public/maps/scenarios/sandbox_athenians.pmp" --exclude=""
+          # The terrain is already in the authentic, checksum-verified
+          # public.zip; do not query the broken Git LFS endpoint again.
           python3 - <<'PY'
           from pathlib import Path
-          p=Path("binaries/data/mods/public/maps/scenarios/sandbox_athenians.pmp")
-          assert p.stat().st_size>1000, f"Terrain asset still LFS pointer or empty: {p.stat().st_size} bytes"
-          print("Original map and signed upstream release art restored:",p.stat().st_size)
+          from zipfile import ZipFile
+          p=Path("binaries/data/mods/public/public.zip")
+          assert p.stat().st_size>100000000, "Official public.zip missing or still placeholder"
+          with ZipFile(p) as game:
+              names=game.namelist()
+              assert any(x.endswith("maps/scenarios/sandbox_athenians.pmp") for x in names), "Sandbox terrain missing from official game data"
+          print("Original scenario and verified game art archive available:",p.stat().st_size)
           PY
       - name: Render actual 3D gameplay after the loading screen closes
         shell: bash
