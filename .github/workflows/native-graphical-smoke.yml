@@ -121,7 +121,21 @@ jobs:
             echo "Graphical RTS failed to load before timeout"
             exit 1
           fi
-          sleep 14
+          hud_ready=0
+          for attempt in $(seq 1 150); do
+            if grep -Fq "ZION_HUD_REPORT_VISIBLE" graphical.log; then
+              hud_ready=1
+              break
+            fi
+            if ! kill -0 "$pid" 2>/dev/null; then break; fi
+            sleep 1
+          done
+          if [ "$hud_ready" -ne 1 ]; then
+            echo "Society HUD never received a live report before capture"
+            tail -80 graphical.log
+            exit 1
+          fi
+          sleep 2
           scrot -o ../../screenshots/zion-graphical.png
           set +e
           wait "$pid"
@@ -152,6 +166,10 @@ jobs:
           black_share=sum(1 for r,g,b in world.getdata() if max(r,g,b)<18)/(world.width*world.height)
           print("Near-black gameplay viewport share:",round(black_share,3))
           assert black_share<0.75, "Most of the world is unrendered/black"
+          hud=image.crop((830,44,1210,124))
+          white_text=sum(1 for r,g,b in hud.getdata() if min(r,g,b)>180)
+          print("Society HUD bright text pixels:",white_text)
+          assert white_text>=30, "Society HUD is not visible in captured frame"
           PY
           tail -75 binaries/system/graphical.log
           file screenshots/zion-graphical.png
