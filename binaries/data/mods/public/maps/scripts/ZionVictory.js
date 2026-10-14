@@ -260,19 +260,59 @@ if (typeof module !== "undefined" && module.exports)
                 "ecology": "Protect forests and maintain fields",
                 "resilience": "Secure food, defenses and civic centers"
             };
-            const nextStep = result.age < 3 ?
-                "Research the next civic institution" :
-                observation.farms < 3 ? "Build more food fields" :
-                observation.food < 100 ? "Gather at least 100 food" :
-                result.floor < 42 || result.mean < 59 ||
-                result.quadrants.some(value => value < 51) ?
-                    remedies[weakest] :
-                    "Maintain flourishing until covenant completion";
+            // Native research prerequisites, not a prescribed ideology.
+            const has = id => observation.techs[id];
+            const first = has("zion_covenant") || has("zion_magistracy");
+            const second = has("zion_commons") || has("zion_guilds");
+            const third = has("zion_concord") || has("zion_stewardship");
+            const civicPath = [
+                has("zion_covenant") ? "Council" :
+                    has("zion_magistracy") ? "Magistracy" : "Undecided",
+                has("zion_commons") ? "Assembly" :
+                    has("zion_guilds") ? "Guilds" : "Undecided",
+                has("zion_concord") ? "Concord" :
+                    has("zion_stewardship") ? "Stewardship" : "Undecided"
+            ].join(" > ");
+            let nextStep;
+            if (!first)
+                nextStep = "Choose Council or Magistracy at Civic Center";
+            else if (!has("phase_town"))
+                nextStep = "Advance to Town Phase at Civic Center";
+            else if (!second && observation.houses < 5 && observation.markets < 1)
+                nextStep = "Build 5 houses (" + observation.houses +
+                    "/5) or 1 market for next civic choice";
+            else if (!second)
+                nextStep = observation.houses >= 5 && observation.markets >= 1 ?
+                    "Choose Assembly or Guilds at Civic Center" :
+                    observation.houses >= 5 ?
+                        "Choose Common Assembly at Civic Center" :
+                        "Choose Guild Republic at Civic Center";
+            else if (!has("phase_city"))
+                nextStep = "Advance to City Phase at Civic Center";
+            else if (!third && observation.temples < 1 && observation.farms < 3)
+                nextStep = "Build 1 temple or 3 fields (" + observation.farms +
+                    "/3) for final civic choice";
+            else if (!third)
+                nextStep = observation.temples >= 1 && observation.farms >= 3 ?
+                    "Choose Concord or Stewardship at Civic Center" :
+                    observation.temples >= 1 ?
+                        "Choose Concord at Civic Center" :
+                        "Choose Stewardship at Civic Center";
+            else if (observation.farms < 3)
+                nextStep = "Build food fields (" + observation.farms + "/3)";
+            else if (observation.food < 100)
+                nextStep = "Gather at least 100 food";
+            else if (result.floor < 42 || result.mean < 59 ||
+                result.quadrants.some(value => value < 51))
+                nextStep = remedies[weakest];
+            else
+                nextStep = "Maintain flourishing until covenant completion";
             this.zionLatestReports[playerID] = {
                 "score": result.score,
                 "mean": result.mean,
                 "eligible": result.eligible,
                 "nextStep": nextStep,
+                "civicPath": civicPath,
                 "floor": result.floor,
                 "weakest": weakest,
                 "ageName": result.ageName,
