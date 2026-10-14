@@ -160,12 +160,45 @@ export class ResearchManager
 		return null;
 	}
 
+	/**
+	 * In First Covenant games, the AI pursues one constitutional strategy
+	 * through ordinary research and resource queues. Non-Zion games are unchanged.
+	 */
+	researchZionInstitutions(gameState, queues, availableTechs)
+	{
+		if (!gameState.getVictoryConditions().has("zion"))
+			return false;
+
+		if (this.zionPath === undefined)
+			this.zionPath = this.Config.personality.cooperative >= 0.5 ? 0 : 1;
+
+		const routes = [
+			["zion_covenant", "zion_commons", "zion_concord"],
+			["zion_magistracy", "zion_guilds", "zion_stewardship"]
+		];
+		for (const name of routes[this.zionPath])
+		{
+			if (gameState.isResearched(name))
+				continue;
+			if (gameState.isResearching(name))
+				return true;
+			if (!availableTechs.some(tech => tech[0] === name))
+				return false;
+			queues.minorTech.addPlan(new ResearchPlan(gameState, name));
+			return true;
+		}
+		return false;
+	}
+
 	update(gameState, queues)
 	{
 		if (queues.minorTech.hasQueuedUnits() || queues.majorTech.hasQueuedUnits())
 			return;
 
 		const techs = gameState.findAvailableTech();
+
+		if (this.researchZionInstitutions(gameState, queues, techs))
+			return;
 
 		let techName = this.researchWantedTechs(gameState, techs);
 		if (techName)
@@ -239,10 +272,11 @@ export class ResearchManager
 
 	Serialize()
 	{
-		return {};
+		return { "zionPath": this.zionPath };
 	}
 
 	Deserialize(data)
 	{
+		this.zionPath = data.zionPath;
 	}
 }
