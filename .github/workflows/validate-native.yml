@@ -35,4 +35,4 @@ jobs:
           node --check binaries/data/mods/public/maps/scripts/ZionVictory.js
           node --check binaries/data/mods/public/gui/session/ZionStatus.js
           node --check binaries/data/mods/public/simulation/components/GuiInterface.js
-          node --test tests/zion-native.test.cjs tests/zion-petra-adaptive.test.cjs tests/zion-trade-flow.test.cjs
+          node --test tests/zion-native.test.cjs tests/zion-petra-adaptive.test.cjs tests/zion-trade-flow.test.cjs tests/zion-relief.test.cjs
