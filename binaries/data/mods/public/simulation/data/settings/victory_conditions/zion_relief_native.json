@@ -1,0 +1,30 @@
+{
+  "TranslatedKeys": [
+    "Title",
+    "Description"
+  ],
+  "Data": {
+    "Title": "Developer test: postwar civic relief",
+    "Description": "Automated Pyrogenesis integration scenario testing recovery after war and famine.",
+    "Scripts": [
+      "scripts/TriggerHelper.js",
+      "scripts/ZionVictory.js",
+      "scripts/ZionEngineTest.js",
+      "scripts/ZionReliefNativeTest.js"
+    ],
+    "GUIOrder": 1004,
+    "DisabledWhenChecked": [
+      "conquest",
+      "conquest_units",
+      "conquest_structures",
+      "conquest_civic_centers",
+      "regicide",
+      "wonder",
+      "capture_the_relic",
+      "zion",
+      "zion_e2e",
+      "zion_e2e_alternate",
+      "zion_adversarial"
+    ]
+  }
+}
