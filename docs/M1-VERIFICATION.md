@@ -25,3 +25,9 @@ For each acceptance test, retain the engine log, screenshot or save artifact, ex
 
 - Clean source build workflow [38500703364](https://github.com/DalmoMendonca/zion/actions/runs/38500703364) and stricter dependency-manifest build [38500721310](https://github.com/DalmoMendonca/zion/actions/runs/38500721310) were both compiling third-party dependencies at inspection time; neither is counted as passed until complete.
 - Turn 3 asset verification baseline: [graphical workflow 38498563274](https://github.com/DalmoMendonca/zion/actions/runs/38498563274) successfully fetched real upstream LFS art and `sandbox_athenians.pmp`, rendered a 1280×720 gameplay frame, rejected loading parchment and black viewport, and asserted visible society HUD text. The CI screenshot artifact is [11864544622](https://github.com/DalmoMendonca/zion/actions/runs/38498563274/artifacts/11864544622). Animation and individual texture quality are not separately verified.
+
+## Turn 4–6 regression updates
+
+- [Native worker movement 38501574452](https://github.com/DalmoMendonca/zion/actions/runs/38501574452) **passed**: `ZION_MOVEMENT_VERIFIED` recorded 9.38 world units displacement. This does not test GUI selection.
+- [Foundation run 38501689315](https://github.com/DalmoMendonca/zion/actions/runs/38501689315) found an actual pair prerequisite defect: the second-stage pair referenced its own second-stage options, and the third-stage pair referenced first-stage options. Both were corrected to require their immediate preceding stage. Reverification pending.
+- Worker gathering, construction and production queue are still not proven by this movement test; do not mark A03 complete.
