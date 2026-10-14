@@ -15,6 +15,11 @@ on:
 permissions:
   contents: read
   actions: read
+# Render only the newest revision for a given branch. Old graphical jobs
+# otherwise each download gigabytes of official licensed art, delaying QA.
+concurrency:
+  group: zion-graphical-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   graphical:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
