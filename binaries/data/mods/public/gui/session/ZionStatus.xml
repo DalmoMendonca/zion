@@ -5,7 +5,10 @@
     size="100%-450 44 100%-70 124" hidden="true" z="46">
   <object name="zionStatusText" type="text" ghost="true"
       style="ModernLabelText" font="sans-12" textcolor="white"
-      size="12 8 100%-10 100%-8"/>
+      size="12 8 100%-10 100%-16"/>
+  <!-- A native progressbar drawn inside the clickable society button. -->
+  <object name="zionVictoryProgress" type="progressbar" ghost="true"
+      style="ModernProgressBar" size="12 69 100%-12 77"/>
 </object>
 <object name="zionDetailsPanel" type="image" sprite="sessionOverlayBackground"
     size="100%-450 132 100%-70 360" hidden="true" z="47">
