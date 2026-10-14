@@ -245,6 +245,15 @@ if (typeof module !== "undefined" && module.exports)
             const memory = ZionModel.updateMemory(
                 this.zionSocieties[playerID] || ZionModel.freshMemory(), observation);
             let result = ZionModel.measure(observation, memory);
+            // Track changes between completed native simulation evaluations.
+            // The report is cached on Trigger for deterministic save/rejoin;
+            // reading the HUD must never mutate this state.
+            const previous = this.zionLatestReports[playerID];
+            const changes = {};
+            for (const dimension of ZionModel.DIMENSIONS)
+                changes[dimension] = previous && previous.dimensions &&
+                    previous.dimensions[dimension] !== undefined ?
+                    result.dimensions[dimension] - previous.dimensions[dimension] : 0;
             memory.stableChecks = result.eligible ? memory.stableChecks + 1 : 0;
             this.zionSocieties[playerID] = memory;
             // Expose a concrete path from the current bottleneck to progress.
@@ -317,6 +326,7 @@ if (typeof module !== "undefined" && module.exports)
                 "weakest": weakest,
                 "ageName": result.ageName,
                 "dimensions": result.dimensions,
+                "changes": changes,
                 "quadrants": result.quadrants,
                 "trust": Math.round(memory.trust),
                 "warStrain": Math.round(memory.trauma),
