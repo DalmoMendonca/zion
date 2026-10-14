@@ -5,6 +5,21 @@
 		"zion_guilds"
 	],
 	"requirements": {
-		"tech": "phase_town"
-	}
+		"all": [
+			{
+				"tech": "phase_town"
+			},
+			{
+				"any": [
+					{
+						"tech": "zion_commons"
+					},
+					{
+						"tech": "zion_guilds"
+					}
+				]
+			}
+		]
+	},
+	"requirementsTooltip": "Requires the preceding civic decision, phase and relevant buildings."
 }
