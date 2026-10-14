@@ -16,10 +16,20 @@
 					"class": "Market",
 					"number": 1
 				}
+			},
+			{
+				"any": [
+					{
+						"tech": "zion_covenant"
+					},
+					{
+						"tech": "zion_magistracy"
+					}
+				]
 			}
 		]
 	},
-	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
+	"requirementsTooltip": "Requires the preceding civic decision, phase and relevant buildings.",
 	"icon": "amphore.png",
 	"researchTime": 20,
 	"tooltip": "Traders +22% profit; houses -1 population capacity.",
