@@ -32,7 +32,9 @@
             GetActivePlayers().includes(OPPONENT), "No active player 2");
         this.zionAIBaseline = counters();
         warn("ZION_AI_PROBE_STARTED: independent Petra opponent observation underway");
-        this.DoAfterDelay(180000, "ZionAIProbeVerify", {});
+        // Civic research competes with early economic priorities; observe a full
+        // eight simulated minutes rather than assuming a three-minute rush.
+        this.DoAfterDelay(480000, "ZionAIProbeVerify", {});
     };
 
     Trigger.prototype.ZionAIProbeVerify = function()
