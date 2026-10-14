@@ -72,253 +72,30 @@ jobs:
           mkdir -p "$HOME/.local/share/0ad/mods"
           ldd binaries/system/pyrogenesis
           ! ldd binaries/system/pyrogenesis | grep 'not found'
-      - name: Restore authentic upstream release art without broken bulk LFS endpoint
+      - name: Restore official release 28 artwork without broken bulk Git LFS
         shell: bash
         run: |
           set -euo pipefail
-          # Upstream Git LFS currently responds with HTML in place of binary
-          # objects, causing hundreds of OID mismatches in bulk fetches.
-          # Official 0 A.D. release-28 data provides the same licensed art
-          # in checked, distributable public.zip/mod.zip archives.
           mkdir -p .upstream-assets
           (
             cd .upstream-assets
             file="0ad-0.28.0-unix-data.tar.xz"
-            curl -fL --retry 4 --retry-delay 10 -o "$file" \
-              "https://releases.wildfiregames.com/$file"
-            curl -fL --retry 4 --retry-delay 10 -o "$file.sha256sum" \
-              "https://releases.wildfiregames.com/$file.sha256sum"
+            curl -fL --retry 4 --retry-delay 10 -o "$file" "https://releases.wildfiregames.com/$file"
+            curl -fL --retry 4 --retry-delay 10 -o "$file.sha256sum" "https://releases.wildfiregames.com/$file.sha256sum"
             sha256sum -c "$file.sha256sum"
           )
           bundle=".upstream-assets/0ad-0.28.0-unix-data.tar.xz"
-          tar -tJf "$bundle" | grep -E '(^|/)binaries/data/mods/(public/public|mod/mod)\\.zip
-      - name: Render actual 3D gameplay after the loading screen closes
-        shell: bash
-        run: |
-          mkdir -p screenshots
-          cat > ./capture-zion.sh <<'SH'
-          #!/usr/bin/env bash
-          set -euo pipefail
-          export LIBGL_ALWAYS_SOFTWARE=1
-          export GALLIUM_DRIVER=llvmpipe
-          export SDL_VIDEODRIVER=x11
-          cd binaries/system
-          timeout --signal=TERM 250s ./pyrogenesis \
-            -autostart="scenarios/sandbox_athenians" \
-            -autostart-victory=zion \
-            -autostart-disable-replay \
-            -nosound -quickstart -windowed -xres=1280 -yres=720 \
-            >graphical.log 2>&1 &
-          pid=$!
-          # The larger Arcadia scenario (4205 entities) previously timed out under llvmpipe.
-          # Combat demo has 234 entities and exercises real native terrain, units and UI.
-          # A fixed 16-second sleep previously captured the loading screen
-          # and nevertheless passed the test. Wait for the real game marker.
-          ready=0
-          for attempt in $(seq 1 210); do
-            if grep -Fq "GAME STARTED, ALL INIT COMPLETE" graphical.log; then
-              ready=1
-              break
-            fi
-            if ! kill -0 "$pid" 2>/dev/null; then
-              echo "Pyrogenesis exited before the match started"
-              tail -80 graphical.log
-              break
-            fi
-            sleep 1
-          done
-          if [ "$ready" -ne 1 ]; then
-            echo "Graphical RTS failed to load before timeout"
-            exit 1
-          fi
-          hud_ready=0
-          for attempt in $(seq 1 150); do
-            if grep -Fq "ZION_SOCIAL_TICK_OK" graphical.log; then
-              hud_ready=1
-              break
-            fi
-            if ! kill -0 "$pid" 2>/dev/null; then break; fi
-            sleep 1
-          done
-          if [ "$hud_ready" -ne 1 ]; then
-            echo "Society HUD never received a live report before capture"
-            tail -80 graphical.log
-            exit 1
-          fi
-          sleep 2
-          scrot -o ../../screenshots/zion-graphical.png
-          set +e
-          wait "$pid"
-          code=$?
-          set -e
-          echo "GRAPHICAL_ENGINE_EXIT=$code"
-          test "$code" -eq 0 -o "$code" -eq 124
-          SH
-          xvfb-run -a -s '-screen 0 1280x720x24' bash ./capture-zion.sh
-          test -s screenshots/zion-graphical.png
-          python3 - <<'PY'
-          from PIL import Image, ImageStat
-          image=Image.open("screenshots/zion-graphical.png").convert("RGB")
-          assert image.size == (1280,720), f"Unexpected frame: {image.size}"
-          viewport=image.crop((350, 110, 1120, 630))
-          deviation=ImageStat.Stat(viewport).stddev
-          print("3D viewport RGB standard deviation:",deviation)
-          assert max(deviation)>=12, "3D viewport is blank/unrendered"
-          parchment=image.crop((840,210,1040,480))
-          pixels=list(parchment.getdata())
-          matches=sum(1 for red,green,blue in pixels if
-            155<=red<=230 and 125<=green<=210 and 75<=blue<=165
-            and red>green+10 and green>blue+15)
-          parchment_share=matches/len(pixels)
-          print("Loading-screen parchment share:",round(parchment_share,3))
-          assert parchment_share < 0.70, "Still showing loading parchment, not gameplay"
-          world=image.crop((370,190,1050,600))
-          black_share=sum(1 for r,g,b in world.getdata() if max(r,g,b)<18)/(world.width*world.height)
-          print("Near-black gameplay viewport share:",round(black_share,3))
-          assert black_share<0.75, "Most of the world is unrendered/black"
-          hud=image.crop((830,44,1210,124))
-          white_text=sum(1 for r,g,b in hud.getdata() if min(r,g,b)>180)
-          print("Society HUD bright text pixels:",white_text)
-          assert white_text>=30, "Society HUD is not visible in captured frame"
-          PY
-          tail -75 binaries/system/graphical.log
-          file screenshots/zion-graphical.png
-          grep -F "ZION_NATIVE_READY" binaries/system/graphical.log
-          grep -F "GAME STARTED, ALL INIT COMPLETE" binaries/system/graphical.log
-          grep -F "ZION_SOCIAL_TICK_OK" binaries/system/graphical.log
-          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|GUI object has no setting' binaries/system/graphical.log; then
-            echo "Native GUI/engine diagnostics include errors or invalid styles"
-            exit 1
-          fi
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: zion-graphical-diagnostics
-          if-no-files-found: warn
-          path: |
-            screenshots/zion-graphical.png
-            binaries/system/graphical.log
-
-          mapfile -t archives < <(tar -tJf "$bundle" |
-            grep -E '(^|/)binaries/data/mods/(public/public|mod/mod)\\.zip
-      - name: Render actual 3D gameplay after the loading screen closes
-        shell: bash
-        run: |
-          mkdir -p screenshots
-          cat > ./capture-zion.sh <<'SH'
-          #!/usr/bin/env bash
-          set -euo pipefail
-          export LIBGL_ALWAYS_SOFTWARE=1
-          export GALLIUM_DRIVER=llvmpipe
-          export SDL_VIDEODRIVER=x11
-          cd binaries/system
-          timeout --signal=TERM 250s ./pyrogenesis \
-            -autostart="scenarios/sandbox_athenians" \
-            -autostart-victory=zion \
-            -autostart-disable-replay \
-            -nosound -quickstart -windowed -xres=1280 -yres=720 \
-            >graphical.log 2>&1 &
-          pid=$!
-          # The larger Arcadia scenario (4205 entities) previously timed out under llvmpipe.
-          # Combat demo has 234 entities and exercises real native terrain, units and UI.
-          # A fixed 16-second sleep previously captured the loading screen
-          # and nevertheless passed the test. Wait for the real game marker.
-          ready=0
-          for attempt in $(seq 1 210); do
-            if grep -Fq "GAME STARTED, ALL INIT COMPLETE" graphical.log; then
-              ready=1
-              break
-            fi
-            if ! kill -0 "$pid" 2>/dev/null; then
-              echo "Pyrogenesis exited before the match started"
-              tail -80 graphical.log
-              break
-            fi
-            sleep 1
-          done
-          if [ "$ready" -ne 1 ]; then
-            echo "Graphical RTS failed to load before timeout"
-            exit 1
-          fi
-          hud_ready=0
-          for attempt in $(seq 1 150); do
-            if grep -Fq "ZION_SOCIAL_TICK_OK" graphical.log; then
-              hud_ready=1
-              break
-            fi
-            if ! kill -0 "$pid" 2>/dev/null; then break; fi
-            sleep 1
-          done
-          if [ "$hud_ready" -ne 1 ]; then
-            echo "Society HUD never received a live report before capture"
-            tail -80 graphical.log
-            exit 1
-          fi
-          sleep 2
-          scrot -o ../../screenshots/zion-graphical.png
-          set +e
-          wait "$pid"
-          code=$?
-          set -e
-          echo "GRAPHICAL_ENGINE_EXIT=$code"
-          test "$code" -eq 0 -o "$code" -eq 124
-          SH
-          xvfb-run -a -s '-screen 0 1280x720x24' bash ./capture-zion.sh
-          test -s screenshots/zion-graphical.png
-          python3 - <<'PY'
-          from PIL import Image, ImageStat
-          image=Image.open("screenshots/zion-graphical.png").convert("RGB")
-          assert image.size == (1280,720), f"Unexpected frame: {image.size}"
-          viewport=image.crop((350, 110, 1120, 630))
-          deviation=ImageStat.Stat(viewport).stddev
-          print("3D viewport RGB standard deviation:",deviation)
-          assert max(deviation)>=12, "3D viewport is blank/unrendered"
-          parchment=image.crop((840,210,1040,480))
-          pixels=list(parchment.getdata())
-          matches=sum(1 for red,green,blue in pixels if
-            155<=red<=230 and 125<=green<=210 and 75<=blue<=165
-            and red>green+10 and green>blue+15)
-          parchment_share=matches/len(pixels)
-          print("Loading-screen parchment share:",round(parchment_share,3))
-          assert parchment_share < 0.70, "Still showing loading parchment, not gameplay"
-          world=image.crop((370,190,1050,600))
-          black_share=sum(1 for r,g,b in world.getdata() if max(r,g,b)<18)/(world.width*world.height)
-          print("Near-black gameplay viewport share:",round(black_share,3))
-          assert black_share<0.75, "Most of the world is unrendered/black"
-          hud=image.crop((830,44,1210,124))
-          white_text=sum(1 for r,g,b in hud.getdata() if min(r,g,b)>180)
-          print("Society HUD bright text pixels:",white_text)
-          assert white_text>=30, "Society HUD is not visible in captured frame"
-          PY
-          tail -75 binaries/system/graphical.log
-          file screenshots/zion-graphical.png
-          grep -F "ZION_NATIVE_READY" binaries/system/graphical.log
-          grep -F "GAME STARTED, ALL INIT COMPLETE" binaries/system/graphical.log
-          grep -F "ZION_SOCIAL_TICK_OK" binaries/system/graphical.log
-          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|GUI object has no setting' binaries/system/graphical.log; then
-            echo "Native GUI/engine diagnostics include errors or invalid styles"
-            exit 1
-          fi
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: zion-graphical-diagnostics
-          if-no-files-found: warn
-          path: |
-            screenshots/zion-graphical.png
-            binaries/system/graphical.log
-)
+          mapfile -t archives < <(tar -tJf "$bundle" | grep -E "(^|/)binaries/data/mods/(public/public|mod/mod)\\.zip$")
           test "${#archives[@]}" -ge 1
           tar -xJf "$bundle" -C . "${archives[@]}"
           test -s binaries/data/mods/public/public.zip
-          # These sources remain under their original CC-BY-SA licenses.
           git lfs install --local
           git lfs pull --include="binaries/data/mods/public/maps/scenarios/sandbox_athenians.pmp" --exclude=""
           python3 - <<'PY'
           from pathlib import Path
           p=Path("binaries/data/mods/public/maps/scenarios/sandbox_athenians.pmp")
           assert p.stat().st_size>1000, f"Terrain asset still LFS pointer or empty: {p.stat().st_size} bytes"
-          print("Real sandbox terrain and official release art restored",p.stat().st_size)
+          print("Original map and signed upstream release art restored:",p.stat().st_size)
           PY
       - name: Render actual 3D gameplay after the loading screen closes
         shell: bash
