@@ -16,10 +16,20 @@
 					"class": "Field",
 					"number": 3
 				}
+			},
+			{
+				"any": [
+					{
+						"tech": "zion_commons"
+					},
+					{
+						"tech": "zion_guilds"
+					}
+				]
 			}
 		]
 	},
-	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
+	"requirementsTooltip": "Requires the preceding civic decision, phase and relevant buildings.",
 	"icon": "town_phase.png",
 	"researchTime": 20,
 	"tooltip": "Houses +2 population; civic territory +12%; trader profits -10%.",
