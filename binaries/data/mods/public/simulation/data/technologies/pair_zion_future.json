@@ -5,6 +5,21 @@
 		"zion_stewardship"
 	],
 	"requirements": {
-		"tech": "phase_city"
-	}
+		"all": [
+			{
+				"tech": "phase_city"
+			},
+			{
+				"any": [
+					{
+						"tech": "zion_covenant"
+					},
+					{
+						"tech": "zion_magistracy"
+					}
+				]
+			}
+		]
+	},
+	"requirementsTooltip": "Requires the preceding civic decision, phase and relevant buildings."
 }
