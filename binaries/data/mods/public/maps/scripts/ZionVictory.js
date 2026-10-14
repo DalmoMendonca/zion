@@ -21,7 +21,9 @@ var ZionModel = (function()
 
     function freshMemory()
     {
-        return { "trauma": 0, "trust": 0, "lastKills": 0, "lastLosses": 0, "lastTributes": 0, "stableChecks": 0 };
+        return { "trauma": 0, "trust": 0, "lastKills": 0, "lastLosses": 0,
+            "lastTributes": 0, "lastFoodGathered": 0, "recentFoodGathered": 0,
+            "stableChecks": 0 };
     }
 
     function measure(o, memory)
@@ -99,6 +101,11 @@ var ZionModel = (function()
         const newLosses = Math.max(0, losses - next.lastLosses);
         const aid = amount(observation.tributes);
         const newAid = Math.max(0, aid - next.lastTributes);
+        // Only harvests since the previous simulation sample count.
+        // A cumulative statistics counter must never generate repeat income.
+        const foodGathered = amount(observation.foodGathered);
+        next.recentFoodGathered = Math.max(0, foodGathered - next.lastFoodGathered);
+        next.lastFoodGathered = foodGathered;
         next.lastKills = kills;
         next.lastLosses = losses;
         next.lastTributes = aid;
@@ -174,6 +181,7 @@ if (typeof module !== "undefined" && module.exports)
             "kills": total(stats.enemyUnitsKilled),
             "losses": total(stats.unitsLost),
             "woodGathered": total(stats.resourcesGathered && stats.resourcesGathered.wood),
+            "foodGathered": total(stats.resourcesGathered && stats.resourcesGathered.food),
             "techs": techs
         };
     }
@@ -275,8 +283,9 @@ if (typeof module !== "undefined" && module.exports)
             const cmpPlayer = QueryPlayerIDInterface(playerID);
             // Prosperous, ecologically viable local food systems gain a modest payoff.
             if (result.dimensions.ecology >= 68 && result.dimensions.provision >= 65 &&
-                observation.farms >= 3)
-                cmpPlayer.AddResource("food", 10);
+                observation.farms >= 3 && memory.recentFoodGathered >= 25)
+                cmpPlayer.AddResource("food",
+                    Math.min(10, Math.floor(memory.recentFoodGathered / 25)));
             // Prolonged wartime stress has a real, restrained resource cost.
             if (memory.trauma >= 18 && observation.food >= 30 &&
                 result.dimensions.communion < 42)
