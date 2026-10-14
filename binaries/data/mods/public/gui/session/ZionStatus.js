@@ -17,14 +17,14 @@ class ZionStatus
         {
             if (!this.emptyLogged)
             {
-                warn("ZION_HUD_STATUS_EMPTY: no local societal report yet");
+                // A missing first report is expected during simulation initialization.
                 this.emptyLogged = true;
             }
             return;
         }
         if (!this.reportRendered)
         {
-            warn("ZION_HUD_REPORT_VISIBLE: local societal report reached the session GUI");
+            // A populated report is rendered in the HUD; do not show debug overlays.
             this.reportRendered = true;
         }
 
