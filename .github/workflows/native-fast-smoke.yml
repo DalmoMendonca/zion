@@ -122,9 +122,9 @@ jobs:
           set -uo pipefail
           cd binaries/system
           set +e
-          timeout --signal=TERM 24s ./pyrogenesis \\
-            -autostart="scenarios/arcadia" -autostart-victory=zion_movement \\
-            -autostart-nonvisual -autostart-disable-replay \\
+          timeout --signal=TERM 24s ./pyrogenesis \
+            -autostart="scenarios/arcadia" -autostart-victory=zion_movement \
+            -autostart-nonvisual -autostart-disable-replay \
             -nosound -quickstart >zion-movement.log 2>&1
           code=$?
           set -e
