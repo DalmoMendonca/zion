@@ -26,7 +26,11 @@ jobs:
                        "binaries/data/mods/public/gui/session/top_panel/BuildLabel.xml",
              "binaries/data/mods/public/gui/session/ZionStatus.xml",
              "binaries/data/mods/public/gui/session/session.xml"):
-              ET.parse(path)
+              root = ET.parse(path).getroot()
+              # Included session GUI snippets require one object root; XML
+              # well-formedness alone does not catch the Pyrogenesis error.
+              if path.endswith("ZionStatus.xml"):
+                  assert root.tag == "object", "Included Zion HUD must have a single object root"
           assert "ZION A.D." in Path("binaries/data/mods/public/gui/pregame/ProjectInformation.xml").read_text()
           print("Native game fork checks passed.")
           PY
