@@ -85,7 +85,7 @@ jobs:
             sha256sum -c "$file.sha256sum"
           )
           bundle=".upstream-assets/0ad-0.28.0-unix-data.tar.xz"
-          mapfile -t archives < <(tar -tJf "$bundle" | grep -E "(^|/)binaries/data/mods/(public/public|mod/mod)\\.zip$")
+          mapfile -t archives < <(tar -tJf "$bundle" | grep -E "(^|/)binaries/data/mods/(public/public|mod/mod)[.]zip$")
           test "${#archives[@]}" -ge 1
           tar -xJf "$bundle" -C . "${archives[@]}"
           test -s binaries/data/mods/public/public.zip
