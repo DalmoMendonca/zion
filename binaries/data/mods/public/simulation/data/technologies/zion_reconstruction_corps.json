@@ -1,0 +1,9 @@
+{
+  "genericName": "Reconstruction Corps",
+  "description": "Funded civic relief organizes skilled rebuilding in a mature city.",
+  "autoResearch": true,
+  "requirements": {"all": [{"tech": "zion_relief"}, {"tech": "phase_city"}]},
+  "icon": "asclepius_rod.png",
+  "tooltip": "After paid Civic Relief and City Phase, citizens build 12% faster.",
+  "modifications": [{"value": "Builder/Rate", "multiply": 1.12, "affects": "Worker"}]
+}
