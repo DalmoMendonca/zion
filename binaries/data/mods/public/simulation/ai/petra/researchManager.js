@@ -175,6 +175,15 @@ export class ResearchManager
 		if (this.zionPath === undefined)
 			this.zionPath = this.Config.personality.cooperative >= 0.5 ? 0 : 1;
 
+		if (gameState.getVictoryConditions().has("zion_ai_observation") &&
+			(this.zionProbeLogs || 0) < 3)
+		{
+			this.zionProbeLogs = (this.zionProbeLogs || 0) + 1;
+			warn("ZION_PETRA_RESEARCH_DIAG: route " + this.zionPath +
+				", available " + availableTechs.map(tech => tech[0]).
+					filter(name => name.startsWith("zion_")).join(","));
+		}
+
 		const routes = [
 			["zion_covenant", "zion_commons", "zion_concord"],
 			["zion_magistracy", "zion_guilds", "zion_stewardship"]
