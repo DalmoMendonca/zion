@@ -1,0 +1,20 @@
+{
+  "TranslatedKeys": [
+    "Title",
+    "Description"
+  ],
+  "Data": {
+    "Title": "Developer test: Zion unit training",
+    "Description": "Native production queue and worker spawn regression test.",
+    "Scripts": [
+      "scripts/TriggerHelper.js",
+      "scripts/ZionVictory.js",
+      "scripts/ZionTrainingTest.js"
+    ],
+    "GUIOrder": 999,
+    "DisabledWhenChecked": [
+      "conquest",
+      "zion"
+    ]
+  }
+}
