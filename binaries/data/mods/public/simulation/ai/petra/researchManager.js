@@ -196,7 +196,12 @@ export class ResearchManager
 				return true;
 			if (!availableTechs.some(tech => tech[0] === name))
 				return false;
-			queues.minorTech.addPlan(new ResearchPlan(gameState, name));
+			// Prioritize institutional research against competing economy queues.
+			gameState.ai.queueManager.changePriority("minorTech",
+				Math.max(this.Config.priorities.majorTech, this.Config.priorities.minorTech));
+			const plan = new ResearchPlan(gameState, name);
+			plan.queueToReset = "minorTech";
+			queues.minorTech.addPlan(plan);
 			return true;
 		}
 		return false;
