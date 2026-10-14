@@ -50,7 +50,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            xvfb xauth scrot mesa-utils libgl1-mesa-dri git-lfs python3-pil \
+            xvfb xauth scrot xdotool mesa-utils libgl1-mesa-dri git-lfs python3-pil \
             libboost-dev libboost-system-dev libboost-filesystem-dev \
             libcurl4-gnutls-dev libenet-dev libfmt-dev libfreetype-dev \
             libgloox-dev libicu-dev libminiupnpc-dev libogg-dev \
@@ -201,17 +201,30 @@ jobs:
           fi
           sleep 2
           scrot -o ../../screenshots/zion-graphical.png
+          # The native clickable panel spans x=830..1210, y=44..124 at 1280x720.
+          # Exercise it under Xvfb, not in an isolated JavaScript mock.
+          xdotool mousemove --sync 1020 85 click 1
+          sleep 2
+          scrot -o ../../screenshots/zion-ledger-expanded.png
+          xdotool mousemove --sync 1020 85 click 1
+          sleep 2
+          scrot -o ../../screenshots/zion-ledger-collapsed.png
+          # A captured, tested frame is sufficient; terminate the graphical
+          # runtime instead of occupying a CI worker for the full 250s timeout.
+          kill -TERM "$pid" 2>/dev/null || true
           set +e
           wait "$pid"
           code=$?
           set -e
           echo "GRAPHICAL_ENGINE_EXIT=$code"
-          test "$code" -eq 0 -o "$code" -eq 124
+          test "$code" -eq 0 -o "$code" -eq 143 -o "$code" -eq 124
           SH
           xvfb-run -a -s '-screen 0 1280x720x24' bash ./capture-zion.sh
           test -s screenshots/zion-graphical.png
+          test -s screenshots/zion-ledger-expanded.png
+          test -s screenshots/zion-ledger-collapsed.png
           python3 - <<'PY'
-          from PIL import Image, ImageStat
+          from PIL import Image, ImageStat, ImageChops
           image=Image.open("screenshots/zion-graphical.png").convert("RGB")
           assert image.size == (1280,720), f"Unexpected frame: {image.size}"
           viewport=image.crop((350, 110, 1120, 630))
@@ -234,6 +247,19 @@ jobs:
           white_text=sum(1 for r,g,b in hud.getdata() if min(r,g,b)>180)
           print("Society HUD bright text pixels:",white_text)
           assert white_text>=30, "Society HUD is not visible in captured frame"
+          expanded=Image.open("screenshots/zion-ledger-expanded.png").convert("RGB")
+          collapsed=Image.open("screenshots/zion-ledger-collapsed.png").convert("RGB")
+          assert expanded.size == image.size == collapsed.size, "Ledger frames have different sizes"
+          # Ignore animations in the underlying 3D viewport. The ledger has
+          # fixed screen-space bounds, so this region isolates its UI changes.
+          region=(840,145,1190,345)
+          a=ImageChops.difference(image.crop(region),expanded.crop(region))
+          b=ImageChops.difference(expanded.crop(region),collapsed.crop(region))
+          changed_a=sum(1 for rgb in a.getdata() if max(rgb)>=30)
+          changed_b=sum(1 for rgb in b.getdata() if max(rgb)>=30)
+          print("Ledger open/close changed pixels:",changed_a,changed_b)
+          assert changed_a>2500, "Mouse click did not open the native society ledger"
+          assert changed_b>2500, "Second mouse click did not close the native society ledger"
           PY
           tail -75 binaries/system/graphical.log
           file screenshots/zion-graphical.png
@@ -251,4 +277,6 @@ jobs:
           if-no-files-found: warn
           path: |
             screenshots/zion-graphical.png
+            screenshots/zion-ledger-expanded.png
+            screenshots/zion-ledger-collapsed.png
             binaries/system/graphical.log
