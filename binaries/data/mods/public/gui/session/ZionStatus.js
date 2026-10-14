@@ -79,6 +79,8 @@ class ZionStatus
             "\nCIVICS  " + (state.civicPath || "Not yet chosen") +
             "\nTRADE  " + (state.recentTrade || 0) + " recent exchange activity" +
             "\nNEXT  " + (state.nextStep || "Maintain balanced flourishing") +
+            (state.recoveryAction ? "\nRECOVERY  " + state.recoveryAction :
+                state.reliefApplied ? "\nRECOVERY  Civic relief funded" : "") +
             "\nSustained  " + state.sustained + " of " + state.needed +
             " qualifying evaluations";
         this.detailsPanel.tooltip = "Eight dimensions of collective welfare; changes are per evaluation. " +
