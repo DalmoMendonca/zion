@@ -1,0 +1,20 @@
+{
+  "TranslatedKeys": [
+    "Title",
+    "Description"
+  ],
+  "Data": {
+    "Title": "Developer test: Zion combat",
+    "Description": "Native native combat integration regression; not a playable mode.",
+    "Scripts": [
+      "scripts/TriggerHelper.js",
+      "scripts/ZionVictory.js",
+      "scripts/ZionCombatTest.js"
+    ],
+    "GUIOrder": 999,
+    "DisabledWhenChecked": [
+      "conquest",
+      "zion"
+    ]
+  }
+}
