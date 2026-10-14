@@ -69,6 +69,11 @@ jobs:
           make -C build/workspaces/gcc -j3 config=release
           test -x binaries/system/pyrogenesis
           binaries/system/pyrogenesis -version
+          ldd binaries/system/pyrogenesis | tee binaries/system/native-dependencies.txt
+          if grep -F "not found" binaries/system/native-dependencies.txt; then
+            echo "Native executable has unresolved shared-library dependencies."
+            exit 1
+          fi
           # Actual rendered game requires conversion DLLs even if a headless
           # match passes. Do not mistake a no-NVTT executable for a 3D build.
           test -f binaries/system/libCollada.so
@@ -113,6 +118,7 @@ jobs:
           if-no-files-found: warn
           path: |
             binaries/system/engine-smoke.log
+            binaries/system/native-dependencies.txt
             binaries/system/pyrogenesis
             binaries/system/libmozjs*.so*
             binaries/system/libCollada*.so*
