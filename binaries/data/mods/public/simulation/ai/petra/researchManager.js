@@ -184,22 +184,33 @@ export class ResearchManager
 					filter(name => name.startsWith("zion_")).join(","));
 		}
 
-		const routes = [
-			["zion_covenant", "zion_commons", "zion_concord"],
-			["zion_magistracy", "zion_guilds", "zion_stewardship"]
+		// Civic stages are exclusive pairs, but either member is a legitimate
+		// path to Zion. Follow the preferred route when its requirements are
+		// satisfied; otherwise choose a researchable alternative instead of
+		// leaving an otherwise capable society permanently stuck.
+		const stages = [
+			["zion_covenant", "zion_magistracy"],
+			["zion_commons", "zion_guilds"],
+			["zion_concord", "zion_stewardship"]
 		];
-		for (const name of routes[this.zionPath])
+		const available = new Set(availableTechs.map(tech => tech[0]));
+		for (const choices of stages)
 		{
-			if (gameState.isResearched(name))
+			if (choices.some(name => gameState.isResearched(name)))
 				continue;
-			if (gameState.isResearching(name))
+			if (choices.some(name => gameState.isResearching(name)))
 				return true;
-			if (!availableTechs.some(tech => tech[0] === name))
+			const preferred = choices[this.zionPath];
+			const alternate = choices[1 - this.zionPath];
+			const selected = available.has(preferred) ? preferred :
+				available.has(alternate) ? alternate : null;
+			if (!selected)
 				return false;
-			// Prioritize institutional research against competing economy queues.
+			// Preserve the normal research queue and resource payment;
+			// never inject phases, technology, or prerequisites.
 			gameState.ai.queueManager.changePriority("minorTech",
 				Math.max(this.Config.priorities.majorTech, this.Config.priorities.minorTech));
-			const plan = new ResearchPlan(gameState, name);
+			const plan = new ResearchPlan(gameState, selected);
 			plan.queueToReset = "minorTech";
 			queues.minorTech.addPlan(plan);
 			return true;
