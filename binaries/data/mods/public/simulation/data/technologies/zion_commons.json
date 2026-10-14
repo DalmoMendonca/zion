@@ -16,10 +16,20 @@
 					"class": "House",
 					"number": 5
 				}
+			},
+			{
+				"any": [
+					{
+						"tech": "zion_covenant"
+					},
+					{
+						"tech": "zion_magistracy"
+					}
+				]
 			}
 		]
 	},
-	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
+	"requirementsTooltip": "Requires the preceding civic decision, phase and relevant buildings.",
 	"icon": "population.png",
 	"researchTime": 20,
 	"tooltip": "Houses +3 population capacity; structures take 7% longer to build.",
