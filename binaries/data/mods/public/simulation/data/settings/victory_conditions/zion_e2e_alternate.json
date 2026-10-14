@@ -1,0 +1,28 @@
+{
+  "TranslatedKeys": [
+    "Title",
+    "Description"
+  ],
+  "Data": {
+    "Title": "Developer test: second Zion victory route",
+    "Description": "Automated integration mode only; independently proves the second constitutional route can win.",
+    "Scripts": [
+      "scripts/TriggerHelper.js",
+      "scripts/ZionVictory.js",
+      "scripts/ZionEngineTest.js",
+      "scripts/ZionE2EAlternate.js"
+    ],
+    "GUIOrder": 1000,
+    "DisabledWhenChecked": [
+      "conquest",
+      "conquest_units",
+      "conquest_structures",
+      "conquest_civic_centers",
+      "regicide",
+      "wonder",
+      "capture_the_relic",
+      "zion",
+      "zion_e2e"
+    ]
+  }
+}
