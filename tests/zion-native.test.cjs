@@ -235,3 +235,24 @@ test("Both governance routes still qualify with actual food infrastructure", () 
     assert.equal(model.measure({...base, techs, farms:0}, model.freshMemory()).eligible, false);
   }
 });
+
+test("Civic age cannot skip prerequisite institutions", () => {
+  for (const [techs, expectedAge] of [
+    [{phase_city:true,zion_concord:true},0],
+    [{phase_town:true,phase_city:true,zion_commons:true,zion_concord:true},0],
+    [{phase_town:true,phase_city:true,zion_covenant:true,zion_concord:true},1]
+  ]) {
+    const result = model.measure({...base,techs},model.freshMemory());
+    assert.equal(result.age,expectedAge);
+    assert.equal(result.eligible,false);
+  }
+});
+test("All higher civic research requires preceding institutional decision", () => {
+  for (const [names,previous] of [
+    [["zion_commons","zion_guilds","pair_zion_institutions"],["zion_covenant","zion_magistracy"]],
+    [["zion_concord","zion_stewardship","pair_zion_future"],["zion_commons","zion_guilds"]]
+  ]) for (const name of names) {
+    const data=JSON.parse(fs.readFileSync(path.join(techPath,name+".json"),"utf8"));
+    assert.ok(data.requirements.all.some(x=>x.any && previous.every(p=>x.any.some(a=>a.tech===p))),name);
+  }
+});
