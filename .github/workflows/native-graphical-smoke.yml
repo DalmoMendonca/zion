@@ -119,10 +119,21 @@ jobs:
           from zipfile import ZipFile
           p=Path("binaries/data/mods/public/public.zip")
           assert p.stat().st_size>100000000, "Official public.zip missing or still placeholder"
+          allow=("art/", "audio/", "fonts/", "maps/scenarios/", "maps/skirmishes/", "shaders/", "textures/")
+          target=Path("binaries/data/mods/public")
+          count=0
           with ZipFile(p) as game:
               names=game.namelist()
               assert any(x.endswith("maps/scenarios/sandbox_athenians.pmp") for x in names), "Sandbox terrain missing from official game data"
-          print("Original scenario and verified game art archive available:",p.stat().st_size)
+              for entry in game.infolist():
+                  if entry.filename.startswith(allow):
+                      game.extract(entry,target)
+                      count+=1
+          assert count>100, "Official release art missing unexpectedly"
+          print("Extracted authentic visual assets without replacing Zion scripts:",count)
+          p.unlink()
+          # Native current fork has its own mod bootstrap scripts.
+          Path("binaries/data/mods/mod/mod.zip").unlink(missing_ok=True)
           PY
       - name: Render actual 3D gameplay after the loading screen closes
         shell: bash
