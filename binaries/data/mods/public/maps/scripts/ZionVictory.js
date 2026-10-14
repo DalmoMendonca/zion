@@ -178,8 +178,10 @@ if (typeof module !== "undefined" && module.exports)
             "fortresses": count(playerID, "Fortress"),
             "trade": total(stats.tradeIncome),
             "tributes": total(stats.tributesSent),
-            "kills": total(stats.enemyUnitsKilled),
-            "losses": total(stats.unitsLost),
+            // The engine's StatisticsTracker increments the Unit class counters,
+            // not the initialized-but-unmaintained .total fields.
+            "kills": total(stats.enemyUnitsKilled && stats.enemyUnitsKilled.Unit),
+            "losses": total(stats.unitsLost && stats.unitsLost.Unit),
             "woodGathered": total(stats.resourcesGathered && stats.resourcesGathered.wood),
             "foodGathered": total(stats.resourcesGathered && stats.resourcesGathered.food),
             "techs": techs
