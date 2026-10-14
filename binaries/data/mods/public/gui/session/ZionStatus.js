@@ -44,8 +44,11 @@ class ZionStatus
             "Click to inspect all eight societal dimensions";
 
         const dims = state.dimensions || {};
+        const changes = state.changes || {};
         const format = (label, key) => label + "  " +
-            (dims[key] === undefined ? "—" : dims[key] + "/100");
+            (dims[key] === undefined ? "—" : dims[key] + "/100") +
+            (!changes[key] ? "" : "  (" + (changes[key] > 0 ? "+" : "") +
+                changes[key] + ")");
         this.detailsTitle.caption = "SOCIETY  |  " + state.ageName;
         this.detailsLeft.caption = [
             format("Provision", "provision"),
@@ -61,10 +64,11 @@ class ZionStatus
         ].join("\n");
         this.detailsFooter.caption =
             "Trust  " + state.trust + "  |  War strain  " + state.warStrain +
+            "\nCIVICS  " + (state.civicPath || "Not yet chosen") +
             "\nNEXT  " + (state.nextStep || "Maintain balanced flourishing") +
             "\nSustained  " + state.sustained + " of " + state.needed +
             " qualifying evaluations";
-        this.detailsPanel.tooltip = "Eight dimensions of collective welfare. " +
+        this.detailsPanel.tooltip = "Eight dimensions of collective welfare; changes are per evaluation. " +
             "No single government or economic arrangement guarantees victory.";
     }
 }
