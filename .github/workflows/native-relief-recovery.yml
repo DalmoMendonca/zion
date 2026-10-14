@@ -1,0 +1,84 @@
+name: Native postwar reconstruction and deterministic rejoin
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/native-relief-recovery.yml"
+      - "binaries/data/mods/public/maps/scripts/Zion*"
+      - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion_e2e*.json"
+      - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion_relief_native.json"
+      - "binaries/data/mods/public/simulation/data/technologies/zion_relief.json"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      GIT_LFS_SKIP_SMUDGE: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - name: Find compiled native engine
+        id: engine
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run_id="$(gh api 'repos/DalmoMendonca/zion/actions/artifacts?name=zion-native-linux-smoke&per_page=50' --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | first | .workflow_run.id')"
+          test -n "$run_id" && test "$run_id" != "null"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        with:
+          repository: DalmoMendonca/zion
+          run-id: ${{ steps.engine.outputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: zion-native-linux-smoke
+          path: .native-cache
+      - name: Restore runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libboost-dev libboost-system-dev libboost-filesystem-dev libcurl4-gnutls-dev libenet-dev libfmt-dev libfreetype-dev libgloox-dev libicu-dev libminiupnpc-dev libogg-dev libopenal-dev libpng-dev libsdl2-dev libsodium-dev libvorbis-dev libwxgtk3.2-dev libxml2-dev libxcursor-dev libgl1-mesa-dev libglu1-mesa-dev libvulkan-dev git-lfs
+          engine="$(find .native-cache -type f -name pyrogenesis | head -1)"
+          test -n "$engine"
+          cp "$engine" binaries/system/pyrogenesis
+          chmod +x binaries/system/pyrogenesis
+          while IFS= read -r lib; do cp "$lib" binaries/system/; done < <(find .native-cache -type f \( -name 'libmozjs*.so*' -o -name 'libCollada*.so*' -o -name 'libnv*.so*' \))
+          echo "LD_LIBRARY_PATH=$(pwd)/binaries/system:${LD_LIBRARY_PATH:-}" >> "$GITHUB_ENV"
+          git lfs install --local
+          git lfs pull --include="binaries/data/mods/public/maps/scenarios/arcadia.pmp" --exclude=""
+      - name: Verify native war, paid civic relief and post-famine victory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.local/share/0ad/mods"
+          cd binaries/system
+          set +e
+          timeout --signal=TERM 55s ./pyrogenesis \
+            -autostart="scenarios/arcadia" \
+            -autostart-victory=zion_relief_native \
+            -autostart-nonvisual -autostart-disable-replay \
+            -nosound -quickstart -rejointest=700 \
+            >zion_relief_native.log 2>&1
+          code=$?
+          set -e
+          tail -70 zion_relief_native.log
+          grep -F 'GAME STARTED, ALL INIT COMPLETE' zion_relief_native.log
+          grep -F 'Initializing the secondary simulation' zion_relief_native.log
+          grep -F 'ZION_RELIEF_NATIVE_CRISIS_OK' zion_relief_native.log
+          grep -F 'ZION_RELIEF_NATIVE_RESEARCH_OK' zion_relief_native.log
+          grep -F 'ZION_RELIEF_NATIVE_FOOD_RESTORED' zion_relief_native.log
+          grep -F 'ZION_FIRST_COVENANT_WON: player 1 ' zion_relief_native.log
+          grep -F 'ZION_RELIEF_NATIVE_RECOVERY_OK' zion_relief_native.log
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_RELIEF_NATIVE_FAILED|ZION_E2E_FAILED|Serialization test failure' zion_relief_native.log; then
+            echo 'Native postwar recovery or deterministic serialization failed' >&2
+            exit 1
+          fi
+          test "$code" -eq 0 -o "$code" -eq 124
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zion-postwar-recovery-logs
+          path: binaries/system/zion_relief_native.log
