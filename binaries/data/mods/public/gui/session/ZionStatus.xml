@@ -11,7 +11,7 @@
       style="ModernProgressBar" size="12 69 100%-12 77"/>
 </object>
 <object name="zionDetailsPanel" type="image" sprite="sessionOverlayBackground"
-    size="100%-450 132 100%-70 390" hidden="true" z="47">
+    size="100%-450 132 100%-70 418" hidden="true" z="47">
   <object name="zionDetailsTitle" type="text" ghost="true"
       style="ModernLabelText" font="sans-14" textcolor="white"
       size="12 8 100%-10 32"/>
