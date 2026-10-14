@@ -21,6 +21,14 @@ Roadmap scope is authoritative; GitHub issues are executable work packets with a
 - [#9: M6–M8 contingent 2,000-year campaign](https://github.com/DalmoMendonca/zion/issues/9)
 - [#10: M9 accessibility, visual/audio and release quality](https://github.com/DalmoMendonca/zion/issues/10)
 
+
+## October 13 native verification update
+
+- Both distinct civic pathways have won separate native Pyrogenesis matches: [independent victories CI](https://github.com/DalmoMendonca/zion/actions/runs/38493183565) passed. This is accelerated scripted testing, not a human-paced match.
+- The Petra AI civic research implementation was merged to main as `595da60`; its foundation tests passed. An ordinary AI-driven native match and save/reload are **not verified**.
+- The first graphical gameplay screenshot passed visual review, including the Zion society HUD, in [graphical CI](https://github.com/DalmoMendonca/zion/actions/runs/38493164634). Later HUD diagnostic removal caused the graphical workflow to wait for a removed log marker; [failure](https://github.com/DalmoMendonca/zion/actions/runs/38495822900). Commit `1ded697` switches synchronization to the live simulation tick; graphical retest is pending.
+- Native smoke now triggers for Petra AI source changes (`5bddba0`). Remaining M1 acceptance: ordinary AI-controlled match, player interaction verification, negative adversarial scenarios, save/reload and installed desktop package.
+
 ## October 13 execution handoff
 
 - Native foundation verification **passed** at [2c5886e](https://github.com/DalmoMendonca/zion/actions/runs/38477277846). This is not graphical-playability proof.
