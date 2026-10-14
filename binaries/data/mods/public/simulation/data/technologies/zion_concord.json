@@ -16,10 +16,20 @@
 					"class": "Temple",
 					"number": 1
 				}
+			},
+			{
+				"any": [
+					{
+						"tech": "zion_commons"
+					},
+					{
+						"tech": "zion_guilds"
+					}
+				]
 			}
 		]
 	},
-	"requirementsTooltip": "Requires civic institutions and the appropriate phase.",
+	"requirementsTooltip": "Requires the preceding civic decision, city phase and a temple.",
 	"icon": "asclepius_rod.png",
 	"researchTime": 20,
 	"tooltip": "Organic units heal while idle; all units +8% maximum health.",
