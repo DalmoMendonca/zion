@@ -48,6 +48,12 @@
             (now.harvest - before.harvest).toFixed(1) + " resources, trained " +
             (now.trained - before.trained) + ", built " +
             (now.constructed - before.constructed));
+        const cmpTech = QueryPlayerIDInterface(OPPONENT, IID_TechnologyManager);
+        check(!!cmpTech, "Opponent has no native TechnologyManager");
+        const founded = cmpTech.IsTechnologyResearched("zion_covenant") ||
+            cmpTech.IsTechnologyResearched("zion_magistracy");
+        check(founded, "Petra did not independently research a first civic institution");
+        warn("ZION_AI_CIVIC_RESEARCH_OK: Petra chose and completed its first governing institution");
     };
 
     Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger).RegisterTrigger(
