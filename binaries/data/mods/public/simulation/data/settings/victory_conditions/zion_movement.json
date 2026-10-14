@@ -1,0 +1,20 @@
+{
+  "TranslatedKeys": [
+    "Title",
+    "Description"
+  ],
+  "Data": {
+    "Title": "Developer test: Zion worker movement",
+    "Description": "Native worker movement integration test, not a playable victory mode.",
+    "Scripts": [
+      "scripts/TriggerHelper.js",
+      "scripts/ZionVictory.js",
+      "scripts/ZionMovementTest.js"
+    ],
+    "GUIOrder": 999,
+    "DisabledWhenChecked": [
+      "conquest",
+      "zion"
+    ]
+  }
+}
