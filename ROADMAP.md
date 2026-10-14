@@ -6,6 +6,13 @@ Zion A.D. is a **genuine fork** of 0 A.D. / Pyrogenesis. It is a real-time 3D ci
 
 This is an **implementation plan**, not a list of features already delivered. No invented deadline, release date, or percentage complete. Each stage ends in a playable and verified game state, never just mockups. All release gates below are cumulative: passing a source check does not imply gameplay quality.
 
+## October 13, 2026 — native AI research verified; graphical font regression identified
+
+- **AI research:** [rapid Pyrogenesis CI 38505240337](https://github.com/DalmoMendonca/zion/actions/runs/38505240337) **PASSED** on commit `95ee779`: Petra independently gathered 6,083 resources, trained 38 citizens/soldiers, built eight structures, and completed its first Zion governing institution through an ordinary research queue. The change temporarily prioritizes that queue without injecting resources, structures or technology. This does not yet establish full AI victory or later-stage research.
+- **Player guidance:** commit `c65d191` adds the weakest societal dimension and actionable next-step guidance to the native simulation report and session HUD. JavaScript syntax was checked; native integration and graphical screenshot remain pending.
+- **Graphical regression:** [graphical CI 38505003719](https://github.com/DalmoMendonca/zion/actions/runs/38505003719) **FAILED** before a gameplay screenshot: the workflow discards the official `mod.zip` after removing unresolved LFS pointers, leaving core fonts (`LinBiolinum_Rah.ttf`, `LinBiolinum_RBah.ttf`, `DejaVuSansMono.ttf`) unavailable. Restore `fonts/` from the verified upstream `mod.zip` into `binaries/data/mods/mod/fonts/` before removing the ZIP, without replacing Zion's scripts. Then rerun and inspect the frame and logs. Do not claim graphical acceptance yet.
+- **Integration location:** these new changes are committed to `automation/m1-civic-hud-20261013`, not merged to `main`. The branch includes `95ee779` and `c65d191`. The mainline M1 acceptance checklist remains open.
+
 ## Tracked feature epics
 
 Roadmap scope is authoritative; GitHub issues are executable work packets with acceptance criteria. [All issues](https://github.com/DalmoMendonca/zion/issues).
