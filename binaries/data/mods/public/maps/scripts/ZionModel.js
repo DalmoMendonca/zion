@@ -20,7 +20,8 @@ var ZionModel = (function()
     function freshMemory()
     {
         return { "trauma": 0, "trust": 0, "lastKills": 0, "lastLosses": 0,
-            "lastTributes": 0, "lastFoodGathered": 0, "recentFoodGathered": 0,
+            "lastTributes": 0, "lastTrade": 0, "tradeActivity": 0,
+            "lastFoodGathered": 0, "recentFoodGathered": 0,
             "stableChecks": 0 };
     }
 
@@ -31,7 +32,8 @@ var ZionModel = (function()
         const s = {};
         s.provision = 20 + Math.min(25, amount(o.food) / 50) +
             Math.min(24, amount(o.farms) * 6) + Math.min(12, amount(o.houses));
-        s.prosperity = 25 + Math.min(18, amount(o.trade) / 60) +
+        // Living prosperity follows recent real exchanges, not lifetime trade.
+        s.prosperity = 25 + Math.min(18, amount(m.tradeActivity) / 60) +
             amount(o.markets) * 12 + amount(o.civics) * 5 +
             Math.min(15, amount(o.metal) / 75);
         s.dignity = 28 + Math.min(24, amount(o.houses) * 3) + amount(o.temples) * 8 +
@@ -104,6 +106,16 @@ var ZionModel = (function()
         const foodGathered = amount(observation.foodGathered);
         next.recentFoodGathered = Math.max(0, foodGathered - next.lastFoodGathered);
         next.lastFoodGathered = foodGathered;
+        const trade = amount(observation.trade);
+        // Legacy serialized games have no trade counter baseline. Seed it
+        // without treating the entire historical total as a new transaction.
+        const hasBaseline = memory &&
+            Object.prototype.hasOwnProperty.call(memory, "lastTrade");
+        const lastTrade = hasBaseline ? amount(memory.lastTrade) : trade;
+        const newTrade = Math.max(0, trade - lastTrade);
+        next.tradeActivity = Math.min(1200,
+            amount(next.tradeActivity) * 0.65 + newTrade);
+        next.lastTrade = trade;
         next.lastKills = kills;
         next.lastLosses = losses;
         next.lastTributes = aid;
