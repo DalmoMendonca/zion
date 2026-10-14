@@ -12,16 +12,20 @@ order_marker="$2"
 success_marker="$3"
 maximum="$4"
 case "$mode" in
-  gather|construction|combat) ;;
+  gather|construction|combat|ai_observation) ;;
   *) echo "invalid native scenario: $mode" >&2; exit 2 ;;
 esac
 [[ "$maximum" =~ ^[0-9]+$ ]] && (( maximum > 0 )) || exit 2
+engine_opts=()
+if [[ "$mode" == "ai_observation" ]]; then
+  engine_opts=(-autostart-ai=2:petra -autostart-aidiff=2:3)
+fi
 log="binaries/system/zion-${mode}.log"
 (
   cd binaries/system
   exec timeout --signal=TERM --kill-after=5s "${maximum}s" ./pyrogenesis \
     -autostart="scenarios/arcadia" "-autostart-victory=zion_${mode}" \
-    -autostart-nonvisual -autostart-disable-replay -nosound -quickstart \
+    "${engine_opts[@]}" -autostart-nonvisual -autostart-disable-replay -nosound -quickstart \
     >"zion-${mode}.log" 2>&1
 ) &
 pid=$!
@@ -51,7 +55,7 @@ fi
 grep -F "GAME STARTED, ALL INIT COMPLETE" "$log"
 grep -F "$order_marker" "$log"
 grep -F "$success_marker" "$log"
-if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_(GATHER|CONSTRUCTION|COMBAT)_FAILED' "$log"; then
+if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_(GATHER|CONSTRUCTION|COMBAT|AI_OBSERVATION)_FAILED' "$log"; then
   tail -100 "$log"
   exit 1
 fi
