@@ -256,3 +256,33 @@ test("All higher civic research requires preceding institutional decision", () =
     assert.ok(data.requirements.all.some(x=>x.any && previous.every(p=>x.any.some(a=>a.tech===p))),name);
   }
 });
+
+test("Historic lifetime aid and kills cannot permanently change today's welfare", () => {
+  const neutral={...base, tributes:0, kills:0, losses:0};
+  const past={...neutral, tributes:100000, kills:10000, losses:10000};
+  const memory=model.freshMemory();
+  const clean=model.measure(neutral,memory);
+  const historical=model.measure(past,memory);
+  assert.equal(historical.dimensions.communion,clean.dimensions.communion);
+  assert.equal(historical.score,clean.score);
+  const aid=model.updateMemory(memory,{...neutral,tributes:250});
+  assert.ok(aid.trust>model.updateMemory(memory,neutral).trust,
+    "A new aid action must still improve living trust");
+  const conflict=model.updateMemory(memory,{...neutral,kills:30,losses:10});
+  assert.ok(conflict.trauma>0,"Actual recent casualties must hurt");
+  assert.ok(model.measure(past,conflict).score<clean.score);
+});
+
+test("Society can recover from conflict without erasing the historical record", () => {
+  const peacetime={...base,kills:0,losses:0,tributes:0};
+  const history={...peacetime,kills:45,losses:20};
+  let memory=model.updateMemory(model.freshMemory(),history);
+  const wartime=model.measure(history,memory);
+  for(let i=0;i<100;i++)
+    memory=model.updateMemory(memory,history);
+  const recovered=model.measure(history,memory);
+  assert.ok(memory.trauma<3,"Old losses should no longer create lasting trauma at peace");
+  assert.ok(recovered.dimensions.communion>wartime.dimensions.communion,
+    "Reconciliation must improve lived communion");
+  assert.ok(recovered.score>wartime.score,"Societal healing must improve welfare");
+});
