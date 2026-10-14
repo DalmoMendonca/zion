@@ -66,8 +66,9 @@
         for (const p of players)
         {
             const stats = QueryPlayerIDInterface(p.id, IID_StatisticsTracker).GetStatistics();
-            check(stats.unitsLost.total >= 24 && stats.enemyUnitsKilled.total >= 24,
-                "Damage did not reach actual native casualty accounting");
+            check(stats.unitsLost.Unit >= 24 && stats.enemyUnitsKilled.Unit >= 24,
+                "Damage did not reach native Unit casualty counters: lost " +
+                stats.unitsLost.Unit + ", killed " + stats.enemyUnitsKilled.Unit);
         }
         warn("ZION_ADVERSARIAL_NATIVE_BATTLE_OK: casualties accounted by Health and StatisticsTracker");
         warn("ZION_ADVERSARIAL_FAMINE_STARTED: fields removed and stockpiles emptied");
