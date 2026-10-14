@@ -95,6 +95,9 @@ jobs:
           #!/usr/bin/env bash
           set -euo pipefail
           root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          # A clean Linux account may have no 0 A.D. user-data directory yet.
+          # Pyrogenesis enumerates this path during first startup.
+          mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/0ad/mods"
           cd "$root/binaries/system"
           export LD_LIBRARY_PATH="$PWD:${LD_LIBRARY_PATH:-}"
           exec ./pyrogenesis -mod=public -quickstart "$@"
