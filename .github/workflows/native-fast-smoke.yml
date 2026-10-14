@@ -169,14 +169,26 @@ jobs:
           fi
           test "$code" -eq 0 -o "$code" -eq 124
       - name: Verify food gathering and Civic Centre deposit
+        id: native_gather
+        continue-on-error: true
         shell: bash
         run: bash tests/run-zion-native-mode.sh gather ZION_GATHER_ORDER_OK ZION_GATHER_DEPOSIT_VERIFIED 95
       - name: Verify house foundation construction and completion
+        id: native_construction
+        continue-on-error: true
         shell: bash
         run: bash tests/run-zion-native-mode.sh construction ZION_CONSTRUCTION_PLACED ZION_CONSTRUCTION_VERIFIED 165
       - name: Verify infantry attack damage against enemy unit
+        id: native_combat
+        continue-on-error: true
         shell: bash
         run: bash tests/run-zion-native-mode.sh combat ZION_COMBAT_ORDER_OK ZION_COMBAT_DAMAGE_VERIFIED 75
+      - name: Enforce all independent native integration results
+        if: always()
+        run: |
+          test '${{ steps.native_gather.outcome }}' = 'success'
+          test '${{ steps.native_construction.outcome }}' = 'success'
+          test '${{ steps.native_combat.outcome }}' = 'success'
       - if: always()
         uses: actions/upload-artifact@v4
         with:
