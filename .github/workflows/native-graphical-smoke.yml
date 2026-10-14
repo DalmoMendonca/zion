@@ -89,6 +89,21 @@ jobs:
           test "${#archives[@]}" -ge 1
           tar -xJf "$bundle" -C . "${archives[@]}"
           test -s binaries/data/mods/public/public.zip
+          # Keep the fork's loose Zion code, but remove unusable Git LFS
+          # placeholder files so packaged original art resolves from ZIP.
+          python3 - <<'PY'
+          from pathlib import Path
+          removed=0
+          for base in ("binaries/data/mods/public", "binaries/data/mods/mod"):
+              for file in Path(base).rglob("*"):
+                  if file.is_file() and file.stat().st_size < 256:
+                      with file.open("rb") as stream:
+                          is_pointer=stream.read(64).startswith(b"version https://git-lfs.github.com/spec/v1")
+                      if is_pointer:
+                          file.unlink()
+                          removed+=1
+          print("Removed stale LFS placeholder assets:",removed)
+          PY
           git lfs install --local
           git lfs pull --include="binaries/data/mods/public/maps/scenarios/sandbox_athenians.pmp" --exclude=""
           python3 - <<'PY'
