@@ -24,14 +24,20 @@
         {
             for (let angle = 0; angle < 12 && !foundation; ++angle)
             {
+                const prior = new Set(TriggerHelper.GetEntitiesByPlayer(player));
                 const radians = angle * Math.PI / 6;
-                foundation = TryConstructBuilding(player, QueryPlayerIDInterface(player), false, {
+                // Victory scripts run in an isolated context: use the engine's
+                // supported command dispatcher, not the private helper function.
+                ProcessCommand(player, {
                     "type": "construct", "entities": builders,
                     "template": "structures/" + civ + "/house",
                     "x": point.x + radius * Math.cos(radians),
                     "z": point.y + radius * Math.sin(radians),
                     "angle": 0, "autorepair": true, "autocontinue": false, "queued": false
                 });
+                foundation = TriggerHelper.GetEntitiesByPlayer(player).find(ent =>
+                    !prior.has(ent) && !!Engine.QueryInterface(ent, IID_Foundation) &&
+                    Engine.QueryInterface(ent, IID_Position)?.IsInWorld());
             }
             if (foundation)
                 break;
