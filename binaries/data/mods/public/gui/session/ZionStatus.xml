@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<objects>
+<!-- Included GUI files require a single object root, not an objects tree. -->
+<object name="zionStatusRoot" ghost="true" size="0 0 100% 100%">
 <!-- Native society ledger: click the compact HUD to inspect all dimensions. -->
 <object name="zionStatusPanel" type="button" sprite="sessionOverlayBackground"
     size="100%-450 44 100%-70 124" hidden="true" z="46">
@@ -26,4 +27,4 @@
       size="12 154 100%-10 100%-10"/>
 </object>
 
-</objects>
+</object>
