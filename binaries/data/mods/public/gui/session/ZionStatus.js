@@ -5,6 +5,7 @@ class ZionStatus
     {
         this.panel = Engine.GetGUIObjectByName("zionStatusPanel");
         this.label = Engine.GetGUIObjectByName("zionStatusText");
+        this.victoryProgress = Engine.GetGUIObjectByName("zionVictoryProgress");
         this.detailsPanel = Engine.GetGUIObjectByName("zionDetailsPanel");
         this.detailsTitle = Engine.GetGUIObjectByName("zionDetailsTitle");
         this.detailsLeft = Engine.GetGUIObjectByName("zionDetailsLeft");
@@ -31,6 +32,17 @@ class ZionStatus
     {
         const state = Engine.GuiInterfaceCall("GetZionStatus");
         this.panel.hidden = !state;
+        // Show progress toward three consecutive qualifying native evaluations.
+        // Losing eligibility resets this value in the authoritative simulation.
+        const needed = state && Number.isFinite(state.needed) && state.needed > 0 ?
+            state.needed : 0;
+        const sustained = state && Number.isFinite(state.sustained) ?
+            state.sustained : 0;
+        this.victoryProgress.progress = needed ?
+            Math.round(100 * Math.max(0, Math.min(1, sustained / needed))) : 0;
+        this.victoryProgress.tooltip = "First Covenant: " +
+            Math.max(0, sustained) + "/" + needed +
+            " consecutive qualifying evaluations. Crises reset progress.";
         this.detailsPanel.hidden = !state || !this.expanded;
         if (!state)
             return;
