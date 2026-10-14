@@ -45,12 +45,37 @@ jobs:
           )
           test -f binaries/system/libCollada.so
           find binaries/system -maxdepth 1 -iname 'libnvtt*.so*' -print -quit | grep .
-      - name: Restore game art, terrain and UI
+      - name: Restore verified upstream art from official 0 A.D. release 28
+        shell: bash
         run: |
           set -euo pipefail
-          git lfs install --local
-          git lfs pull --include='binaries/data/mods/public/**,binaries/data/mods/mod/**' --exclude=''
-          test "$(stat -c %s binaries/data/mods/public/maps/scenarios/combat_demo.pmp)" -gt 1000
+          mkdir -p .upstream-assets
+          (
+            cd .upstream-assets
+            file="0ad-0.28.0-unix-data.tar.xz"
+            curl -fL --retry 4 --retry-delay 10 -o "$file" "https://releases.wildfiregames.com/$file"
+            curl -fL --retry 4 --retry-delay 10 -o "$file.sha256sum" "https://releases.wildfiregames.com/$file.sha256sum"
+            sha256sum -c "$file.sha256sum"
+          )
+          bundle=".upstream-assets/0ad-0.28.0-unix-data.tar.xz"
+          mapfile -t archives < <(tar -tJf "$bundle" | grep -E "(^|/)binaries/data/mods/(public/public|mod/mod)[.]zip$")
+          test "${#archives[@]}" -ge 1
+          tar -xJf "$bundle" -C . "${archives[@]}"
+          test -s binaries/data/mods/public/public.zip
+          # Remove placeholder LFS pointers that would shadow the real ZIP art.
+          python3 - <<'PY'
+          from pathlib import Path
+          removed=0
+          for base in ("binaries/data/mods/public", "binaries/data/mods/mod"):
+              for file in Path(base).rglob("*"):
+                  if file.is_file() and file.stat().st_size < 256:
+                      with file.open("rb") as stream:
+                          is_pointer=stream.read(64).startswith(b"version https://git-lfs.github.com/spec/v1")
+                      if is_pointer:
+                          file.unlink()
+                          removed+=1
+          print("Removed stale LFS placeholder assets:",removed)
+          PY
           df -h .
       - name: Create relocatable Linux archive
         run: |
@@ -58,6 +83,7 @@ jobs:
           mkdir -p dist/ZionAD/binaries
           cp -a binaries/system dist/ZionAD/binaries/
           cp -a binaries/data dist/ZionAD/binaries/
+          cp LICENSE.md license_gpl-2.0.txt license_lgpl-2.1.txt license_mit.txt dist/ZionAD/
           cat > dist/ZionAD/play-zion.sh <<'SH'
           #!/usr/bin/env bash
           set -euo pipefail
