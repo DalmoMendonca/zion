@@ -286,3 +286,20 @@ test("Society can recover from conflict without erasing the historical record", 
     "Reconciliation must improve lived communion");
   assert.ok(recovered.score>wartime.score,"Societal healing must improve welfare");
 });
+
+test("Food surplus depends on newly gathered harvest, never lifetime production", () => {
+  const unworked={...base,foodGathered:0};
+  const first=model.updateMemory(model.freshMemory(),unworked);
+  assert.equal(first.recentFoodGathered,0);
+  const harvest=model.updateMemory(first,{...unworked,foodGathered:250});
+  assert.equal(harvest.recentFoodGathered,250);
+  const idle=model.updateMemory(harvest,{...unworked,foodGathered:250});
+  assert.equal(idle.recentFoodGathered,0);
+  const renewed=model.updateMemory(idle,{...unworked,foodGathered:300});
+  assert.equal(renewed.recentFoodGathered,50);
+  const victory=fs.readFileSync(path.join(mod,"maps/scripts/ZionVictory.js"),"utf8");
+  assert.ok(victory.includes("memory.recentFoodGathered >= 25"),
+    "Native harvest reward must require recent real production");
+  assert.ok(victory.includes('"foodGathered": total(stats.resourcesGathered && stats.resourcesGathered.food)'),
+    "Harvest must originate from native StatisticsTracker");
+});
