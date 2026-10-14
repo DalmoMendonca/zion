@@ -71,7 +71,20 @@ jobs:
       - name: Obtain original scenario assets for nonvisual simulation
         run: |
           git lfs install --local
-          git lfs pull --include="binaries/data/mods/public/maps/scenarios/arcadia.pmp" --exclude=""
+          git lfs pull --include="binaries/data/mods/public/maps/scenarios/arcadia.pmp,binaries/data/mods/public/art/animation/biped/citizen/idle_relax_f.dae,binaries/data/mods/public/art/animation/biped/citizen/walk_relax_f.dae,binaries/data/mods/public/art/animation/biped/citizen/build.dae,binaries/data/mods/public/art/animation/biped/gatherer/farming.dae,binaries/data/mods/public/art/animation/biped/gatherer/gather_wood.dae,binaries/data/mods/public/art/animation/biped/gatherer/carry_grain_f.dae" --exclude=""
+      - name: Verify actual restored citizen, harvesting and construction animation files
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          paths = ["binaries/data/mods/public/art/animation/biped/citizen/idle_relax_f.dae","binaries/data/mods/public/art/animation/biped/citizen/walk_relax_f.dae","binaries/data/mods/public/art/animation/biped/citizen/build.dae","binaries/data/mods/public/art/animation/biped/gatherer/farming.dae","binaries/data/mods/public/art/animation/biped/gatherer/gather_wood.dae","binaries/data/mods/public/art/animation/biped/gatherer/carry_grain_f.dae"]
+          for raw in paths:
+              p = Path(raw)
+              data = p.read_bytes()
+              assert len(data) > 512, f"Missing or unhydrated animation: {p} ({len(data)} bytes)"
+              assert not data.startswith(b"version https://git-lfs.github.com/spec/v1"), f"LFS pointer: {p}"
+              assert b"COLLADA" in data[:8192], f"Not a COLLADA animation: {p}"
+              print(f"ZION_ANIMATION_ASSET_OK: {p} ({len(data)} bytes)")
+          PY
       - name: Launch built engine with current Zion scripts
         shell: bash
         run: |
