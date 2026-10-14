@@ -86,9 +86,16 @@ jobs:
             sha256sum -c "$file.sha256sum"
           )
           bundle=".upstream-assets/0ad-0.28.0-unix-data.tar.xz"
-          mapfile -t archives < <(tar -tJf "$bundle" | grep -E "(^|/)binaries/data/mods/(public/public|mod/mod)[.]zip$")
-          test "${#archives[@]}" -ge 1
-          tar -xJf "$bundle" --strip-components=1 -C . "${archives[@]}"
+          # The upstream tarball has a versioned root directory. Never extract
+          # over Zion's loose scripts: restore ZIP art into a separate tree.
+          mkdir -p .upstream-assets/unpacked binaries/data/mods/public binaries/data/mods/mod
+          tar -xJf "$bundle" -C .upstream-assets/unpacked
+          public_zip="$(find .upstream-assets/unpacked -type f -name public.zip -print -quit)"
+          mod_zip="$(find .upstream-assets/unpacked -type f -name mod.zip -print -quit)"
+          test -n "$public_zip" && test -n "$mod_zip"
+          test "$(stat -c %s "$public_zip")" -gt 100000000
+          mv "$public_zip" binaries/data/mods/public/public.zip
+          mv "$mod_zip" binaries/data/mods/mod/mod.zip
           test -s binaries/data/mods/public/public.zip
           # Keep the fork's loose Zion code, but remove unusable Git LFS
           # placeholder files so packaged original art resolves from ZIP.
