@@ -154,6 +154,57 @@ jobs:
             exit 1
           fi
           test "$code" -eq 0 -o "$code" -eq 124
+      - name: Verify food gathering and Civic Centre deposit
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd binaries/system
+          set +e
+          timeout --signal=TERM 95s ./pyrogenesis -autostart="scenarios/arcadia" -autostart-victory=zion_gather -autostart-nonvisual -autostart-disable-replay -nosound -quickstart >zion-gather.log 2>&1
+          code=$?
+          set -e
+          grep -F "GAME STARTED, ALL INIT COMPLETE" zion-gather.log || { tail -100 zion-gather.log; exit 1; }
+          grep -F "ZION_GATHER_ORDER_OK" zion-gather.log || { tail -100 zion-gather.log; exit 1; }
+          grep -F "ZION_GATHER_DEPOSIT_VERIFIED" zion-gather.log || { tail -100 zion-gather.log; exit 1; }
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_(GATHER|CONSTRUCTION|COMBAT)_FAILED' zion-gather.log; then
+            tail -100 zion-gather.log
+            exit 1
+          fi
+          test "$code" -eq 0 -o "$code" -eq 124
+      - name: Verify house foundation construction and completion
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd binaries/system
+          set +e
+          timeout --signal=TERM 165s ./pyrogenesis -autostart="scenarios/arcadia" -autostart-victory=zion_construction -autostart-nonvisual -autostart-disable-replay -nosound -quickstart >zion-construction.log 2>&1
+          code=$?
+          set -e
+          grep -F "GAME STARTED, ALL INIT COMPLETE" zion-construction.log || { tail -100 zion-construction.log; exit 1; }
+          grep -F "ZION_CONSTRUCTION_PLACED" zion-construction.log || { tail -100 zion-construction.log; exit 1; }
+          grep -F "ZION_CONSTRUCTION_VERIFIED" zion-construction.log || { tail -100 zion-construction.log; exit 1; }
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_(GATHER|CONSTRUCTION|COMBAT)_FAILED' zion-construction.log; then
+            tail -100 zion-construction.log
+            exit 1
+          fi
+          test "$code" -eq 0 -o "$code" -eq 124
+      - name: Verify infantry attack damage against enemy unit
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd binaries/system
+          set +e
+          timeout --signal=TERM 75s ./pyrogenesis -autostart="scenarios/arcadia" -autostart-victory=zion_combat -autostart-nonvisual -autostart-disable-replay -nosound -quickstart >zion-combat.log 2>&1
+          code=$?
+          set -e
+          grep -F "GAME STARTED, ALL INIT COMPLETE" zion-combat.log || { tail -100 zion-combat.log; exit 1; }
+          grep -F "ZION_COMBAT_ORDER_OK" zion-combat.log || { tail -100 zion-combat.log; exit 1; }
+          grep -F "ZION_COMBAT_DAMAGE_VERIFIED" zion-combat.log || { tail -100 zion-combat.log; exit 1; }
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_(GATHER|CONSTRUCTION|COMBAT)_FAILED' zion-combat.log; then
+            tail -100 zion-combat.log
+            exit 1
+          fi
+          test "$code" -eq 0 -o "$code" -eq 124
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -164,3 +215,6 @@ jobs:
             binaries/system/zion-e2e.log
             binaries/system/zion-movement.log
             binaries/system/zion-training.log
+            binaries/system/zion-gather.log
+            binaries/system/zion-construction.log
+            binaries/system/zion-combat.log
