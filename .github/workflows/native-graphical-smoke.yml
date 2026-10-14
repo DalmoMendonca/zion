@@ -123,7 +123,7 @@ jobs:
           fi
           hud_ready=0
           for attempt in $(seq 1 150); do
-            if grep -Fq "ZION_HUD_REPORT_VISIBLE" graphical.log; then
+            if grep -Fq "ZION_SOCIAL_TICK_OK" graphical.log; then
               hud_ready=1
               break
             fi
@@ -175,7 +175,7 @@ jobs:
           file screenshots/zion-graphical.png
           grep -F "ZION_NATIVE_READY" binaries/system/graphical.log
           grep -F "GAME STARTED, ALL INIT COMPLETE" binaries/system/graphical.log
-          grep -F "ZION_HUD_REPORT_VISIBLE" binaries/system/graphical.log
+          grep -F "ZION_SOCIAL_TICK_OK" binaries/system/graphical.log
           if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|GUI object has no setting' binaries/system/graphical.log; then
             echo "Native GUI/engine diagnostics include errors or invalid styles"
             exit 1
