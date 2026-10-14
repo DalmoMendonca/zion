@@ -22,6 +22,16 @@ Roadmap scope is authoritative; GitHub issues are executable work packets with a
 - [#10: M9 accessibility, visual/audio and release quality](https://github.com/DalmoMendonca/zion/issues/10)
 
 
+## October 13, 2026 — additional native M1 evidence
+
+- [Rapid real-engine gameplay CI](https://github.com/DalmoMendonca/zion/actions/runs/38503235991) **PASSED**: worker walking/displacement, production queue worker spawn, real food gathering/deposit, house foundation and construction, infantry attack/damage, plus initialized Zion victory and civic research.
+- [Independent victories and adversarial native CI](https://github.com/DalmoMendonca/zion/actions/runs/38503106735) **PASSED**: each civic route independently won a different actual Pyrogenesis scenario. The third native scenario removed food reserves and real fields, inflicted 24 lethal casualties on each player through Health.TakeDamage, and verified two subsequent welfare evaluations rejected victory and recorded war strain.
+- **Important defect fixed:** 0 A.D. StatisticsTracker's enemyUnitsKilled.total and unitsLost.total remain zero; the class-specific .Unit counters are incremented. ZionVictory now uses the actual native Unit counters so wartime casualties affect societal memory.
+- **Economic exploit fixed:** social score no longer permanently credits historical diplomatic aid or penalizes ancient casualties; ecological food rewards now require newly gathered food, not merely idle farm fields. [Source/Node verification](https://github.com/DalmoMendonca/zion/actions/runs/38503235943) passed; normal economic balance remains unverified.
+- **Graphical assets:** older CI hit upstream Git LFS returning HTML instead of the expected asset OIDs ([failed example](https://github.com/DalmoMendonca/zion/actions/runs/38502158610)). New graphical workflow requests the genuine signed/checksummed 0 A.D. release-28 data archive instead; no success claim until asset restoration, gameplay rendering, visual screenshot review and clean logs are confirmed.
+- **Linux packaging:** experimental packaging workflow now restores the official art archive, strips unresolved LFS pointers and includes source licenses. A clean user installation and asset-complete package are **not yet verified**.
+- **Outstanding M1 acceptance:** rendered world+HUD and actual player mouse interaction at 720p and 1080p; sustained recovery after war; normal-length AI opponent match, normal non-injected progression, save/reload and deterministic replay; final desktop archive installation/playtest.
+
 ## October 13 native verification update
 
 - Both distinct civic pathways have won separate native Pyrogenesis matches: [independent victories CI](https://github.com/DalmoMendonca/zion/actions/runs/38493183565) passed. This is accelerated scripted testing, not a human-paced match.
