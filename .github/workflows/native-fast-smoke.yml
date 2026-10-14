@@ -6,7 +6,7 @@ on:
       - ".github/workflows/native-fast-smoke.yml"
       - "binaries/data/mods/public/maps/scripts/Zion*"
       - "binaries/data/mods/public/simulation/ai/petra/**"
-      - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion.json"
+      - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion*.json"
 permissions:
   contents: read
   actions: read
@@ -116,6 +116,25 @@ jobs:
             exit 1
           fi
           test "$code" -eq 0 -o "$code" -eq 124
+      - name: Verify native worker movement command
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd binaries/system
+          set +e
+          timeout --signal=TERM 24s ./pyrogenesis \\
+            -autostart="scenarios/arcadia" -autostart-victory=zion_movement \\
+            -autostart-nonvisual -autostart-disable-replay \\
+            -nosound -quickstart >zion-movement.log 2>&1
+          code=$?
+          set -e
+          grep -F "ZION_MOVEMENT_ORDER_OK" zion-movement.log
+          grep -F "ZION_MOVEMENT_VERIFIED" zion-movement.log
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_MOVEMENT_FAILED' zion-movement.log; then
+            tail -100 zion-movement.log
+            exit 1
+          fi
+          test "$code" -eq 0 -o "$code" -eq 124
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -124,3 +143,4 @@ jobs:
           path: |
             binaries/system/engine-smoke.log
             binaries/system/zion-e2e.log
+            binaries/system/zion-movement.log
