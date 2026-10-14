@@ -9,7 +9,8 @@ on:
       - ".github/workflows/native-graphical-smoke.yml"
       - "binaries/data/mods/public/gui/session/**"
       - "binaries/data/mods/public/simulation/components/GuiInterface.js"
-      - "binaries/data/mods/public/maps/scripts/Zion*"
+      - "binaries/data/mods/public/maps/scripts/ZionModel.js"
+      - "binaries/data/mods/public/maps/scripts/ZionVictory.js"
       - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion*.json"
 permissions:
   contents: read
