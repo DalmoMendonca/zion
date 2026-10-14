@@ -20,3 +20,8 @@ For each acceptance test, retain the engine log, screenshot or save artifact, ex
 2. Native scenario: natural phase prerequisites, queue-based research and both governance routes without phase grants.
 3. Ordinary Petra skirmish with recorded resource, construction, research and victory progress.
 4. Save/reload and replay continuation from the same deterministic seed.
+
+## Turn 2 / Turn 3 live checks
+
+- Clean source build workflow [38500703364](https://github.com/DalmoMendonca/zion/actions/runs/38500703364) and stricter dependency-manifest build [38500721310](https://github.com/DalmoMendonca/zion/actions/runs/38500721310) were both compiling third-party dependencies at inspection time; neither is counted as passed until complete.
+- Turn 3 asset verification baseline: [graphical workflow 38498563274](https://github.com/DalmoMendonca/zion/actions/runs/38498563274) successfully fetched real upstream LFS art and `sandbox_athenians.pmp`, rendered a 1280×720 gameplay frame, rejected loading parchment and black viewport, and asserted visible society HUD text. The CI screenshot artifact is [11864544622](https://github.com/DalmoMendonca/zion/actions/runs/38498563274/artifacts/11864544622). Animation and individual texture quality are not separately verified.
