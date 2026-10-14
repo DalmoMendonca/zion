@@ -135,6 +135,25 @@ jobs:
             exit 1
           fi
           test "$code" -eq 0 -o "$code" -eq 124
+      - name: Verify native unit training and population growth
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd binaries/system
+          set +e
+          timeout --signal=TERM 45s ./pyrogenesis \
+            -autostart="scenarios/arcadia" -autostart-victory=zion_training \
+            -autostart-nonvisual -autostart-disable-replay \
+            -nosound -quickstart >zion-training.log 2>&1
+          code=$?
+          set -e
+          grep -F "ZION_TRAINING_QUEUED" zion-training.log
+          grep -F "ZION_TRAINING_VERIFIED" zion-training.log
+          if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_TRAINING_FAILED' zion-training.log; then
+            tail -100 zion-training.log
+            exit 1
+          fi
+          test "$code" -eq 0 -o "$code" -eq 124
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -144,3 +163,4 @@ jobs:
             binaries/system/engine-smoke.log
             binaries/system/zion-e2e.log
             binaries/system/zion-movement.log
+            binaries/system/zion-training.log
