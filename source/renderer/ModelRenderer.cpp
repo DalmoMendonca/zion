@@ -370,6 +370,16 @@ void ModelRenderer::Render(
 			const CMaterial& material{model->GetMaterial()};
 			const CShaderDefines& defines{material.GetShaderDefines()};
 			const CStrIntern shaderEffect{material.GetShaderEffect(materialPass)};
+			if (shaderEffect.empty())
+			{
+				// Not every material supports every rendering pass. Do not
+				// request the nonsensical shaders/effects/.xml from the shader
+				// manager for an unsupported reflection/shadow/silhouette pass.
+				if (materialPass == CMaterial::Pass::MAIN)
+					ONCE(LOGERROR("A model has no main shader effect. Check the "
+						"installed art/materials definitions."));
+				continue;
+			}
 			SMRMaterialBucketKey key(shaderEffect, defines);
 
 			MaterialBuckets_t::iterator it = materialBuckets.find(key);
