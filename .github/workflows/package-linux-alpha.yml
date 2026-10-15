@@ -95,6 +95,39 @@ jobs:
                           removed+=1
           print("Removed stale LFS placeholder assets:",removed)
           PY
+          # The release-28 ZIP also contains old scripts. VFS defines no stable
+          # precedence between ZIP entries and loose files at equal priority.
+          # Restore licensed ART only so Zion's current gameplay/autostart code wins.
+          python3 - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          allow=("art/", "audio/", "fonts/", "maps/scenarios/", "maps/skirmishes/", "shaders/", "textures/")
+          public=Path("binaries/data/mods/public/public.zip")
+          target=public.parent
+          restored=0
+          with ZipFile(public) as archive:
+              assert "maps/scenarios/sandbox_athenians.pmp" in archive.namelist()
+              for member in archive.infolist():
+                  dest=target/member.filename
+                  if member.filename.startswith(allow) and not member.is_dir() and not dest.exists():
+                      archive.extract(member,target)
+                      restored+=1
+          assert restored>100, "No authentic public art restored"
+          public.unlink()
+          # The base mod's genuine fonts are required for GUI startup, but its
+          # scripts must not shadow this native fork's current bootstrap.
+          base=Path("binaries/data/mods/mod/mod.zip")
+          with ZipFile(base) as archive:
+              for member in archive.infolist():
+                  dest=base.parent/member.filename
+                  if member.filename.startswith("fonts/") and not member.is_dir() and not dest.exists():
+                      archive.extract(member,base.parent)
+          base.unlink()
+          for name in ("LinBiolinum_Rah.ttf", "LinBiolinum_RBah.ttf", "DejaVuSansMono.ttf"):
+              assert (Path("binaries/data/mods/mod/fonts")/name).stat().st_size>1024, "Missing GUI font "+name
+          assert (target/"maps/scenarios/sandbox_athenians.pmp").stat().st_size>100000
+          print("ZION_PACKAGE_ART_OK: authentic art restored without old script shadowing:",restored)
+          PY
           df -h .
       - name: Create relocatable Linux archive
         run: |
