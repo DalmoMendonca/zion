@@ -81,6 +81,7 @@ class ZionStatus
             "\nNEXT  " + (state.nextStep || "Maintain balanced flourishing") +
             (state.recoveryAction ? "\nRECOVERY  " + state.recoveryAction :
                 state.reliefApplied ? "\nRECOVERY  Civic relief funded" : "") +
+            (state.rebuilding ? "\nREBUILDING  " + state.reliefTicks + " funded cycles left" : "") +
             "\nSustained  " + state.sustained + " of " + state.needed +
             " qualifying evaluations";
         this.detailsPanel.tooltip = "Eight dimensions of collective welfare; changes are per evaluation. " +
