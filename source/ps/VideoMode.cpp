@@ -80,7 +80,8 @@ int DEFAULT_WINDOW_H = 768;
 int DEFAULT_FULLSCREEN_W = 1024;
 int DEFAULT_FULLSCREEN_H = 768;
 
-const wchar_t DEFAULT_CURSOR_NAME[] = L"default-arrow";
+// Current upstream cursor art is named arrow-default-down.png.
+const wchar_t DEFAULT_CURSOR_NAME[] = L"arrow-default-down";
 
 Renderer::Backend::Backend GetFallbackBackend(const Renderer::Backend::Backend backend)
 {
