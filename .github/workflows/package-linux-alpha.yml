@@ -10,7 +10,9 @@ on:
       - "tests/verify-linux-package.sh"
       - "binaries/data/mods/public/simulation/components/PlayerManager.js"
       - "binaries/data/mods/public/simulation/helpers/Player.js"
+      - "binaries/data/mods/public/gamesettings/attributes/PlayerCiv.js"
       - "tests/verify-legacy-player-civ.cjs"
+      - "tests/verify-game-settings-civ.cjs"
 permissions:
   contents: read
   actions: read
@@ -30,6 +32,8 @@ jobs:
         run: |
           node --check binaries/data/mods/public/simulation/helpers/Player.js
           node tests/verify-legacy-player-civ.cjs
+          node --check binaries/data/mods/public/gamesettings/attributes/PlayerCiv.js
+          node tests/verify-game-settings-civ.cjs
       - name: Find verified native engine
         id: engine
         env:
