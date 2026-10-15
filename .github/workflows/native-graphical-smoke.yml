@@ -139,8 +139,18 @@ jobs:
           assert count>100, "Official release art missing unexpectedly"
           print("Extracted authentic visual assets without replacing Zion scripts:",count)
           p.unlink()
-          # Native current fork has its own mod bootstrap scripts.
-          Path("binaries/data/mods/mod/mod.zip").unlink(missing_ok=True)
+          # Fonts are shipped in upstream base mod.zip, not public.zip.
+          # Restore only the licensed fonts, preserving Zion bootstrap scripts.
+          base=Path("binaries/data/mods/mod/mod.zip")
+          with ZipFile(base) as original_mod:
+              fonts=[entry for entry in original_mod.infolist() if entry.filename.startswith("fonts/") and not entry.is_dir()]
+              assert len(fonts)>=3, "Official base mod is missing font assets"
+              for entry in fonts:
+                  original_mod.extract(entry, Path("binaries/data/mods/mod"))
+          for font in ("LinBiolinum_Rah.ttf", "LinBiolinum_RBah.ttf", "DejaVuSansMono.ttf"):
+              assert (Path("binaries/data/mods/mod/fonts")/font).stat().st_size > 1024, "Missing rendered HUD font: "+font
+          print("Restored base-mod fonts:", len(fonts))
+          base.unlink()
           PY
       - name: Render actual 3D gameplay after the loading screen closes
         shell: bash
