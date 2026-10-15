@@ -167,6 +167,50 @@ jobs:
           print("Restored base-mod fonts:", len(fonts))
           base.unlink()
           PY
+      - name: Restore matching upstream development water and UI art
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The fork uses 0.29 development data. Release-28 art is a fallback
+          # only; it does not contain the current water, cursor and UI files.
+          GIT_LFS_SKIP_SMUDGE=1 timeout 360s git clone --depth 1 --filter=blob:none --sparse \
+            https://gitea.wildfiregames.com/0ad/0ad.git .upstream-dev
+          git -C .upstream-dev sparse-checkout set \
+            binaries/data/mods/public/art/textures/animated/water \
+            binaries/data/mods/public/art/textures/cursors \
+            binaries/data/mods/public/art/textures/misc \
+            binaries/data/mods/public/art/textures/ui \
+            binaries/data/mods/public/art/materials
+          git -C .upstream-dev rev-parse HEAD | tee .upstream-dev-revision.txt
+          timeout 480s git -C .upstream-dev -c lfs.url=https://gitea.wildfiregames.com/0ad/0ad.git/info/lfs \
+            lfs pull --include='binaries/data/mods/public/art/textures/animated/water/**,binaries/data/mods/public/art/textures/cursors/**,binaries/data/mods/public/art/textures/misc/**,binaries/data/mods/public/art/textures/ui/**' --exclude=''
+          python3 - <<'PY'
+          from pathlib import Path
+          from shutil import copy2
+          source = Path(".upstream-dev/binaries/data/mods/public/art")
+          dest = Path("binaries/data/mods/public/art")
+          required = [
+              "textures/animated/water/default/diffuse29.dds",
+              "textures/animated/water/ocean/normal0022.png",
+              "textures/cursors/default-arrow.png"
+          ]
+          for name in required:
+              path = source / name
+              assert path.is_file() and path.stat().st_size > 1024, f"Missing upstream 0.29 asset: {name}"
+              assert not path.read_bytes()[:80].startswith(b"version https://git-lfs.github.com/spec/v1"), f"Unresolved LFS pointer: {name}"
+          copied = 0
+          for file in source.rglob("*"):
+              if not file.is_file():
+                  continue
+              relative = file.relative_to(source)
+              if file.stat().st_size < 256 and file.read_bytes().startswith(b"version https://git-lfs.github.com/spec/v1"):
+                  raise RuntimeError(f"Unresolved upstream art pointer: {relative}")
+              target = dest / relative
+              target.parent.mkdir(parents=True, exist_ok=True)
+              copy2(file, target)
+              copied += 1
+          print(f"ZION_029_ART_RESTORED: {copied} art files")
+          PY
       - name: Render actual 3D gameplay after the loading screen closes
         shell: bash
         run: |
