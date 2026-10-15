@@ -290,8 +290,12 @@ jobs:
           sleep 3
           xdotool key --clearmodifiers shift+F8
           sleep 3
-          grep -F "Quicksaved game" graphical.log
-          grep -F "Quickloaded game" graphical.log
+          # C++ LOGMESSAGERENDER writes to the native mainlog.html rather than
+          # necessarily to process stdout/stderr (graphical.log).
+          mainlog="$HOME/.local/state/0ad/log/mainlog.html"
+          test -s "$mainlog"
+          grep -F "Quicksaved game" "$mainlog"
+          grep -F "Quickloaded game" "$mainlog"
           echo "ZION_NATIVE_QUICKSAVE_RELOAD_OK: simulation serializes and reloads via GUI"
           # The frame and live simulation are already verified. Do not waste
           # four additional minutes waiting for the 250s watchdog to expire.
@@ -378,6 +382,8 @@ jobs:
             screenshots/zion-selected.png
             screenshots/zion-ordered.png
             binaries/system/graphical.log
+            ~/.local/state/0ad/log/mainlog.html
+            ~/.local/state/0ad/log/interestinglog.html
 
       # GitHub's authenticated classic commit statuses are queryable even when
       # this connector cannot list Actions workflow runs. Preserve the exact
