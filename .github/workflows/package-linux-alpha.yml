@@ -50,6 +50,23 @@ jobs:
           test -n "$run_id" && test "$run_id" != "null"
           echo "Native engine build run: $run_id"
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+      - name: Verify binary and source revision compatibility
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ZION_NATIVE_RUN_ID: ${{ steps.engine.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          native_sha="$(gh api "repos/${{ github.repository }}/actions/runs/$ZION_NATIVE_RUN_ID" --jq '.head_sha')"
+          checkout_sha="$(git rev-parse HEAD)"
+          test -n "$native_sha" && test "$native_sha" != "null"
+          git fetch --quiet --no-tags --depth=1 origin "$native_sha"
+          if ! git diff --quiet "$native_sha" "$checkout_sha" -- source/ build/ libraries/; then
+            echo "::error::Compiled native engine ($native_sha) does not match this checkout ($checkout_sha) under source/, build/, or libraries/."
+            echo "A matching native build is required; never accept a mismatched binary."
+            exit 1
+          fi
+          echo "ZION_NATIVE_BINARY_SOURCE_MATCH_OK: engine=$native_sha checkout=$checkout_sha"
       - uses: actions/download-artifact@v4
         with:
           repository: DalmoMendonca/zion
