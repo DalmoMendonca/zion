@@ -55,6 +55,10 @@ fi
 grep -F "GAME STARTED, ALL INIT COMPLETE" "$log"
 grep -F "$order_marker" "$log"
 grep -F "$success_marker" "$log"
+if [[ "$mode" == "ai_observation" ]]; then
+  # The AI victory must be preceded by an actual civic research completion.
+  grep -F "ZION_AI_CIVIC_RESEARCH_OK" "$log"
+fi
 if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed|ZION_(GATHER|CONSTRUCTION|COMBAT|AI_OBSERVATION)_FAILED' "$log"; then
   tail -100 "$log"
   exit 1
