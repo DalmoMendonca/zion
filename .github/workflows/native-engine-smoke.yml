@@ -77,11 +77,36 @@ jobs:
           # match passes. Do not mistake a no-NVTT executable for a 3D build.
           test -f binaries/system/libCollada.so
           find binaries/system -maxdepth 1 -iname 'libnvtt*.so*' -print -quit | grep .
-      - name: Fetch real scenario data from the upstream LFS server
+      - name: Restore Arcadia terrain from checksum-verified upstream art
+        shell: bash
         run: |
-          git lfs install --local
-          git lfs pull --include='binaries/data/mods/public/maps/scenarios/arcadia.pmp' --exclude=''
-          test "$(stat -c %s binaries/data/mods/public/maps/scenarios/arcadia.pmp)" -gt 100000
+          set -euo pipefail
+          mkdir -p .upstream-native
+          (
+            cd .upstream-native
+            file="0ad-0.28.0-unix-data.tar.xz"
+            curl -fL --retry 4 --retry-delay 10 -o "$file" "https://releases.wildfiregames.com/$file"
+            curl -fL --retry 4 --retry-delay 10 -o "$file.sha256sum" "https://releases.wildfiregames.com/$file.sha256sum"
+            sha256sum -c "$file.sha256sum"
+          )
+          mkdir -p .upstream-native/unpacked
+          tar -xJf .upstream-native/0ad-0.28.0-unix-data.tar.xz -C .upstream-native/unpacked
+          public_zip="$(find .upstream-native/unpacked -type f -name public.zip -print -quit)"
+          test -n "$public_zip"
+          python3 - "$public_zip" <<'PY'
+          import shutil, sys
+          from pathlib import Path
+          from zipfile import ZipFile
+          dest = Path("binaries/data/mods/public/maps/scenarios/arcadia.pmp")
+          with ZipFile(sys.argv[1]) as archive:
+              entry = archive.getinfo("maps/scenarios/arcadia.pmp")
+              assert entry.file_size > 100_000, "Upstream Arcadia terrain is incomplete"
+              dest.parent.mkdir(parents=True, exist_ok=True)
+              with archive.open(entry) as source, dest.open("wb") as target:
+                  shutil.copyfileobj(source, target)
+          assert dest.stat().st_size > 100_000, "Arcadia terrain is still a Git LFS pointer"
+          print("ZION_NATIVE_TERRAIN_OK:", dest.stat().st_size)
+          PY
       - name: Run native Zion victory and assert initialization
         shell: bash
         run: |
