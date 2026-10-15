@@ -102,16 +102,13 @@ GameSettings.prototype.Attributes.PlayerCiv = class PlayerCiv extends GameSettin
 	_set(playerIndex, value)
 	{
 		const map = this._getMapData(playerIndex);
-		if (map)
-		{
-			this.values[playerIndex] = map;
-			this.locked[playerIndex] = true;
-		}
-		else
-		{
-			this.values[playerIndex] = value;
-			this.locked[playerIndex] = this.settings.map.type == "scenario";
-		}
+		// Historical 0.28 scenario metadata calls the Achaemenids "pers";
+		// 0.29 game data registers that same civilization as "achae".
+		// Normalize before GUI, AI and simulation settings are finalized.
+		const civ = map || value;
+		const compatibleCiv = civ == "pers" ? "achae" : civ;
+		this.values[playerIndex] = compatibleCiv;
+		this.locked[playerIndex] = !!map || this.settings.map.type == "scenario";
 	}
 
 	setValue(playerIndex, val)
