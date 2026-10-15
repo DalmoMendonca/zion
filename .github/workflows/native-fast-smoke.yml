@@ -5,16 +5,18 @@ on:
     paths:
       - ".github/workflows/native-fast-smoke.yml"
       - "tests/run-zion-native-mode.sh"
+      - "tests/restore-native-simulation-art.sh"
       - "binaries/data/mods/public/maps/scripts/Zion*"
       - "binaries/data/mods/public/simulation/ai/petra/**"
       - "binaries/data/mods/public/simulation/data/settings/victory_conditions/zion*.json"
 permissions:
   contents: read
   actions: read
+  statuses: write
 jobs:
   native-simulation:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 20
     env:
       GIT_LFS_SKIP_SMUDGE: "1"
     steps:
@@ -36,6 +38,23 @@ jobs:
           fi
           echo "Using compiled engine from run $run_id"
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+      - name: Verify selected binary matches current native C++ sources
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ZION_NATIVE_RUN_ID: ${{ steps.native.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          native_sha="$(gh api "repos/${{ github.repository }}/actions/runs/$ZION_NATIVE_RUN_ID" --jq '.head_sha')"
+          checkout_sha="$(git rev-parse HEAD)"
+          test -n "$native_sha" && test "$native_sha" != "null"
+          git fetch --quiet --no-tags --depth=1 origin "$native_sha"
+          if ! git diff --quiet "$native_sha" "$checkout_sha" -- source/ build/ libraries/; then
+            echo "::error::Rapid native gameplay would use a different C++ engine version than checkout."
+            echo "compiled=$native_sha checked_out=$checkout_sha"
+            exit 1
+          fi
+          echo "ZION_NATIVE_BINARY_SOURCE_MATCH_OK: engine=$native_sha checkout=$checkout_sha"
       - name: Restore precompiled Pyrogenesis engine
         uses: actions/download-artifact@v4
         with:
@@ -53,7 +72,7 @@ jobs:
             libgloox-dev libicu-dev libminiupnpc-dev libogg-dev \
             libopenal-dev libpng-dev libsdl2-dev libsodium-dev \
             libvorbis-dev libwxgtk3.2-dev libxml2-dev libxcursor-dev \
-            libgl1-mesa-dev libglu1-mesa-dev libvulkan-dev
+            libgl1-mesa-dev libglu1-mesa-dev libvulkan-dev subversion
       - name: Locate executable and game engine shared libraries
         run: |
           set -euxo pipefail
@@ -69,23 +88,11 @@ jobs:
           ldd binaries/system/pyrogenesis
           ! ldd binaries/system/pyrogenesis | grep 'not found'
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
-      - name: Obtain original scenario assets for nonvisual simulation
+      - name: Restore genuine native scenario and citizen animations
+        shell: bash
         run: |
-          git lfs install --local
-          git lfs pull --include="binaries/data/mods/public/maps/scenarios/arcadia.pmp,binaries/data/mods/public/art/animation/biped/citizen/idle_relax_f.dae,binaries/data/mods/public/art/animation/biped/citizen/walk_relax_f.dae,binaries/data/mods/public/art/animation/biped/citizen/build.dae,binaries/data/mods/public/art/animation/biped/gatherer/farming.dae,binaries/data/mods/public/art/animation/biped/gatherer/gather_wood.dae,binaries/data/mods/public/art/animation/biped/gatherer/carry_grain_f.dae" --exclude=""
-      - name: Verify actual restored citizen, harvesting and construction animation files
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          paths = ["binaries/data/mods/public/art/animation/biped/citizen/idle_relax_f.dae","binaries/data/mods/public/art/animation/biped/citizen/walk_relax_f.dae","binaries/data/mods/public/art/animation/biped/citizen/build.dae","binaries/data/mods/public/art/animation/biped/gatherer/farming.dae","binaries/data/mods/public/art/animation/biped/gatherer/gather_wood.dae","binaries/data/mods/public/art/animation/biped/gatherer/carry_grain_f.dae"]
-          for raw in paths:
-              p = Path(raw)
-              data = p.read_bytes()
-              assert len(data) > 512, f"Missing or unhydrated animation: {p} ({len(data)} bytes)"
-              assert not data.startswith(b"version https://git-lfs.github.com/spec/v1"), f"LFS pointer: {p}"
-              assert b"COLLADA" in data[:8192], f"Not a COLLADA animation: {p}"
-              print(f"ZION_ANIMATION_ASSET_OK: {p} ({len(data)} bytes)")
-          PY
+          bash -n tests/restore-native-simulation-art.sh
+          bash tests/restore-native-simulation-art.sh binaries/data/mods/public
       - name: Launch built engine with current Zion scripts
         shell: bash
         run: |
@@ -209,3 +216,19 @@ jobs:
             binaries/system/zion-construction.log
             binaries/system/zion-combat.log
             binaries/system/zion-ai_observation.log
+
+      - name: Publish verifiable rapid native gameplay gate result
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ZION_JOB_RESULT: ${{ job.status }}
+          ZION_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if [[ "$ZION_JOB_RESULT" == "success" ]]; then state=success; else state=failure; fi
+          gh api --method POST "repos/${{ github.repository }}/statuses/${{ github.sha }}" \
+            -f state="$state" \
+            -f context="zion/native-gameplay" \
+            -f description="Native worker, building, combat, Petra AI and civic tests" \
+            -f target_url="$ZION_RUN_URL"
+          echo "ZION_CI_GATE_REPORTED: zion/native-gameplay $state at ${{ github.sha }} $ZION_RUN_URL"
