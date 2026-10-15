@@ -31,6 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
           lfs: false
           fetch-depth: 1
       - name: Check native player setup and color preservation
@@ -42,7 +43,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          run_id="$(gh api 'repos/DalmoMendonca/zion/actions/artifacts?name=zion-native-linux-smoke&per_page=50' --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | first | .workflow_run.id')"
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            # Match the engine artifact to the exact source commit checked out above.
+            run_id="${{ github.event.workflow_run.id }}"
+          else
+            # JS-only push: reuse the latest compiled C++ engine artifact.
+            run_id="$(gh api 'repos/DalmoMendonca/zion/actions/artifacts?name=zion-native-linux-smoke&per_page=50' --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | first | .workflow_run.id')"
+          fi
           test -n "$run_id"
           test "$run_id" != "null"
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
