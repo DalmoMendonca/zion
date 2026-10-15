@@ -17,7 +17,14 @@ PlayerManager.prototype.AddPlayer = function(templateName)
 {
 	const ent = Engine.AddEntity(templateName);
 	const id = this.playerEntities.length;
-	Engine.QueryInterface(ent, IID_Player).SetPlayerID(id);
+	const cmpPlayer = Engine.QueryInterface(ent, IID_Player);
+	cmpPlayer.SetPlayerID(id);
+
+	// Renderers can request a player color before LoadPlayerSettings assigns
+	// the map-specific one. Never expose an uninitialized CColor to the engine.
+	const defaults = Engine.ReadJSONFile("simulation/data/settings/player_defaults.json").PlayerData;
+	const color = defaults[id]?.Color || { "r": 128, "g": 128, "b": 128 };
+	cmpPlayer.SetColor(color.r, color.g, color.b);
 	this.playerEntities.push(ent);
 
 	const newDiplo = [];
@@ -59,7 +66,11 @@ PlayerManager.prototype.ReplacePlayerTemplate = function(id, newTemplateName)
 	newCmpPlayer.SetPlayerID(id);
 	this.playerEntities[id] = ent;
 
-	newCmpPlayer.SetColor(oldCmpPlayer.GetColor());
+	// GetColor returns normalized channels, while SetColor accepts 0..255
+	// channel arguments (not a color object).
+	const oldColor = oldCmpPlayer.GetColor();
+	if (oldColor)
+		newCmpPlayer.SetColor(oldColor.r * 255, oldColor.g * 255, oldColor.b * 255);
 	Engine.QueryInterface(ent, IID_Diplomacy).SetDiplomacy(Engine.QueryInterface(oldent, IID_Diplomacy).GetDiplomacy());
 
 	Engine.BroadcastMessage(MT_PlayerEntityChanged, {
