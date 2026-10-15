@@ -9,6 +9,8 @@ on:
       - ".github/workflows/package-linux-alpha.yml"
       - "tests/verify-linux-package.sh"
       - "binaries/data/mods/public/simulation/components/PlayerManager.js"
+      - "binaries/data/mods/public/simulation/helpers/Player.js"
+      - "tests/verify-legacy-player-civ.cjs"
 permissions:
   contents: read
   actions: read
@@ -24,6 +26,10 @@ jobs:
         with:
           ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
           lfs: false
+      - name: Check native legacy civilization mapping
+        run: |
+          node --check binaries/data/mods/public/simulation/helpers/Player.js
+          node tests/verify-legacy-player-civ.cjs
       - name: Find verified native engine
         id: engine
         env:
