@@ -36,22 +36,26 @@ with tarfile.open(sys.argv[1], "r:gz") as archive:
 PY
 root="$sandbox/ZionAD"
 for file in play-zion.sh binaries/system/pyrogenesis \
-  binaries/data/mods/public/public.zip binaries/data/mods/mod/mod.zip \
+  binaries/data/mods/public/maps/scenarios/arcadia.pmp \
+  binaries/data/mods/public/maps/scenarios/sandbox_athenians.pmp \
   binaries/data/mods/public/maps/scripts/ZionVictory.js LICENSE.md; do
   test -s "$root/$file" || { echo "Missing packaged asset: $file" >&2; exit 1; }
 done
 python3 - "$root" <<'PY'
 from pathlib import Path
-from zipfile import ZipFile
 import sys
 root=Path(sys.argv[1])
-with ZipFile(root/"binaries/data/mods/mod/mod.zip") as archive:
-    names=set(archive.namelist())
-    for font in ("LinBiolinum_Rah.ttf","LinBiolinum_RBah.ttf","DejaVuSansMono.ttf"):
-        assert "fonts/"+font in names, "Required base-mod font missing: "+font
-with ZipFile(root/"binaries/data/mods/public/public.zip") as archive:
-    assert "maps/scenarios/arcadia.pmp" in archive.namelist(), "Native Arcadia terrain missing"
-print("ZION_PACKAGE_ASSETS_OK: verified original licensed fonts and terrain")
+base=root/"binaries/data/mods/mod"
+public=root/"binaries/data/mods/public"
+for font in ("LinBiolinum_Rah.ttf","LinBiolinum_RBah.ttf","DejaVuSansMono.ttf"):
+    p=base/"fonts"/font
+    assert p.is_file() and p.stat().st_size>1024, "Required base-mod font missing: "+font
+assert (public/"maps/scenarios/arcadia.pmp").stat().st_size>100_000, "Native terrain missing"
+assert (public/"maps/scenarios/sandbox_athenians.pmp").stat().st_size>100_000, "Sandbox terrain missing"
+assert not (public/"public.zip").exists(), "Old upstream ZIP can shadow current Zion scripts"
+assert not (base/"mod.zip").exists(), "Old bootstrap ZIP can shadow current Zion scripts"
+assert (public/"art").is_dir(), "Actor artwork missing"
+print("ZION_PACKAGE_ASSETS_OK: verified original licensed fonts, terrain and fork script isolation")
 PY
 cd "$root/binaries/system"
 export LD_LIBRARY_PATH="$PWD:${LD_LIBRARY_PATH:-}"
