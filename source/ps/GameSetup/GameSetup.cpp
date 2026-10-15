@@ -795,10 +795,15 @@ bool Autostart(const CmdLineArgs& args)
 
 	JS::RootedValue resultValue{rq.cx};
 	JS::RootedValue global(rq.cx, rq.globalValue());
-	if (!Script::Function::Call(rq, global,
+	// A failed script or a non-object result must not be passed to
+	// JS::IsPromiseObject below. Both cases previously produced a crash when
+	// autostart scripts could not initialize in a clean installation.
+	const bool autostartSucceeded = Script::Function::Call(rq, global,
 		args.Has("autostart-client") ? "autostartClient" : "autostartHost", &resultValue,
-		cmdLineArgs, args.Has("autostart-host")) && !resultValue.isObject())
+		cmdLineArgs, args.Has("autostart-host"));
+	if (!autostartSucceeded || !resultValue.isObject())
 	{
+		LOGERROR("Autostart failed or returned a non-object value; check script and mod diagnostics.");
 		return false;
 	}
 
