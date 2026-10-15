@@ -127,6 +127,10 @@ jobs:
           rc=$?
           set -e
           cat .package-test/launch.log
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::Extracted package exited unsuccessfully (exit $rc)"
+            exit 1
+          fi
           if [ "$rc" -eq 139 ] || [ "$rc" -eq 134 ]; then
             echo "::error::Extracted package crashed (exit $rc)"
             exit 1
