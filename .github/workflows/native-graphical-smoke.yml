@@ -133,7 +133,9 @@ jobs:
               names=game.namelist()
               assert any(x.endswith("maps/scenarios/sandbox_athenians.pmp") for x in names), "Sandbox terrain missing from official game data"
               for entry in game.infolist():
-                  if entry.filename.startswith(allow):
+                  destination=target/entry.filename
+                  if entry.filename.startswith(allow) and not entry.is_dir() and not destination.exists():
+                      # Keep the newer fork's scenario XML, scripts and artwork where present.
                       game.extract(entry,target)
                       count+=1
           assert count>100, "Official release art missing unexpectedly"
