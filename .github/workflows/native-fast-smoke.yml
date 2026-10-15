@@ -218,7 +218,9 @@ jobs:
         id: native_ai
         continue-on-error: true
         shell: bash
-        run: bash tests/run-zion-native-mode.sh ai_observation ZION_AI_OPPONENT_ACTIVE ZION_AI_CIVIC_RESEARCH_OK 105
+        run: |
+          bash tests/run-zion-native-mode.sh ai_observation ZION_AI_OPPONENT_ACTIVE \
+            'ZION_FIRST_COVENANT_WON: player 2' 105
       - name: Enforce all independent native integration results
         if: always()
         run: |
