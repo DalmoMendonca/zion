@@ -26,17 +26,41 @@ jobs:
           fetch-depth: 1
       # An engine binary may be valid even if a script smoke test failed later.
       # Select the newest retained artifact, not just a run with success status.
-      - name: Discover newest compiled Pyrogenesis artifact
+      - name: Select source-compatible compiled engine for this checkout or triggering runDiscover newest compiled Pyrogenesis artifact
         id: native
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          run_id="$(gh api 'repos/DalmoMendonca/zion/actions/artifacts?name=zion-native-linux-smoke&per_page=50' --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | first | .workflow_run.id')"
-          if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
-            echo "No compiled native engine artifact is retained."
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            # The triggering native build must match the checked-out revision.
+            run_id="${{ github.event.workflow_run.id }}"
+            test -n "$run_id"
+          else
+            # Build artifacts can finish in a different order from commits.
+            # Do not mistake most-recent upload time for most-recent source.
+            # Check the compiled C++ source trees, not the artifact timestamp.
+            run_id=""
+            while IFS=$'\t' read -r candidate candidate_sha; do
+              test -n "$candidate" && test -n "$candidate_sha" || continue
+              git fetch --quiet --no-tags --depth=1 origin "$candidate_sha"
+              if git diff --quiet "$candidate_sha" HEAD -- source/ build/ libraries/; then
+                run_id="$candidate"
+                echo "ZION_NATIVE_COMPATIBLE_ARTIFACT: $candidate at $candidate_sha"
+                break
+              fi
+              echo "Skipping incompatible engine artifact $candidate ($candidate_sha)"
+            done < <(
+              gh api 'repos/${{ github.repository }}/actions/artifacts?name=zion-native-linux-smoke&per_page=100' \
+                --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | .[] | [.workflow_run.id, .workflow_run.head_sha] | @tsv'
+            )
+          fi
+          if [[ -z "$run_id" || "$run_id" == "null" ]]; then
+            echo "::error::No retained Pyrogenesis engine artifact matches checked-out C++ sources."
             exit 1
           fi
-          echo "Using compiled engine from run $run_id"
+          echo "ZION_NATIVE_SELECTED_RUN=$run_id"
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
       - name: Verify selected binary matches current native C++ sources
         shell: bash
