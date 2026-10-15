@@ -70,7 +70,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            xvfb xauth scrot mesa-utils libgl1-mesa-dri git-lfs python3-pil \
+            xvfb xauth scrot xdotool mesa-utils libgl1-mesa-dri git-lfs python3-pil \
             libboost-dev libboost-system-dev libboost-filesystem-dev \
             libcurl4-gnutls-dev libenet-dev libfmt-dev libfreetype-dev \
             libgloox-dev libicu-dev libminiupnpc-dev libogg-dev \
@@ -266,6 +266,21 @@ jobs:
           fi
           sleep 2
           scrot -o ../../screenshots/zion-graphical.png
+          # Exercise the ACTUAL SDL/X11 RTS input path, rather than merely
+          # asserting that the interface code contains selection handlers.
+          # These coordinates enclose the controllable soldiers in the fixed
+          # sandbox_athenians screenshot at 1280x720 (central plaza).
+          xdotool mousemove --sync 690 360 mousedown 1
+          sleep 0.2
+          xdotool mousemove --sync 856 503
+          sleep 0.2
+          xdotool mouseup 1
+          sleep 2
+          scrot -o ../../screenshots/zion-selected.png
+          # An unobstructed plaza target; right click gives a real RTS order.
+          xdotool mousemove --sync 915 360 click 3
+          sleep 8
+          scrot -o ../../screenshots/zion-ordered.png
           # The frame and live simulation are already verified. Do not waste
           # four additional minutes waiting for the 250s watchdog to expire.
           kill -TERM "$pid" 2>/dev/null || true
@@ -304,6 +319,34 @@ jobs:
           print("Society HUD bright text pixels:",white_text)
           assert white_text>=30, "Society HUD is not visible in captured frame"
           PY
+          python3 - <<'PY'
+          from PIL import Image, ImageChops
+          baseline = Image.open("screenshots/zion-graphical.png").convert("RGB")
+          selected = Image.open("screenshots/zion-selected.png").convert("RGB")
+          ordered = Image.open("screenshots/zion-ordered.png").convert("RGB")
+          for frame in (selected, ordered):
+              assert frame.size == baseline.size, "RTS input capture changed display resolution"
+          # Bottom game controls are normally blank without a selection;
+          # selected entities populate the native unit command/details UI.
+          box = (332, 526, 1275, 710)
+          before = baseline.crop(box)
+          after = selected.crop(box)
+          import numpy as np
+          a = np.asarray(before, dtype=np.int16)
+          b = np.asarray(after, dtype=np.int16)
+          changed = np.any(np.abs(a-b) > 28, axis=2)
+          fraction = float(np.mean(changed))
+          print("ZION_RTS_SELECTION_PANEL_PIXEL_CHANGE:", round(fraction, 4))
+          assert fraction > 0.01, "Mouse drag did not visibly populate native RTS selection panel"
+          world = (680, 355, 990, 510)
+          a = np.asarray(selected.crop(world), dtype=np.int16)
+          b = np.asarray(ordered.crop(world), dtype=np.int16)
+          changed = np.any(np.abs(a-b) > 35, axis=2)
+          fraction = float(np.mean(changed))
+          print("ZION_RTS_ORDER_WORLD_PIXEL_CHANGE:", round(fraction, 4))
+          assert fraction > 0.005, "Right-click order caused no visible world change"
+          print("ZION_RTS_INPUT_VISUAL_OK: live native GUI responded to drag selection and right click")
+          PY
           tail -75 binaries/system/graphical.log
           file screenshots/zion-graphical.png
           grep -F "ZION_NATIVE_READY" binaries/system/graphical.log
@@ -320,4 +363,6 @@ jobs:
           if-no-files-found: warn
           path: |
             screenshots/zion-graphical.png
+            screenshots/zion-selected.png
+            screenshots/zion-ordered.png
             binaries/system/graphical.log
