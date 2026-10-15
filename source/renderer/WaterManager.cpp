@@ -196,7 +196,9 @@ int WaterManager::LoadWaterTextures()
 	// Load diffuse grayscale images (for non-fancy water)
 	for (size_t i = 0; i < ARRAY_SIZE(m_WaterTexture); ++i)
 	{
-		swprintf_s(pathname, ARRAY_SIZE(pathname), L"art/textures/animated/water/default/diffuse%02d.dds", (int)i+1);
+		// The current upstream water art ships 60 animated noise frames; the
+		// old default/diffuseNN.dds sequence no longer exists.
+		swprintf_s(pathname, ARRAY_SIZE(pathname), L"art/textures/animated/water/noise/normal%02d.dds", (int)i+1);
 		CTextureProperties textureProps(pathname);
 		textureProps.SetAddressMode(
 			Renderer::Backend::Sampler::AddressMode::REPEAT);
@@ -450,7 +452,10 @@ void WaterManager::ReloadWaterNormalTextures()
 	wchar_t pathname[PATH_MAX];
 	for (size_t i = 0; i < ARRAY_SIZE(m_NormalMap); ++i)
 	{
-		swprintf_s(pathname, ARRAY_SIZE(pathname), L"art/textures/animated/water/%ls/normal00%02d.png", m_WaterType.c_str(), static_cast<int>(i) + 1);
+		// Historical maps use 'ocean', while the current upstream art ships
+		// normal-map animations under lake/ and clap/, not ocean/.
+		const wchar_t* textureType = m_WaterType == L"ocean" ? L"lake" : m_WaterType.c_str();
+		swprintf_s(pathname, ARRAY_SIZE(pathname), L"art/textures/animated/water/%ls/normal00%02d.png", textureType, static_cast<int>(i) + 1);
 		CTextureProperties textureProps(pathname);
 		textureProps.SetAddressMode(
 			Renderer::Backend::Sampler::AddressMode::REPEAT);
