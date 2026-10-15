@@ -281,6 +281,16 @@ jobs:
           xdotool mousemove --sync 915 360 click 3
           sleep 8
           scrot -o ../../screenshots/zion-ordered.png
+          # Native simulation serialization round-trip via the normal GUI
+          # shortcuts (Shift+F5 quicksave / Shift+F8 quickload). This is
+          # in-memory quicksave, not yet disk save/reload acceptance.
+          xdotool key --clearmodifiers shift+F5
+          sleep 3
+          xdotool key --clearmodifiers shift+F8
+          sleep 3
+          grep -F "Quicksaved game" graphical.log
+          grep -F "Quickloaded game" graphical.log
+          echo "ZION_NATIVE_QUICKSAVE_RELOAD_OK: simulation serializes and reloads via GUI"
           # The frame and live simulation are already verified. Do not waste
           # four additional minutes waiting for the 250s watchdog to expire.
           kill -TERM "$pid" 2>/dev/null || true
