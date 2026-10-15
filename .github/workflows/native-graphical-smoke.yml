@@ -22,6 +22,7 @@ on:
 permissions:
   contents: read
   actions: read
+  statuses: write
 jobs:
   graphical:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
@@ -340,3 +341,27 @@ jobs:
             screenshots/zion-selected.png
             screenshots/zion-ordered.png
             binaries/system/graphical.log
+
+      # GitHub's authenticated classic commit statuses are queryable even when
+      # this connector cannot list Actions workflow runs. Preserve the exact
+      # triggering source revision and permanent job URL for diagnostics.
+      - name: Publish verifiable native gate result
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ZION_SOURCE_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+          ZION_JOB_RESULT: ${{ job.status }}
+          ZION_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if [[ "$ZION_JOB_RESULT" == "success" ]]; then
+            state=success
+          else
+            state=failure
+          fi
+          gh api --method POST "repos/${{ github.repository }}/statuses/$ZION_SOURCE_SHA" \
+            -f state="$state" \
+            -f context="zion/graphical" \
+            -f description="Rendered native gameplay and GUI controls" \
+            -f target_url="$ZION_RUN_URL"
+          echo "ZION_CI_GATE_REPORTED: zion/graphical $state at $ZION_SOURCE_SHA $ZION_RUN_URL"
