@@ -2,6 +2,13 @@
 
 **Status:** active native-engine development. **Source of truth:** this document for execution, [GAMEPLAY-CONTRACT](docs/GAMEPLAY-CONTRACT.md) for the eight player-approved design decisions, and [ZION-VISION](ZION-VISION.md) for the long-term premise. **Updated:** October 13, 2026.
 
+
+## Playable-alpha scope freeze — October 14, 2026
+
+Until graphical player control and a clean extracted Linux launch are verified in actual Pyrogenesis runs, do not extend eras, social features or cosmetic HUD functionality. Prioritize graphical initialization, launcher crash, then a normal AI match and save/reload. A test script or queued GitHub Action is not an accepted playable build.
+
+**Unverified implementation fixes published:** `365586f` initializes player colors before render and repairs color preservation during template replacement; `ccbe728` corrects removal broadcasts. Linux startup diagnostics are now integrated in `0b82cf1`/`c0608c7`; `fcfdb84` and `604ca5b` route actual player-color changes through graphical CI. No completed clean graphical frame, packaged launch, AI match or save/reload acceptance is claimed from these commits. Next task is inspect the resulting CI jobs and iterate on concrete errors.
+
 Zion A.D. is a **genuine fork** of 0 A.D. / Pyrogenesis. It is a real-time 3D civilization strategy game in which ordinary workers, construction, warfare and control remain familiar, but institutions, laws, economics, relationships, cultural maturation and ecological stewardship change what civilization can become over an alternative two-thousand-year journey. Multiple political and cultural arrangements may cultivate Zion; no ideology gets an automatic victory.
 
 This is an **implementation plan**, not a list of features already delivered. No invented deadline, release date, or percentage complete. Each stage ends in a playable and verified game state, never just mockups. All release gates below are cumulative: passing a source check does not imply gameplay quality.
