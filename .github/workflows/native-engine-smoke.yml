@@ -97,43 +97,55 @@ jobs:
           import shutil, sys
           from pathlib import Path
           from zipfile import ZipFile
-          dest = Path("binaries/data/mods/public/maps/scenarios/arcadia.pmp")
           with ZipFile(sys.argv[1]) as archive:
-              entry = archive.getinfo("maps/scenarios/arcadia.pmp")
-              assert entry.file_size > 100_000, "Upstream Arcadia terrain is incomplete"
-              dest.parent.mkdir(parents=True, exist_ok=True)
-              with archive.open(entry) as source, dest.open("wb") as target:
-                  shutil.copyfileobj(source, target)
-          assert dest.stat().st_size > 100_000, "Arcadia terrain is still a Git LFS pointer"
-          print("ZION_NATIVE_TERRAIN_OK:", dest.stat().st_size)
+              for name in ("arcadia", "sandbox_athenians"):
+                  dest = Path("binaries/data/mods/public/maps/scenarios") / (name+".pmp")
+                  entry = archive.getinfo("maps/scenarios/"+name+".pmp")
+                  assert entry.file_size > 100_000, "Upstream "+name+" terrain is incomplete"
+                  dest.parent.mkdir(parents=True, exist_ok=True)
+                  with archive.open(entry) as source, dest.open("wb") as target:
+                      shutil.copyfileobj(source, target)
+                  assert dest.stat().st_size > 100_000, "Map is still a Git LFS pointer"
+                  print("ZION_NATIVE_TERRAIN_OK:",name,dest.stat().st_size)
           PY
       - name: Run native Zion victory and assert initialization
         shell: bash
         run: |
           mkdir -p "$HOME/.local/share/0ad/mods"
           cd binaries/system
-          set +e
-          timeout --signal=TERM 9s ./pyrogenesis \
-            -autostart="scenarios/arcadia" \
+          # The lightweight native sandbox uses 234 entities, whereas Arcadia
+          # has 4,205 and can exceed a hard nine-second startup deadline.
+          timeout --signal=TERM --kill-after=5s 120s ./pyrogenesis \
+            -autostart="scenarios/sandbox_athenians" \
             -autostart-victory=zion \
             -autostart-nonvisual \
             -autostart-disable-replay \
-            -nosound -quickstart >engine-smoke.log 2>&1
-          code=$?
-          set -e
-          echo "Pyrogenesis exit: $code"
-          grep -F "GAME STARTED, ALL INIT COMPLETE" engine-smoke.log
-          grep -F "ZION_NATIVE_READY" engine-smoke.log
-          grep -F "ZION_GOVERNANCE_TECH_OK" engine-smoke.log
-          grep -F "ZION_SOCIAL_TICK_OK" engine-smoke.log
+            -nosound -quickstart >engine-smoke.log 2>&1 &
+          pid=$!
+          ready=0
+          for attempt in $(seq 1 105); do
+            if grep -Fq "GAME STARTED, ALL INIT COMPLETE" engine-smoke.log && \
+               grep -Fq "ZION_NATIVE_READY" engine-smoke.log && \
+               grep -Fq "ZION_GOVERNANCE_TECH_OK" engine-smoke.log && \
+               grep -Fq "ZION_SOCIAL_TICK_OK" engine-smoke.log; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$pid" 2>/dev/null; then break; fi
+            sleep 1
+          done
+          kill -TERM "$pid" 2>/dev/null || true
+          wait "$pid" 2>/dev/null || true
+          tail -80 engine-smoke.log
+          if [ "$ready" -ne 1 ]; then
+            echo "Native game did not initialize and advance to a society report"
+            exit 1
+          fi
           if grep -Ei '(^| )ERROR:|JavaScript error:|unhandled exception|assertion failed' engine-smoke.log; then
             echo "Unexpected Pyrogenesis JavaScript or simulation error."
             exit 1
           fi
-          if [ "$code" -ne 0 ] && [ "$code" -ne 124 ]; then
-            exit "$code"
-          fi
-          echo "Native Zion script loaded cleanly in Pyrogenesis"
+          echo "ZION_NATIVE_ENGINE_OK: headless Pyrogenesis began a real match and sampled society"
       - name: Upload diagnostics and native binary
         if: always()
         uses: actions/upload-artifact@v4
