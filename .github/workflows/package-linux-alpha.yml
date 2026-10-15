@@ -111,6 +111,36 @@ jobs:
           TXT
           tar -C dist -czf ZionAD-linux-alpha.tar.gz ZionAD
           ls -lh ZionAD-linux-alpha.tar.gz
+      - name: Smoke test extracted player package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .package-test
+          tar -xzf ZionAD-linux-alpha.tar.gz -C .package-test
+          test -x .package-test/ZionAD/play-zion.sh
+          test -s .package-test/ZionAD/binaries/data/mods/public/public.zip
+          test -s .package-test/ZionAD/binaries/data/mods/mod/mod.zip
+          mkdir -p .package-test/home
+          export HOME="$PWD/.package-test/home"
+          set +e
+          timeout --signal=TERM --kill-after=5s 60s .package-test/ZionAD/play-zion.sh -autostart=scenarios/arcadia -autostart-victory=zion -autostart-nonvisual -autostart-disable-replay -nosound > .package-test/launch.log 2>&1
+          rc=$?
+          set -e
+          cat .package-test/launch.log
+          if [ "$rc" -eq 139 ] || [ "$rc" -eq 134 ]; then
+            echo "::error::Extracted package crashed (exit $rc)"
+            exit 1
+          fi
+          if ! grep -Eq "ZION_|GAME STARTED" .package-test/launch.log; then
+            echo "::error::Extracted package did not reach a native game session (exit $rc)"
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ZionAD-linux-package-smoke-log
+          path: .package-test/launch.log
+          if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         with:
           name: ZionAD-linux-alpha
