@@ -32,6 +32,7 @@
 #include "graphics/TextureManager.h"
 #include "lib/alignment.h"
 #include "lib/allocators/STLAllocators.h"
+#include "lib/code_generation.h"
 #include "lib/debug.h"
 #include "lib/hash.h"
 #include "maths/Matrix3D.h"
