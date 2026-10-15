@@ -156,7 +156,8 @@ PlayerManager.prototype.RemoveLastPlayer = function()
 
 	const lastId = this.playerEntities.pop();
 	Engine.BroadcastMessage(MT_PlayerEntityChanged, {
-		"player": this.playerEntities.length + 1,
+		// The removed player occupied the index that is now the new length.
+		"player": this.playerEntities.length,
 		"from": lastId,
 		"to": INVALID_ENTITY
 	});
