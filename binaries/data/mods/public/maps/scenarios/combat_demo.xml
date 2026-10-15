@@ -30,7 +30,9 @@
   "Keywords": ["demo"],
   "PlayerData": [
     {
-      "Civ": "athen"
+      "Civ": "athen",
+      "Name": "Athenian Defenders",
+      "Color": {"r": 46, "g": 100, "b": 200}
     },
     {
       "Civ": "athen",
