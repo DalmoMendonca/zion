@@ -1,6 +1,9 @@
 name: Package Zion A.D. Linux alpha
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Build and smoke-test Pyrogenesis"]
+    types: [completed]
   push:
     paths:
       - ".github/workflows/package-linux-alpha.yml"
@@ -11,6 +14,7 @@ permissions:
   actions: read
 jobs:
   package:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
@@ -18,6 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
           lfs: false
       - name: Find verified native engine
         id: engine
@@ -25,8 +30,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          run_id="$(gh api 'repos/DalmoMendonca/zion/actions/artifacts?name=zion-native-linux-smoke&per_page=50' --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | first | .workflow_run.id')"
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            run_id="${{ github.event.workflow_run.id }}"
+          else
+            run_id="$(gh api 'repos/DalmoMendonca/zion/actions/artifacts?name=zion-native-linux-smoke&per_page=50' --jq '[.artifacts[] | select(.expired == false)] | sort_by(.created_at) | reverse | first | .workflow_run.id')"
+          fi
           test -n "$run_id" && test "$run_id" != "null"
+          echo "Native engine build run: $run_id"
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
         with:
