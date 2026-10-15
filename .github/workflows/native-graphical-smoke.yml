@@ -266,12 +266,16 @@ jobs:
           fi
           sleep 2
           scrot -o ../../screenshots/zion-graphical.png
+          # The frame and live simulation are already verified. Do not waste
+          # four additional minutes waiting for the 250s watchdog to expire.
+          kill -TERM "$pid" 2>/dev/null || true
           set +e
           wait "$pid"
           code=$?
           set -e
           echo "GRAPHICAL_ENGINE_EXIT=$code"
-          test "$code" -eq 0 -o "$code" -eq 124
+          # 143 is the expected explicit termination after capture.
+          test "$code" -eq 0 -o "$code" -eq 143
           SH
           xvfb-run -a -s '-screen 0 1280x720x24' bash ./capture-zion.sh
           test -s screenshots/zion-graphical.png
