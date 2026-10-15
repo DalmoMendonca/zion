@@ -118,6 +118,13 @@ function LoadPlayerSettings(settings, newPlayers)
 
 function GetPlayerTemplateName(civ)
 {
+	// Pre-0.29 scenarios name the Achaemenid civilization "pers". Preserve
+	// legacy scenario compatibility while using the fork's real player template.
+	if (civ == "pers")
+	{
+		warn("Legacy civilization ID pers mapped to achae for native player setup.");
+		civ = "achae";
+	}
 	return "special/players/" + civ;
 }
 
