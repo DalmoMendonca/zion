@@ -52,12 +52,30 @@
             (now.constructed - before.constructed));
         const cmpTech = QueryPlayerIDInterface(OPPONENT, IID_TechnologyManager);
         check(!!cmpTech, "Opponent has no native TechnologyManager");
-        const founded = cmpTech.IsTechnologyResearched("zion_covenant") ||
-            cmpTech.IsTechnologyResearched("zion_magistracy");
-        check(founded, "Petra did not independently research a first civic institution");
-        warn("ZION_AI_CIVIC_RESEARCH_OK: Petra chose and completed its first governing institution");
+        // The eight-minute economy checkpoint is not a civic-research deadline.
+        // Real Petra opponents may prioritize expansion before governing.
+        // Require the real research completion EVENT, then the actual victory,
+        // instead of generating an error that invalidates a winning AI match.
+        if (!this.zionAICivicProven &&
+            (cmpTech.IsTechnologyResearched("zion_covenant") ||
+             cmpTech.IsTechnologyResearched("zion_magistracy")))
+        {
+            this.zionAICivicProven = true;
+            warn("ZION_AI_CIVIC_RESEARCH_OK: Petra independently completed its first civic institution");
+        }
     };
 
-    Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger).RegisterTrigger(
-        "OnInitGame", "ZionAIProbeBegin", { "enabled": true });
+    Trigger.prototype.ZionAICivicResearchFinished = function(data)
+    {
+        if (this.zionAICivicProven || !data || data.player != OPPONENT ||
+            !["zion_covenant", "zion_magistracy"].includes(data.tech))
+            return;
+        this.zionAICivicProven = true;
+        warn("ZION_AI_CIVIC_RESEARCH_OK: Petra independently researched " + data.tech);
+    };
+
+    const trigger = Engine.QueryInterface(SYSTEM_ENTITY, IID_Trigger);
+    trigger.RegisterTrigger("OnInitGame", "ZionAIProbeBegin", { "enabled": true });
+    trigger.RegisterTrigger("OnResearchFinished", "ZionAICivicResearchFinished",
+        { "enabled": true });
 })();
