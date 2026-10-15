@@ -26,12 +26,17 @@
 	"requirementsTooltip": "Requires Town Phase and a founding civic constitution.",
 	"icon": "asclepius_rod.png",
 	"researchTime": 35,
-	"tooltip": "One-time paid reconstruction reduces existing war strain by up to 12, strengthens civic trust by 3, and improves idle healing.",
+	"tooltip": "Paid civic relief reduces war strain by 12 and improves trust. Workers also build 12% faster, helping restore damaged settlements.",
 	"modifications": [
 		{
 			"value": "Health/IdleRegenRate",
 			"add": 0.15,
 			"affects": "Organic"
+		},
+		{
+			"value": "Builder/Rate",
+			"multiply": 1.12,
+			"affects": "Worker"
 		}
 	],
 	"soundComplete": "interface/alarm/alarm_upgradearmory.xml"
